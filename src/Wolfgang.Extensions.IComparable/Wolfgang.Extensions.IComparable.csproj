@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>
@@ -9,7 +9,7 @@
 		</TargetFrameworks>
 		<LangVersion>14</LangVersion>
 		<Nullable>enable</Nullable>
-		<Version>0.1.0-rc1</Version>
+		<Version>1.0.0</Version>
 		<Title>$(AssemblyName)</Title>
 		<Authors>Chris Wolfgang</Authors>
 		<Description>A collection of extension methods for IComparable and IComparable&lt;T&gt; types</Description>
