@@ -1,0 +1,38 @@
+<Solution>
+  <Folder Name="/.root/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="CODE_OF_CONDUCT.md" />
+    <File Path="CONTRIBUTING.md" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+    <File Path="SETUP.md" />
+  </Folder>
+  <Folder Name="/.root/.github/">
+    <File Path=".github/CODEOWNERS" />
+    <File Path=".github/copilot-instructions.md" />
+    <File Path=".github/dependabot.yml" />
+    <File Path=".github/pull_request_template.md" />
+  </Folder>
+  <Folder Name="/.root/.github/workflows/">
+    <File Path=".github/workflows/create-labels.yaml" />
+    <File Path=".github/workflows/docfx.yaml" />
+    <File Path=".github/workflows/pr.yaml" />
+    <File Path=".github/workflows/release.yaml" />
+  </Folder>
+  <Folder Name="/.root/ISSUE_TEMPLATE/">
+    <File Path=".github/ISSUE_TEMPLATE/BUG_REPORT.yaml" />
+    <File Path=".github/ISSUE_TEMPLATE/feature_request.md" />
+  </Folder>
+  <Folder Name="/benchmark/" />
+  <Folder Name="/examples/">
+    <Project Path="examples/Wolfgang.Extensions.IComparable.DotNet462.Example1/Wolfgang.Extensions.IComparable.DotNet462.Example1.csproj" Id="fbc16a0c-bf3b-4788-b825-9c8e54920bf9" />
+    <Project Path="examples/Wolfgang.Extensions.IComparable.DotNet8.Example1/Wolfgang.Extensions.IComparable.DotNet8.Example1.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Wolfgang.Extensions.IComparable/Wolfgang.Extensions.IComparable.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="tests/Wolfgang.Extensions.IComparable.Tests.Unit/Wolfgang.Extensions.IComparable.Tests.Unit.csproj" />
+  </Folder>
+</Solution>
