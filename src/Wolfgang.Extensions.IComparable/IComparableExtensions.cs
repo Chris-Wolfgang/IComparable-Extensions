@@ -30,7 +30,8 @@ public static class IComparableExtensions
 
 
     /// <summary>
-    /// Determines if the specified value is greater than or equal to the lowerBound and less than or equal to the upperBound
+    /// Determines if the specified value is greater than or equal to the
+    /// lowerBound and less than or equal to the upperBound
     /// </summary>
     /// <typeparam name="T">The type of the values being compared.</typeparam>
     /// <param name="value">The value to compare.</param>
