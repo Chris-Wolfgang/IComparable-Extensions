@@ -1,3 +1,5 @@
-# Repository Template
+# Wolfgang.Extensions.IComparable
 
-This repository is intended to be used as a template for creating other repositories.
+A collection of extension methods for the `IComparable` struct in C#.
+
+## Methods
