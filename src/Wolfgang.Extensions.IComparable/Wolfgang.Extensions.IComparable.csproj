@@ -12,7 +12,7 @@
 		<Version>0.1.0-rc1</Version>
 		<Title>$(AssemblyName)</Title>
 		<Authors>Chris Wolfgang</Authors>
-		<Description>A collection of extension methods for DateTime</Description>
+		<Description>A collection of extension methods for IComparable and IComparable&lt;T&gt; types</Description>
 		<Copyright>Copyright 2026 Chris Wolfgang </Copyright>
 		<PackageProjectUrl>https://github.com/Chris-Wolfgang/Wolfgang.Extensions.IComparable</PackageProjectUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
