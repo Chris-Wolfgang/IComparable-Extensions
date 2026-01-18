@@ -9,7 +9,7 @@ namespace Wolfgang.Extensions.IComparable;
 public static class IComparableExtensions
 {
     /// <summary>
-    /// Determines if the specified value is greater than the lowerBound and less the upperBound
+    /// Determines if the specified value is greater than the lowerBound and less than the upperBound
     /// </summary>
     /// <typeparam name="T">The type of the values being compared.</typeparam>
     /// <param name="value">The value to compare.</param>
