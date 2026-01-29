@@ -27,7 +27,7 @@ Add the following package reference to your `.csproj` file:
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Wolfgang.Extensions.IComparable" Version="*" />
+  <PackageReference Include="Wolfgang.Extensions.IComparable" Version="1.*" />
 </ItemGroup>
 ```
 
@@ -108,7 +108,7 @@ if (price.IsBetween(0m, 100m))
 ### Working with Dates
 
 ```csharp
-DateTime checkDate = DateTime.Now;
+DateTime checkDate = new DateTime(2024, 6, 15);
 DateTime startDate = new DateTime(2024, 1, 1);
 DateTime endDate = new DateTime(2024, 12, 31);
 

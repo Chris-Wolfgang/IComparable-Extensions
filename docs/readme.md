@@ -47,11 +47,11 @@ if (temperature.IsInRange(18, 26))
 }
 
 // Check if a date is between two dates (exclusive)
-DateTime today = DateTime.Now;
+DateTime checkDate = new DateTime(2024, 6, 15);
 DateTime start = new DateTime(2024, 1, 1);
 DateTime end = new DateTime(2024, 12, 31);
 
-if (today.IsBetween(start, end))
+if (checkDate.IsBetween(start, end))
 {
     Console.WriteLine("Date is within 2024 (exclusive of boundaries)");
 }
@@ -72,7 +72,7 @@ bool isValidPercentage = percentage.IsInRange(0m, 100m);
 
 // Temperature monitoring
 double temp = 98.6;
-bool hasFeaver = temp.IsBetween(98.6, 103.0); // false (not > 98.6)
+bool hasFever = temp.IsBetween(98.6, 103.0); // false (98.6 is not > 98.6, boundary is excluded)
 ```
 
 ### String Comparisons
