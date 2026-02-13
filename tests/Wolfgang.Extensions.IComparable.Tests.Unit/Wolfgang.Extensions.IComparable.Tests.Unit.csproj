@@ -23,9 +23,25 @@
 		<PackageReference Include="xunit.extensibility.core" Version="2.9.3" />
 	</ItemGroup>
 
-	<!-- .NET Framework 4.6.2 - 4.8.1 specific packages -->
+	<!-- .NET Framework 4.6.2 specific packages -->
+	<ItemGroup Condition="'$(TargetFramework)' == 'net462'">
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="xunit.runner.console" Version="2.9.3">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="coverlet.collector" Version="6.0.4">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<!-- .NET Framework 4.7.2 - 4.8.1 specific packages -->
 	<ItemGroup Condition="
-			   '$(TargetFramework)' == 'net462' or
 			   '$(TargetFramework)' == 'net472' or
 			   '$(TargetFramework)' == 'net48' or
 			   '$(TargetFramework)' == 'net481'
