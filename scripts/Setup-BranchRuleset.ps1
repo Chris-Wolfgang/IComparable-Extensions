@@ -112,8 +112,8 @@ try {
         -H "Accept: application/vnd.github+json" `
         -H "X-GitHub-Api-Version: 2022-11-28" `
         "/repos/$Repository/rulesets" `
-        --paginate `
-        --jq '.[] | select(.name == "Protect main branch")' 2>&1
+        --paginate --slurp `
+        --jq '[.[][] | select(.name == "Protect main branch")]' 2>&1
 
     if ($LASTEXITCODE -ne 0) {
         Write-Warning "⚠️  Could not check for existing rulesets (API returned exit code $LASTEXITCODE). Continuing..."

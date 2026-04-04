@@ -4,10 +4,10 @@
 # Stage 3: .NET Framework 4.x tests on Windows (only if Stage 2 passes)
 #
 # SECURITY NOTE:
+# - Uses pull_request_target to run workflow from the trusted main branch, not from the PR branch
+# - All checkout steps use PR refs (refs/pull/*/head) to check out PR code for testing
 # - After checkout, configuration files (.editorconfig, BannedSymbols.txt, etc.) are fetched from
-#   the main branch to prevent malicious PRs from disabling analyzers or bypassing code quality checks
-# - persist-credentials: false prevents the checkout token from being written to git config for subsequent git commands
-#   (it does NOT, by itself, prevent steps from accessing github.token / GITHUB_TOKEN if you explicitly expose it)
+#   the PR's target branch to prevent malicious PRs from disabling analyzers or bypassing code quality checks
 # - Default GITHUB_TOKEN permissions are restricted to read-only repository contents to limit impact if exposed
 
 name: PR Checks v2 (Gated)
@@ -23,10 +23,6 @@ on:
     branches:
       - main
       - develop
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - '.github/workflows/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -43,16 +39,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
+          ref: refs/pull/${{ github.event.pull_request.number }}/head
           fetch-depth: 0
+          persist-credentials: false
 
-      - name: Fetch trusted configuration files from main branch
+      - name: Fetch trusted configuration files from base branch
         run: |
-          echo "Fetching configuration files from main branch to prevent malicious overrides..."
+          BASE_REF="${{ github.event.pull_request.base.ref || 'main' }}"
+          echo "Fetching configuration files from $BASE_REF branch to prevent malicious overrides..."
 
-          # Fetch the main branch
-          git fetch origin main:main-branch
+          # Fetch the target branch (base ref of the PR)
+          git fetch origin "$BASE_REF:trusted-branch"
 
-          # List of configuration files that should come from trusted main branch
+          # List of configuration files that should come from the trusted base branch
           config_files=(
             ".editorconfig"
             "Directory.Build.props"
@@ -62,23 +61,26 @@ jobs:
             "*.ruleset"
           )
 
-          # Copy each configuration file from main branch if it exists
+          # Copy each configuration file from the trusted branch if it exists
           for config_file in "${config_files[@]}"; do
             # Handle glob patterns
             if [[ "$config_file" == *"*"* ]]; then
               # Find files matching the pattern in main branch
-              git ls-tree -r --name-only main-branch | grep -E "${config_file//\*/.*}" | while read -r file; do
+              # Convert glob to proper regex: escape dots, then replace * with [^/]*
+              pattern="${config_file//./\\.}"
+              pattern="${pattern//\*/[^/]*}"
+              git ls-tree -r --name-only trusted-branch | grep -E "^${pattern}$" | while read -r file; do
                 if [ -n "$file" ]; then
-                  echo "  ✓ Copying $file from main branch"
+                  echo "  ✓ Copying $file from $BASE_REF branch"
                   mkdir -p "$(dirname "$file")"
-                  git show "main-branch:$file" > "$file" || echo "  ⚠️  Failed to copy $file"
+                  git show "trusted-branch:$file" > "$file" || echo "  ⚠️  Failed to copy $file"
                 fi
               done
             else
               # Check if file exists in main branch
-              if git cat-file -e "main-branch:$config_file" 2>/dev/null; then
-                echo "  ✓ Copying $config_file from main branch"
-                git show "main-branch:$config_file" > "$config_file"
+              if git cat-file -e "trusted-branch:$config_file" 2>/dev/null; then
+                echo "  ✓ Copying $config_file from $BASE_REF branch"
+                git show "trusted-branch:$config_file" > "$config_file"
               else
                 echo "  ℹ️  $config_file not found in main branch, skipping"
               fi
@@ -86,14 +88,18 @@ jobs:
           done
 
           echo ""
-          echo "✅ Configuration files secured - using versions from main branch"
+          echo "✅ Configuration files secured - using versions from $BASE_REF branch"
 
       - name: Run gitleaks
         run: |
           GITLEAKS_VERSION="8.24.0"
+          INSTALL_DIR="$HOME/.local/bin"
+          mkdir -p "$INSTALL_DIR"
           curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
-            | tar xz -C /usr/local/bin gitleaks
-          gitleaks detect --source . --verbose --redact
+            | tar xz -C "$INSTALL_DIR" gitleaks
+          chmod +x "$INSTALL_DIR/gitleaks"
+          echo "$INSTALL_DIR" >> "$GITHUB_PATH"
+          "$INSTALL_DIR/gitleaks" detect --source . --verbose --redact
         shell: bash
 
   # ============================================================================
@@ -108,14 +114,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Fetch trusted configuration files from main branch
+      - name: Fetch trusted configuration files from base branch
         run: |
-          echo "Fetching configuration files from main branch to prevent malicious overrides..."
+          BASE_REF="${{ github.event.pull_request.base.ref || 'main' }}"
+          echo "Fetching configuration files from $BASE_REF branch to prevent malicious overrides..."
 
-          # Fetch the main branch
-          git fetch origin main:main-branch
+          # Fetch the target branch (base ref of the PR)
+          git fetch origin "$BASE_REF:trusted-branch"
 
-          # List of configuration files that should come from trusted main branch
+          # List of configuration files that should come from the trusted base branch
           config_files=(
             ".editorconfig"
             "Directory.Build.props"
@@ -125,23 +132,26 @@ jobs:
             "*.ruleset"
           )
 
-          # Copy each configuration file from main branch if it exists
+          # Copy each configuration file from the trusted branch if it exists
           for config_file in "${config_files[@]}"; do
             # Handle glob patterns
             if [[ "$config_file" == *"*"* ]]; then
               # Find files matching the pattern in main branch
-              git ls-tree -r --name-only main-branch | grep -E "${config_file//\*/.*}" | while read -r file; do
+              # Convert glob to proper regex: escape dots, then replace * with [^/]*
+              pattern="${config_file//./\\.}"
+              pattern="${pattern//\*/[^/]*}"
+              git ls-tree -r --name-only trusted-branch | grep -E "^${pattern}$" | while read -r file; do
                 if [ -n "$file" ]; then
-                  echo "  ✓ Copying $file from main branch"
+                  echo "  ✓ Copying $file from $BASE_REF branch"
                   mkdir -p "$(dirname "$file")"
-                  git show "main-branch:$file" > "$file" || echo "  ⚠️  Failed to copy $file"
+                  git show "trusted-branch:$file" > "$file" || echo "  ⚠️  Failed to copy $file"
                 fi
               done
             else
               # Check if file exists in main branch
-              if git cat-file -e "main-branch:$config_file" 2>/dev/null; then
-                echo "  ✓ Copying $config_file from main branch"
-                git show "main-branch:$config_file" > "$config_file"
+              if git cat-file -e "trusted-branch:$config_file" 2>/dev/null; then
+                echo "  ✓ Copying $config_file from $BASE_REF branch"
+                git show "trusted-branch:$config_file" > "$config_file"
               else
                 echo "  ℹ️  $config_file not found in main branch, skipping"
               fi
@@ -149,7 +159,7 @@ jobs:
           done
 
           echo ""
-          echo "✅ Configuration files secured - using versions from main branch"
+          echo "✅ Configuration files secured - using versions from $BASE_REF branch"
 
       # Fix for .NET 5.0 on Ubuntu 22.04+ - install libssl1.1 from the focal-security
       # repository so APT verifies the package via GPG instead of a plain wget download.
@@ -216,8 +226,11 @@ jobs:
 
       - name: Run tests with coverage (.NET Core 5.0 - 10.0)
         run: |
-          # Find all test projects
-          mapfile -t test_projects < <(find ./tests -type f -name "*.csproj")
+          # Find all test projects (portable — no mapfile for macOS compat)
+          test_projects=()
+          while IFS= read -r -d '' f; do
+            test_projects+=("$f")
+          done < <(find ./tests -type f -name "*.csproj" -print0)
 
           if [ ${#test_projects[@]} -eq 0 ]; then
             echo "❌ No test projects found in ./tests directory!"
@@ -340,15 +353,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Fetch trusted configuration files from main branch
+      - name: Fetch trusted configuration files from base branch
         shell: bash
         run: |
-          echo "Fetching configuration files from main branch to prevent malicious overrides..."
+          BASE_REF="${{ github.event.pull_request.base.ref || 'main' }}"
+          echo "Fetching configuration files from $BASE_REF branch to prevent malicious overrides..."
 
-          # Fetch the main branch
-          git fetch origin main:main-branch
+          # Fetch the target branch (base ref of the PR)
+          git fetch origin "$BASE_REF:trusted-branch"
 
-          # List of configuration files that should come from trusted main branch
+          # List of configuration files that should come from the trusted base branch
           config_files=(
             ".editorconfig"
             "Directory.Build.props"
@@ -358,23 +372,26 @@ jobs:
             "*.ruleset"
           )
 
-          # Copy each configuration file from main branch if it exists
+          # Copy each configuration file from the trusted branch if it exists
           for config_file in "${config_files[@]}"; do
             # Handle glob patterns
             if [[ "$config_file" == *"*"* ]]; then
               # Find files matching the pattern in main branch
-              git ls-tree -r --name-only main-branch | grep -E "${config_file//\*/.*}" | while read -r file; do
+              # Convert glob to proper regex: escape dots, then replace * with [^/]*
+              pattern="${config_file//./\\.}"
+              pattern="${pattern//\*/[^/]*}"
+              git ls-tree -r --name-only trusted-branch | grep -E "^${pattern}$" | while read -r file; do
                 if [ -n "$file" ]; then
-                  echo "  ✓ Copying $file from main branch"
+                  echo "  ✓ Copying $file from $BASE_REF branch"
                   mkdir -p "$(dirname "$file")"
-                  git show "main-branch:$file" > "$file" || echo "  ⚠️  Failed to copy $file"
+                  git show "trusted-branch:$file" > "$file" || echo "  ⚠️  Failed to copy $file"
                 fi
               done
             else
               # Check if file exists in main branch
-              if git cat-file -e "main-branch:$config_file" 2>/dev/null; then
-                echo "  ✓ Copying $config_file from main branch"
-                git show "main-branch:$config_file" > "$config_file"
+              if git cat-file -e "trusted-branch:$config_file" 2>/dev/null; then
+                echo "  ✓ Copying $config_file from $BASE_REF branch"
+                git show "trusted-branch:$config_file" > "$config_file"
               else
                 echo "  ℹ️  $config_file not found in main branch, skipping"
               fi
@@ -382,7 +399,7 @@ jobs:
           done
 
           echo ""
-          echo "✅ Configuration files secured - using versions from main branch"
+          echo "✅ Configuration files secured - using versions from $BASE_REF branch"
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -520,14 +537,15 @@ jobs:
       - name:  Checkout code
         uses: actions/checkout@v4
 
-      - name: Fetch trusted configuration files from main branch
+      - name: Fetch trusted configuration files from base branch
         run: |
-          echo "Fetching configuration files from main branch to prevent malicious overrides..."
+          BASE_REF="${{ github.event.pull_request.base.ref || 'main' }}"
+          echo "Fetching configuration files from $BASE_REF branch to prevent malicious overrides..."
 
-          # Fetch the main branch
-          git fetch origin main:main-branch
+          # Fetch the target branch (base ref of the PR)
+          git fetch origin "$BASE_REF:trusted-branch"
 
-          # List of configuration files that should come from trusted main branch
+          # List of configuration files that should come from the trusted base branch
           config_files=(
             ".editorconfig"
             "Directory.Build.props"
@@ -537,23 +555,26 @@ jobs:
             "*.ruleset"
           )
 
-          # Copy each configuration file from main branch if it exists
+          # Copy each configuration file from the trusted branch if it exists
           for config_file in "${config_files[@]}"; do
             # Handle glob patterns
             if [[ "$config_file" == *"*"* ]]; then
               # Find files matching the pattern in main branch
-              git ls-tree -r --name-only main-branch | grep -E "${config_file//\*/.*}" | while read -r file; do
+              # Convert glob to proper regex: escape dots, then replace * with [^/]*
+              pattern="${config_file//./\\.}"
+              pattern="${pattern//\*/[^/]*}"
+              git ls-tree -r --name-only trusted-branch | grep -E "^${pattern}$" | while read -r file; do
                 if [ -n "$file" ]; then
-                  echo "  ✓ Copying $file from main branch"
+                  echo "  ✓ Copying $file from $BASE_REF branch"
                   mkdir -p "$(dirname "$file")"
-                  git show "main-branch:$file" > "$file" || echo "  ⚠️  Failed to copy $file"
+                  git show "trusted-branch:$file" > "$file" || echo "  ⚠️  Failed to copy $file"
                 fi
               done
             else
               # Check if file exists in main branch
-              if git cat-file -e "main-branch:$config_file" 2>/dev/null; then
-                echo "  ✓ Copying $config_file from main branch"
-                git show "main-branch:$config_file" > "$config_file"
+              if git cat-file -e "trusted-branch:$config_file" 2>/dev/null; then
+                echo "  ✓ Copying $config_file from $BASE_REF branch"
+                git show "trusted-branch:$config_file" > "$config_file"
               else
                 echo "  ℹ️  $config_file not found in main branch, skipping"
               fi
@@ -561,7 +582,7 @@ jobs:
           done
 
           echo ""
-          echo "✅ Configuration files secured - using versions from main branch"
+          echo "✅ Configuration files secured - using versions from $BASE_REF branch"
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -612,8 +633,11 @@ jobs:
 
       - name:  Run tests with coverage (.NET 6.0 - 10.0 only - ARM64 compatible)
         run: |
-          # Find all test projects
-          mapfile -t test_projects < <(find ./tests -type f -name "*.csproj")
+          # Find all test projects (portable — no mapfile for macOS compat)
+          test_projects=()
+          while IFS= read -r -d '' f; do
+            test_projects+=("$f")
+          done < <(find ./tests -type f -name "*.csproj" -print0)
 
           if [ ${#test_projects[@]} -eq 0 ]; then
             echo "❌ No test projects found in ./tests directory!"
@@ -745,15 +769,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Fetch trusted configuration files from main branch
+      - name: Fetch trusted configuration files from base branch
         shell: bash
         run: |
-          echo "Fetching configuration files from main branch to prevent malicious overrides..."
+          BASE_REF="${{ github.event.pull_request.base.ref || 'main' }}"
+          echo "Fetching configuration files from $BASE_REF branch to prevent malicious overrides..."
 
-          # Fetch the main branch
-          git fetch origin main:main-branch
+          # Fetch the target branch (base ref of the PR)
+          git fetch origin "$BASE_REF:trusted-branch"
 
-          # List of configuration files that should come from trusted main branch
+          # List of configuration files that should come from the trusted base branch
           config_files=(
             ".editorconfig"
             "Directory.Build.props"
@@ -763,23 +788,26 @@ jobs:
             "*.ruleset"
           )
 
-          # Copy each configuration file from main branch if it exists
+          # Copy each configuration file from the trusted branch if it exists
           for config_file in "${config_files[@]}"; do
             # Handle glob patterns
             if [[ "$config_file" == *"*"* ]]; then
               # Find files matching the pattern in main branch
-              git ls-tree -r --name-only main-branch | grep -E "${config_file//\*/.*}" | while read -r file; do
+              # Convert glob to proper regex: escape dots, then replace * with [^/]*
+              pattern="${config_file//./\\.}"
+              pattern="${pattern//\*/[^/]*}"
+              git ls-tree -r --name-only trusted-branch | grep -E "^${pattern}$" | while read -r file; do
                 if [ -n "$file" ]; then
-                  echo "  ✓ Copying $file from main branch"
+                  echo "  ✓ Copying $file from $BASE_REF branch"
                   mkdir -p "$(dirname "$file")"
-                  git show "main-branch:$file" > "$file" || echo "  ⚠️  Failed to copy $file"
+                  git show "trusted-branch:$file" > "$file" || echo "  ⚠️  Failed to copy $file"
                 fi
               done
             else
               # Check if file exists in main branch
-              if git cat-file -e "main-branch:$config_file" 2>/dev/null; then
-                echo "  ✓ Copying $config_file from main branch"
-                git show "main-branch:$config_file" > "$config_file"
+              if git cat-file -e "trusted-branch:$config_file" 2>/dev/null; then
+                echo "  ✓ Copying $config_file from $BASE_REF branch"
+                git show "trusted-branch:$config_file" > "$config_file"
               else
                 echo "  ℹ️  $config_file not found in main branch, skipping"
               fi
@@ -787,7 +815,7 @@ jobs:
           done
 
           echo ""
-          echo "✅ Configuration files secured - using versions from main branch"
+          echo "✅ Configuration files secured - using versions from $BASE_REF branch"
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -862,14 +890,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Fetch trusted configuration files from main branch
+      - name: Fetch trusted configuration files from base branch
         run: |
-          echo "Fetching configuration files from main branch to prevent malicious overrides..."
+          BASE_REF="${{ github.event.pull_request.base.ref || 'main' }}"
+          echo "Fetching configuration files from $BASE_REF branch to prevent malicious overrides..."
 
-          # Fetch the main branch
-          git fetch origin main:main-branch
+          # Fetch the target branch (base ref of the PR)
+          git fetch origin "$BASE_REF:trusted-branch"
 
-          # List of configuration files that should come from trusted main branch
+          # List of configuration files that should come from the trusted base branch
           config_files=(
             ".editorconfig"
             "Directory.Build.props"
@@ -879,23 +908,26 @@ jobs:
             "*.ruleset"
           )
 
-          # Copy each configuration file from main branch if it exists
+          # Copy each configuration file from the trusted branch if it exists
           for config_file in "${config_files[@]}"; do
             # Handle glob patterns
             if [[ "$config_file" == *"*"* ]]; then
               # Find files matching the pattern in main branch
-              git ls-tree -r --name-only main-branch | grep -E "${config_file//\*/.*}" | while read -r file; do
+              # Convert glob to proper regex: escape dots, then replace * with [^/]*
+              pattern="${config_file//./\\.}"
+              pattern="${pattern//\*/[^/]*}"
+              git ls-tree -r --name-only trusted-branch | grep -E "^${pattern}$" | while read -r file; do
                 if [ -n "$file" ]; then
-                  echo "  ✓ Copying $file from main branch"
+                  echo "  ✓ Copying $file from $BASE_REF branch"
                   mkdir -p "$(dirname "$file")"
-                  git show "main-branch:$file" > "$file" || echo "  ⚠️  Failed to copy $file"
+                  git show "trusted-branch:$file" > "$file" || echo "  ⚠️  Failed to copy $file"
                 fi
               done
             else
               # Check if file exists in main branch
-              if git cat-file -e "main-branch:$config_file" 2>/dev/null; then
-                echo "  ✓ Copying $config_file from main branch"
-                git show "main-branch:$config_file" > "$config_file"
+              if git cat-file -e "trusted-branch:$config_file" 2>/dev/null; then
+                echo "  ✓ Copying $config_file from $BASE_REF branch"
+                git show "trusted-branch:$config_file" > "$config_file"
               else
                 echo "  ℹ️  $config_file not found in main branch, skipping"
               fi
@@ -903,7 +935,7 @@ jobs:
           done
 
           echo ""
-          echo "✅ Configuration files secured - using versions from main branch"
+          echo "✅ Configuration files secured - using versions from $BASE_REF branch"
 
       - name: Install DevSkim CLI
         run: dotnet tool install --global Microsoft.CST.DevSkim.CLI

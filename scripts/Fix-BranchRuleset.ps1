@@ -80,7 +80,8 @@ try {
         -H "Accept: application/vnd.github+json" `
         -H "X-GitHub-Api-Version: 2022-11-28" `
         "/repos/$Repository/rulesets" `
-        --paginate 2>&1
+        --paginate --slurp `
+        --jq '[.[][]]' 2>&1
 
     if ($LASTEXITCODE -ne 0) {
         Write-Error "Failed to fetch rulesets: $rulesetsJson"
