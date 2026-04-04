@@ -92,7 +92,7 @@ if ($Repository -eq "Chris-Wolfgang/IComparable-Extensions" -or -not $Repository
         Write-Host "✅ Using repository: $Repository" -ForegroundColor Green
     } catch {
         if ($Repository -eq "Chris-Wolfgang/IComparable-Extensions") {
-            Write-Error "❌ Could not detect repository. Please run the setup script (pwsh ./scripts/setup.ps1) first to replace placeholders, or specify -Repository parameter."
+            Write-Error "❌ Could not detect repository. Please specify the -Repository parameter, or run this script from within the target git repository."
         } else {
             Write-Error "❌ Could not detect repository. Please run from within a git repository or specify -Repository parameter."
         }
@@ -197,8 +197,9 @@ $rulesetConfig = @{
                 # rule below - see that section for details on how CodeQL handles graceful skipping.
                 required_status_checks = @(
                     @{ context = "Stage 1: Linux Tests (.NET 5.0-10.0) + Coverage Gate" },
-                    @{ context = "Stage 2: Windows Tests (.NET 5.0-10.0, Framework 4.6.2-4.8.1)" },
-                    @{ context = "Stage 3: macOS Tests (.NET 6.0-10.0)" },
+                    @{ context = "Stage 2a: Windows Tests (.NET 5.0-10.0)" },
+                    @{ context = "Stage 2b: macOS Tests (.NET 6.0-10.0)" },
+                    @{ context = "Stage 3: Windows .NET Framework Tests (4.6.2-4.8.1)" },
                     @{ context = "Security Scan (DevSkim)" }
                 )
             }
@@ -221,23 +222,9 @@ $rulesetConfig = @{
                 )
             }
         },
-        @{
-            type = "copilot_code_review"
-            # Not yet supported through API, must be set via UI
-            # <-- parameters = @{
-                # Automatically request Copilot code review for new pull requests
-                # if the author has Copilot access and hasn't reached their review request limit
-                # <-- auto_request_copilot_review = $true
-                # Review new pushes to the pull request automatically
-                # <-- review_new_pushes = $true
-                # Review draft pull requests before they are marked as ready
-                # <-- review_draft_pull_requests = $true
-                # Static analysis tools to include in Copilot code review
-                # <-- static_analysis_tools = @("CodeQL")
-                # Query suite for CodeQL
-                # <-- codeql_query_suite = "standard"
-            # }
-        },
+        # NOTE: Copilot code review is not included in this API-created payload because
+        # it is not currently supported through the rulesets API. After the ruleset is
+        # created, enable Copilot code review settings manually in the GitHub repository UI.
         @{
             type = "non_fast_forward"
         },
