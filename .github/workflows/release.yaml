@@ -72,11 +72,11 @@ jobs:
             9.0.x
             10.0.x
 
-      - name: Restore dependencies
-        run: dotnet restore
+      - name: Restore source projects
+        run: dotnet restore src/
 
-      - name: Build Solution (Release)
-        run: dotnet build --no-restore --configuration Release
+      - name: Build Source Projects (Release)
+        run: dotnet build --no-restore --configuration Release src/
 
       - name: Pack NuGet Packages
         shell: pwsh
