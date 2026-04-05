@@ -2,26 +2,113 @@
 # Stage 1: Linux tests with 90% coverage requirement
 # Stage 2: Windows and macOS tests (only if Linux passes)
 # Stage 3: .NET Framework 4.x tests on Windows (only if Stage 2 passes)
+#
+# SECURITY NOTE:
+# - Uses pull_request_target to run workflow from the trusted main branch, not from the PR branch
+# - All checkout steps use PR merge refs (refs/pull/*/merge) to test the merge result
+# - After checkout, configuration files (.editorconfig, BannedSymbols.txt, etc.) are fetched from
+#   the PR's target branch to prevent malicious PRs from disabling analyzers or bypassing code quality checks
+# - Default GITHUB_TOKEN permissions are restricted to read-only repository contents to limit impact if exposed
 
 name: PR Checks v2 (Gated)
 
 permissions:
   contents: read
-  
+
+env:
+  CODECOV_MINIMUM: 90
+
 on:
-  pull_request_target:  # Runs from the main branch, not from PR branch 
-    branches: 
+  pull_request_target:  # Runs from the main branch, not from PR branch
+    branches:
       - main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  # SECRETS SCAN: Detect leaked credentials before merge
+  # ============================================================================
+  secrets-scan:
+    name: "Secrets Scan (gitleaks)"
+    runs-on: ubuntu-latest
+    if: github.repository != 'Chris-Wolfgang/repo-template'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: refs/pull/${{ github.event.pull_request.number }}/merge
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Fetch trusted configuration files from base branch
+        run: |
+          BASE_REF="${{ github.event.pull_request.base.ref || 'main' }}"
+          echo "Fetching configuration files from $BASE_REF branch to prevent malicious overrides..."
+
+          # Fetch the target branch (base ref of the PR)
+          git fetch origin "$BASE_REF:trusted-branch"
+
+          # List of configuration files that should come from the trusted base branch
+          config_files=(
+            ".editorconfig"
+            "Directory.Build.props"
+            "Directory.Build.targets"
+            "BannedSymbols.txt"
+            "*.globalconfig"
+            "*.ruleset"
+          )
+
+          # Copy each configuration file from the trusted branch if it exists
+          for config_file in "${config_files[@]}"; do
+            # Handle glob patterns
+            if [[ "$config_file" == *"*"* ]]; then
+              # Find files matching the pattern in main branch
+              # Convert glob to proper regex: escape dots, then replace * with [^/]*
+              pattern="${config_file//./\\.}"
+              pattern="${pattern//\*/[^/]*}"
+              git ls-tree -r --name-only trusted-branch | { grep -E "^${pattern}$" || true; } | while read -r file; do
+                if [ -n "$file" ]; then
+                  echo "  ✓ Copying $file from $BASE_REF branch"
+                  mkdir -p "$(dirname "$file")"
+                  git show "trusted-branch:$file" > "$file" || echo "  ⚠️  Failed to copy $file"
+                fi
+              done
+            else
+              # Check if file exists in main branch
+              if git cat-file -e "trusted-branch:$config_file" 2>/dev/null; then
+                echo "  ✓ Copying $config_file from $BASE_REF branch"
+                git show "trusted-branch:$config_file" > "$config_file"
+              else
+                echo "  ℹ️  $config_file not found in main branch, skipping"
+              fi
+            fi
+          done
+
+          echo ""
+          echo "✅ Configuration files secured - using versions from $BASE_REF branch"
+
+      - name: Run gitleaks
+        run: |
+          GITLEAKS_VERSION="8.24.0"
+          INSTALL_DIR="$HOME/.local/bin"
+          mkdir -p "$INSTALL_DIR"
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            | tar xz -C "$INSTALL_DIR" gitleaks
+          chmod +x "$INSTALL_DIR/gitleaks"
+          echo "$INSTALL_DIR" >> "$GITHUB_PATH"
+          "$INSTALL_DIR/gitleaks" detect --source . --verbose --redact
+        shell: bash
+
   # ============================================================================
   # STAGE 1: Linux - .NET Core/5+ Tests with Coverage Gate
   # ============================================================================
-  test-linux-core: 
+  test-linux-core:
     name: "Stage 1: Linux Tests (.NET 5.0-10.0) + Coverage Gate"
     runs-on:  ubuntu-latest
     if: github.repository != 'Chris-Wolfgang/repo-template'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -29,11 +116,61 @@ jobs:
           ref: refs/pull/${{ github.event.pull_request.number }}/merge
           persist-credentials: false
 
-      # Fix for .NET 5.0 on Ubuntu 22.04+ - install libssl1.1
+      - name: Fetch trusted configuration files from base branch
+        run: |
+          BASE_REF="${{ github.event.pull_request.base.ref || 'main' }}"
+          echo "Fetching configuration files from $BASE_REF branch to prevent malicious overrides..."
+
+          # Fetch the target branch (base ref of the PR)
+          git fetch origin "$BASE_REF:trusted-branch"
+
+          # List of configuration files that should come from the trusted base branch
+          config_files=(
+            ".editorconfig"
+            "Directory.Build.props"
+            "Directory.Build.targets"
+            "BannedSymbols.txt"
+            "*.globalconfig"
+            "*.ruleset"
+          )
+
+          # Copy each configuration file from the trusted branch if it exists
+          for config_file in "${config_files[@]}"; do
+            # Handle glob patterns
+            if [[ "$config_file" == *"*"* ]]; then
+              # Find files matching the pattern in main branch
+              # Convert glob to proper regex: escape dots, then replace * with [^/]*
+              pattern="${config_file//./\\.}"
+              pattern="${pattern//\*/[^/]*}"
+              git ls-tree -r --name-only trusted-branch | { grep -E "^${pattern}$" || true; } | while read -r file; do
+                if [ -n "$file" ]; then
+                  echo "  ✓ Copying $file from $BASE_REF branch"
+                  mkdir -p "$(dirname "$file")"
+                  git show "trusted-branch:$file" > "$file" || echo "  ⚠️  Failed to copy $file"
+                fi
+              done
+            else
+              # Check if file exists in main branch
+              if git cat-file -e "trusted-branch:$config_file" 2>/dev/null; then
+                echo "  ✓ Copying $config_file from $BASE_REF branch"
+                git show "trusted-branch:$config_file" > "$config_file"
+              else
+                echo "  ℹ️  $config_file not found in main branch, skipping"
+              fi
+            fi
+          done
+
+          echo ""
+          echo "✅ Configuration files secured - using versions from $BASE_REF branch"
+
+      # Fix for .NET 5.0 on Ubuntu 22.04+ - install libssl1.1 from the focal-security
+      # repository so APT verifies the package via GPG instead of a plain wget download.
       - name: Install OpenSSL 1.1 for .NET 5.0
         run: |
-          wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb
-          sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb
+          echo "deb https://security.ubuntu.com/ubuntu focal-security main" | sudo tee /etc/apt/sources.list.d/focal-security.list
+          sudo apt-get update -q
+          sudo apt-get install --yes libssl1.1
+          sudo rm /etc/apt/sources.list.d/focal-security.list
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -49,35 +186,35 @@ jobs:
       - name: Restore and build (exclude .NET Framework 4.x projects)
         run: |
           echo "Finding all projects in solution..."
-          
+
           # Get list of all projects from solution file
           if [ -f "*.sln" ]; then
             sln_file=$(ls *.sln | head -n 1)
             echo "Using solution file: $sln_file"
           fi
-          
+
           # Find all .csproj, .vbproj, and .fsproj files
           # Exclude those with 'dotnet4' or 'DotNet4' in the path (case-insensitive)
           projects=$(find . -type f \( -name "*.csproj" -o -name "*.vbproj" -o -name "*.fsproj" \) | grep -iv "dotnet4")
-          
+
           if [ -z "$projects" ]; then
             echo "No projects found!"
             exit 1
           fi
-          
+
           echo "=========================================="
           echo "Projects to build (excluding .NET Framework 4.x):"
           echo "=========================================="
           echo "$projects"
           echo ""
-          
+
           # Restore each project
           echo "Restoring projects..."
           for proj in $projects; do
             echo "Restoring: $proj"
             dotnet restore "$proj" || exit 1
           done
-          
+
           echo ""
           echo "Building projects..."
           # Build each project
@@ -85,37 +222,40 @@ jobs:
             echo "Building: $proj"
             dotnet build "$proj" --no-restore --configuration Release || exit 1
           done
-          
+
           echo ""
           echo "✅ All compatible projects built successfully"
 
       - name: Run tests with coverage (.NET Core 5.0 - 10.0)
         run: |
-          # Find all test projects
-          test_projects=$(find ./tests -type f -name "*.csproj")
-          
-          if [ -z "$test_projects" ]; then
+          # Find all test projects (portable — no mapfile for macOS compat)
+          test_projects=()
+          while IFS= read -r -d '' f; do
+            test_projects+=("$f")
+          done < <(find ./tests -type f -name "*.csproj" -print0)
+
+          if [ ${#test_projects[@]} -eq 0 ]; then
             echo "❌ No test projects found in ./tests directory!"
             exit 1
           fi
-          
+
           echo "=========================================="
           echo "Found test projects:"
           echo "=========================================="
-          echo "$test_projects"
+          printf '%s\n' "${test_projects[@]}"
           echo ""
-          
+
           # Test each framework individually to ensure all are tested
           frameworks=(net5.0 net6.0 net7.0 net8.0 net9.0 net10.0)
-          
-          for test_proj in $test_projects; do
+
+          for test_proj in "${test_projects[@]}"; do
             echo "=========================================="
             echo "Testing project: $test_proj"
             echo "=========================================="
-            
+
             for fw in "${frameworks[@]}"; do
               echo "Testing framework: $fw"
-              
+
               dotnet test "$test_proj" \
                 --configuration Release \
                 --framework "$fw" \
@@ -136,7 +276,7 @@ jobs:
             -targetdir:"CoverageReport" \
             -reporttypes:"Html;TextSummary;MarkdownSummaryGithub;CsvSummary"
 
-      - name: Enforce 90% coverage threshold
+      - name: Enforce coverage threshold
         run: |
           if [ ! -f CoverageReport/Summary.txt ]; then
             echo "❌ Coverage report not generated!"
@@ -146,18 +286,18 @@ jobs:
           echo "Coverage Summary:"
           cat CoverageReport/Summary.txt
           echo ""
-          
+
           failed_projects=""
-          threshold=90
-          
+          threshold=${CODECOV_MINIMUM:-90}
+
           while read -r line; do
             # Match lines with module names and percentages
             if echo "$line" | grep -qE '^[^ ].*[0-9]+%$' && ! echo "$line" | grep -q '^Summary'; then
               module=$(echo "$line" | awk '{print $1}')
               percent=$(echo "$line" | awk '{print $NF}' | tr -d '%')
-              
+
               echo "Checking module: '$module' - Coverage: ${percent}%"
-              
+
               if [ "$percent" -lt "$threshold" ]; then
                 echo "  ❌ FAIL: Below ${threshold}% threshold"
                 failed_projects="$failed_projects $module (${percent}%)"
@@ -210,13 +350,61 @@ jobs:
     runs-on: windows-latest
     needs: test-linux-core
     if: github.repository != 'Chris-Wolfgang/repo-template'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           ref: refs/pull/${{ github.event.pull_request.number }}/merge
           persist-credentials: false
+
+      - name: Fetch trusted configuration files from base branch
+        shell: bash
+        run: |
+          BASE_REF="${{ github.event.pull_request.base.ref || 'main' }}"
+          echo "Fetching configuration files from $BASE_REF branch to prevent malicious overrides..."
+
+          # Fetch the target branch (base ref of the PR)
+          git fetch origin "$BASE_REF:trusted-branch"
+
+          # List of configuration files that should come from the trusted base branch
+          config_files=(
+            ".editorconfig"
+            "Directory.Build.props"
+            "Directory.Build.targets"
+            "BannedSymbols.txt"
+            "*.globalconfig"
+            "*.ruleset"
+          )
+
+          # Copy each configuration file from the trusted branch if it exists
+          for config_file in "${config_files[@]}"; do
+            # Handle glob patterns
+            if [[ "$config_file" == *"*"* ]]; then
+              # Find files matching the pattern in main branch
+              # Convert glob to proper regex: escape dots, then replace * with [^/]*
+              pattern="${config_file//./\\.}"
+              pattern="${pattern//\*/[^/]*}"
+              git ls-tree -r --name-only trusted-branch | { grep -E "^${pattern}$" || true; } | while read -r file; do
+                if [ -n "$file" ]; then
+                  echo "  ✓ Copying $file from $BASE_REF branch"
+                  mkdir -p "$(dirname "$file")"
+                  git show "trusted-branch:$file" > "$file" || echo "  ⚠️  Failed to copy $file"
+                fi
+              done
+            else
+              # Check if file exists in main branch
+              if git cat-file -e "trusted-branch:$config_file" 2>/dev/null; then
+                echo "  ✓ Copying $config_file from $BASE_REF branch"
+                git show "trusted-branch:$config_file" > "$config_file"
+              else
+                echo "  ℹ️  $config_file not found in main branch, skipping"
+              fi
+            fi
+          done
+
+          echo ""
+          echo "✅ Configuration files secured - using versions from $BASE_REF branch"
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -235,37 +423,41 @@ jobs:
       - name: Build solution
         run: dotnet build --no-restore --configuration Release
 
-      - name: Run tests (.NET Core 5.0 - 10.0)
+      - name: Run tests with coverage (.NET Core 5.0 - 10.0)
         shell: pwsh
         run: |
+          $ErrorActionPreference = 'Stop'
+
           $testProjects = Get-ChildItem -Path './tests' -Recurse -Filter '*.csproj'
-          
+
           if ($testProjects.Count -eq 0) {
             Write-Error "❌ No test projects found in ./tests directory!"
             exit 1
           }
-          
+
           Write-Host "==========================================" -ForegroundColor Cyan
           Write-Host "Found test projects:" -ForegroundColor Cyan
           Write-Host "==========================================" -ForegroundColor Cyan
           $testProjects | ForEach-Object { Write-Host $_.FullName -ForegroundColor White }
           Write-Host ""
-          
+
           $frameworks = @('net5.0', 'net6.0', 'net7.0', 'net8.0', 'net9.0', 'net10.0')
-          
+
           foreach ($testProj in $testProjects) {
             Write-Host "==========================================" -ForegroundColor Cyan
             Write-Host "Testing project: $($testProj.FullName)" -ForegroundColor Cyan
             Write-Host "==========================================" -ForegroundColor Cyan
-            
+
             foreach ($fw in $frameworks) {
               Write-Host "Testing framework:  $fw" -ForegroundColor Yellow
-              
+
               dotnet test $testProj.FullName `
                 --configuration Release `
                 --framework $fw `
+                --collect:"XPlat Code Coverage" `
+                --results-directory "./TestResults" `
                 --logger "console;verbosity=normal"
-              
+
               if ($LASTEXITCODE -ne 0) {
                 Write-Error "Tests failed for $fw in $($testProj.Name)"
                 exit 1
@@ -274,18 +466,131 @@ jobs:
             Write-Host ""
           }
 
-  test-macos-core:  
+      - name: Install ReportGenerator
+        run: dotnet tool install -g dotnet-reportgenerator-globaltool
+
+      - name: Generate coverage report
+        run: |
+          reportgenerator `
+            -reports:"TestResults/**/coverage.cobertura.xml" `
+            -targetdir:"CoverageReport" `
+            -reporttypes:"Html;TextSummary;MarkdownSummaryGithub;CsvSummary"
+        shell: pwsh
+
+      - name: Enforce coverage threshold
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "CoverageReport/Summary.txt")) {
+            Write-Error "❌ Coverage report not generated!"
+            exit 1
+          }
+
+          Write-Host "Coverage Summary:"
+          Get-Content "CoverageReport/Summary.txt"
+          Write-Host ""
+
+          $failedProjects = @()
+          $threshold = if ($env:CODECOV_MINIMUM) { [int]$env:CODECOV_MINIMUM } else { 90 }
+
+          foreach ($line in Get-Content "CoverageReport/Summary.txt") {
+            if ($line -match '^(\S+)\s+.*?(\d+)%$' -and $line -notmatch '^Summary') {
+              $module = $Matches[1]
+              $percent = [int]$Matches[2]
+
+              Write-Host "Checking module: '$module' - Coverage: ${percent}%"
+
+              if ($percent -lt $threshold) {
+                Write-Host "  ❌ FAIL: Below ${threshold}% threshold"
+                $failedProjects += "$module (${percent}%)"
+              } else {
+                Write-Host "  ✅ PASS: Meets ${threshold}% threshold"
+              }
+            }
+          }
+
+          if ($failedProjects.Count -gt 0) {
+            Write-Host ""
+            Write-Host "=========================================="
+            Write-Host "❌ COVERAGE GATE FAILED"
+            Write-Host "=========================================="
+            Write-Host "Projects below ${threshold}% coverage: $($failedProjects -join ', ')"
+            exit 1
+          } else {
+            Write-Host ""
+            Write-Host "=========================================="
+            Write-Host "✅ COVERAGE GATE PASSED"
+            Write-Host "=========================================="
+            Write-Host "All projects meet ${threshold}% coverage threshold."
+          }
+
+      - name: Upload Windows coverage results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-windows
+          path: |
+            TestResults/
+            CoverageReport/
+
+  test-macos-core:
     name: "Stage 2b: macOS Tests (.NET 6.0-10.0)"
     runs-on: macos-latest
     needs: test-linux-core
     if: github.repository != 'Chris-Wolfgang/repo-template'
-    
+
     steps:
       - name:  Checkout code
         uses: actions/checkout@v4
         with:
           ref: refs/pull/${{ github.event.pull_request.number }}/merge
           persist-credentials: false
+
+      - name: Fetch trusted configuration files from base branch
+        run: |
+          BASE_REF="${{ github.event.pull_request.base.ref || 'main' }}"
+          echo "Fetching configuration files from $BASE_REF branch to prevent malicious overrides..."
+
+          # Fetch the target branch (base ref of the PR)
+          git fetch origin "$BASE_REF:trusted-branch"
+
+          # List of configuration files that should come from the trusted base branch
+          config_files=(
+            ".editorconfig"
+            "Directory.Build.props"
+            "Directory.Build.targets"
+            "BannedSymbols.txt"
+            "*.globalconfig"
+            "*.ruleset"
+          )
+
+          # Copy each configuration file from the trusted branch if it exists
+          for config_file in "${config_files[@]}"; do
+            # Handle glob patterns
+            if [[ "$config_file" == *"*"* ]]; then
+              # Find files matching the pattern in main branch
+              # Convert glob to proper regex: escape dots, then replace * with [^/]*
+              pattern="${config_file//./\\.}"
+              pattern="${pattern//\*/[^/]*}"
+              git ls-tree -r --name-only trusted-branch | { grep -E "^${pattern}$" || true; } | while read -r file; do
+                if [ -n "$file" ]; then
+                  echo "  ✓ Copying $file from $BASE_REF branch"
+                  mkdir -p "$(dirname "$file")"
+                  git show "trusted-branch:$file" > "$file" || echo "  ⚠️  Failed to copy $file"
+                fi
+              done
+            else
+              # Check if file exists in main branch
+              if git cat-file -e "trusted-branch:$config_file" 2>/dev/null; then
+                echo "  ✓ Copying $config_file from $BASE_REF branch"
+                git show "trusted-branch:$config_file" > "$config_file"
+              else
+                echo "  ℹ️  $config_file not found in main branch, skipping"
+              fi
+            fi
+          done
+
+          echo ""
+          echo "✅ Configuration files secured - using versions from $BASE_REF branch"
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -300,29 +605,29 @@ jobs:
       - name: Restore and build (exclude .NET Framework 4.x projects)
         run: |
           echo "Finding all projects in solution..."
-          
+
           # Find all .csproj, .vbproj, and .fsproj files
           # Exclude those with 'dotnet4' or 'DotNet4' in the path (case-insensitive)
           projects=$(find . -type f \( -name "*.csproj" -o -name "*.vbproj" -o -name "*.fsproj" \) | grep -iv "dotnet4")
-          
+
           if [ -z "$projects" ]; then
             echo "No projects found!"
             exit 1
           fi
-          
+
           echo "=========================================="
           echo "Projects to build (excluding .NET Framework 4.x):"
           echo "=========================================="
           echo "$projects"
           echo ""
-          
+
           # Restore each project
           echo "Restoring projects..."
           for proj in $projects; do
             echo "Restoring: $proj"
             dotnet restore "$proj" || exit 1
           done
-          
+
           echo ""
           echo "Building projects..."
           # Build each project
@@ -330,44 +635,113 @@ jobs:
             echo "Building: $proj"
             dotnet build "$proj" --no-restore --configuration Release || exit 1
           done
-          
+
           echo ""
           echo "✅ All compatible projects built successfully"
 
-      - name:  Run tests (.NET 6.0 - 10.0 only - ARM64 compatible)
+      - name:  Run tests with coverage (.NET 6.0 - 10.0 only - ARM64 compatible)
         run: |
-          # Find all test projects
-          test_projects=$(find ./tests -type f -name "*.csproj")
-          
-          if [ -z "$test_projects" ]; then
+          # Find all test projects (portable — no mapfile for macOS compat)
+          test_projects=()
+          while IFS= read -r -d '' f; do
+            test_projects+=("$f")
+          done < <(find ./tests -type f -name "*.csproj" -print0)
+
+          if [ ${#test_projects[@]} -eq 0 ]; then
             echo "❌ No test projects found in ./tests directory!"
             exit 1
           fi
-          
+
           echo "=========================================="
           echo "Found test projects:"
           echo "=========================================="
-          echo "$test_projects"
+          printf '%s\n' "${test_projects[@]}"
           echo ""
-          
+
           # Skip .NET Core 5.0 and .NET 5.0 - no ARM64 support on macOS
           frameworks=(net6.0 net7.0 net8.0 net9.0 net10.0)
-          
-          for test_proj in $test_projects; do
+
+          for test_proj in "${test_projects[@]}"; do
             echo "=========================================="
             echo "Testing project: $test_proj"
             echo "=========================================="
-            
+
             for fw in "${frameworks[@]}"; do
               echo "Testing framework: $fw"
-              
+
               dotnet test "$test_proj" \
                 --configuration Release \
                 --framework "$fw" \
+                --collect:"XPlat Code Coverage" \
+                --results-directory "./TestResults" \
                 --logger "console;verbosity=normal" || exit 1
             done
             echo ""
           done
+
+      - name: Install ReportGenerator
+        run: dotnet tool install -g dotnet-reportgenerator-globaltool
+
+      - name: Generate coverage report
+        run: |
+          reportgenerator \
+            -reports:"TestResults/**/coverage.cobertura.xml" \
+            -targetdir:"CoverageReport" \
+            -reporttypes:"Html;TextSummary;MarkdownSummaryGithub;CsvSummary"
+
+      - name: Enforce coverage threshold
+        run: |
+          if [ ! -f CoverageReport/Summary.txt ]; then
+            echo "❌ Coverage report not generated!"
+            exit 1
+          fi
+
+          echo "Coverage Summary:"
+          cat CoverageReport/Summary.txt
+          echo ""
+
+          failed_projects=""
+          threshold=${CODECOV_MINIMUM:-90}
+
+          while read -r line; do
+            if echo "$line" | grep -qE '^[^ ].*[0-9]+%$' && ! echo "$line" | grep -q '^Summary'; then
+              module=$(echo "$line" | awk '{print $1}')
+              percent=$(echo "$line" | awk '{print $NF}' | tr -d '%')
+
+              echo "Checking module: '$module' - Coverage: ${percent}%"
+
+              if [ "$percent" -lt "$threshold" ]; then
+                echo "  ❌ FAIL: Below ${threshold}% threshold"
+                failed_projects="$failed_projects $module (${percent}%)"
+              else
+                echo "  ✅ PASS: Meets ${threshold}% threshold"
+              fi
+            fi
+          done < CoverageReport/Summary.txt
+
+          if [ -n "$failed_projects" ]; then
+            echo ""
+            echo "=========================================="
+            echo "❌ COVERAGE GATE FAILED"
+            echo "=========================================="
+            echo "Projects below ${threshold}% coverage: $failed_projects"
+            exit 1
+          else
+            echo ""
+            echo "=========================================="
+            echo "✅ COVERAGE GATE PASSED"
+            echo "=========================================="
+            echo "All projects meet ${threshold}% coverage threshold."
+          fi
+
+      - name: Upload macOS coverage results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-macos
+          path: |
+            TestResults/
+            CoverageReport/
 
       - name: Display macOS architecture info
         if: always()
@@ -393,18 +767,66 @@ jobs:
   # ============================================================================
   # STAGE 3: Windows - .NET Framework 4.x Tests (Gated by Stage 2)
   # ============================================================================
-  test-windows-framework: 
+  test-windows-framework:
     name: "Stage 3: Windows .NET Framework Tests (4.6.2-4.8.1)"
     runs-on: windows-latest
     needs: [test-windows-core, test-macos-core]
     if: github.repository != 'Chris-Wolfgang/repo-template'
-    
-    steps: 
+
+    steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           ref: refs/pull/${{ github.event.pull_request.number }}/merge
           persist-credentials: false
+
+      - name: Fetch trusted configuration files from base branch
+        shell: bash
+        run: |
+          BASE_REF="${{ github.event.pull_request.base.ref || 'main' }}"
+          echo "Fetching configuration files from $BASE_REF branch to prevent malicious overrides..."
+
+          # Fetch the target branch (base ref of the PR)
+          git fetch origin "$BASE_REF:trusted-branch"
+
+          # List of configuration files that should come from the trusted base branch
+          config_files=(
+            ".editorconfig"
+            "Directory.Build.props"
+            "Directory.Build.targets"
+            "BannedSymbols.txt"
+            "*.globalconfig"
+            "*.ruleset"
+          )
+
+          # Copy each configuration file from the trusted branch if it exists
+          for config_file in "${config_files[@]}"; do
+            # Handle glob patterns
+            if [[ "$config_file" == *"*"* ]]; then
+              # Find files matching the pattern in main branch
+              # Convert glob to proper regex: escape dots, then replace * with [^/]*
+              pattern="${config_file//./\\.}"
+              pattern="${pattern//\*/[^/]*}"
+              git ls-tree -r --name-only trusted-branch | { grep -E "^${pattern}$" || true; } | while read -r file; do
+                if [ -n "$file" ]; then
+                  echo "  ✓ Copying $file from $BASE_REF branch"
+                  mkdir -p "$(dirname "$file")"
+                  git show "trusted-branch:$file" > "$file" || echo "  ⚠️  Failed to copy $file"
+                fi
+              done
+            else
+              # Check if file exists in main branch
+              if git cat-file -e "trusted-branch:$config_file" 2>/dev/null; then
+                echo "  ✓ Copying $config_file from $BASE_REF branch"
+                git show "trusted-branch:$config_file" > "$config_file"
+              else
+                echo "  ℹ️  $config_file not found in main branch, skipping"
+              fi
+            fi
+          done
+
+          echo ""
+          echo "✅ Configuration files secured - using versions from $BASE_REF branch"
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -422,33 +844,33 @@ jobs:
         shell: pwsh
         run: |
           $testProjects = Get-ChildItem -Path './tests' -Recurse -Filter '*.csproj'
-          
+
           if ($testProjects.Count -eq 0) {
             Write-Error "❌ No test projects found in ./tests directory!"
             exit 1
           }
-          
+
           Write-Host "==========================================" -ForegroundColor Cyan
           Write-Host "Found test projects:" -ForegroundColor Cyan
           Write-Host "==========================================" -ForegroundColor Cyan
           $testProjects | ForEach-Object { Write-Host $_.FullName -ForegroundColor White }
           Write-Host ""
-          
+
           $frameworks = @('net462', 'net472', 'net48', 'net481')
-          
+
           foreach ($testProj in $testProjects) {
             Write-Host "==========================================" -ForegroundColor Cyan
             Write-Host "Testing project: $($testProj.FullName)" -ForegroundColor Cyan
             Write-Host "==========================================" -ForegroundColor Cyan
-            
+
             foreach ($fw in $frameworks) {
               Write-Host "Testing framework: $fw" -ForegroundColor Yellow
-              
+
               dotnet test $testProj.FullName `
                 --configuration Release `
                 --framework $fw `
                 --logger "console;verbosity=normal"
-              
+
               if ($LASTEXITCODE -ne 0) {
                 Write-Error "Tests failed for $fw in $($testProj.Name)"
                 exit 1
@@ -456,7 +878,7 @@ jobs:
             }
             Write-Host ""
           }
-          
+
           Write-Host ""
           Write-Host "==========================================" -ForegroundColor Green
           Write-Host "✅ ALL STAGES PASSED" -ForegroundColor Green
@@ -474,7 +896,7 @@ jobs:
     name: "Security Scan (DevSkim)"
     runs-on: ubuntu-latest
     if: github.repository != 'Chris-Wolfgang/repo-template'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -482,17 +904,62 @@ jobs:
           ref: refs/pull/${{ github.event.pull_request.number }}/merge
           persist-credentials: false
 
+      - name: Fetch trusted configuration files from base branch
+        run: |
+          BASE_REF="${{ github.event.pull_request.base.ref || 'main' }}"
+          echo "Fetching configuration files from $BASE_REF branch to prevent malicious overrides..."
+
+          # Fetch the target branch (base ref of the PR)
+          git fetch origin "$BASE_REF:trusted-branch"
+
+          # List of configuration files that should come from the trusted base branch
+          config_files=(
+            ".editorconfig"
+            "Directory.Build.props"
+            "Directory.Build.targets"
+            "BannedSymbols.txt"
+            "*.globalconfig"
+            "*.ruleset"
+          )
+
+          # Copy each configuration file from the trusted branch if it exists
+          for config_file in "${config_files[@]}"; do
+            # Handle glob patterns
+            if [[ "$config_file" == *"*"* ]]; then
+              # Find files matching the pattern in main branch
+              # Convert glob to proper regex: escape dots, then replace * with [^/]*
+              pattern="${config_file//./\\.}"
+              pattern="${pattern//\*/[^/]*}"
+              git ls-tree -r --name-only trusted-branch | { grep -E "^${pattern}$" || true; } | while read -r file; do
+                if [ -n "$file" ]; then
+                  echo "  ✓ Copying $file from $BASE_REF branch"
+                  mkdir -p "$(dirname "$file")"
+                  git show "trusted-branch:$file" > "$file" || echo "  ⚠️  Failed to copy $file"
+                fi
+              done
+            else
+              # Check if file exists in main branch
+              if git cat-file -e "trusted-branch:$config_file" 2>/dev/null; then
+                echo "  ✓ Copying $config_file from $BASE_REF branch"
+                git show "trusted-branch:$config_file" > "$config_file"
+              else
+                echo "  ℹ️  $config_file not found in main branch, skipping"
+              fi
+            fi
+          done
+
+          echo ""
+          echo "✅ Configuration files secured - using versions from $BASE_REF branch"
+
       - name: Install DevSkim CLI
         run: dotnet tool install --global Microsoft.CST.DevSkim.CLI
 
       - name: Run DevSkim security scan
-        continue-on-error: true
         run: |
           devskim analyze \
             --source-code . \
             --file-format text \
             --output-file devskim-results.txt \
-            -E \
             --ignore-rule-ids DS176209 \
             --ignore-globs "**/api/**,**/CoverageReport/**,**/TestResults/**"
 
@@ -505,9 +972,10 @@ jobs:
             echo "=========================================="
             cat devskim-results.txt
             echo ""
-            
+
             if grep -qi "error\|critical\|high" devskim-results.txt; then
-              echo "⚠️ Security issues detected - review required"
+              echo "❌ Security issues detected - review required"
+              exit 1
             else
               echo "✅ No critical security issues found"
             fi

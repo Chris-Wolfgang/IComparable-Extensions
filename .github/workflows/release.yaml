@@ -27,6 +27,7 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
+            3.1.x
             5.0.x
             6.0.x
             7.0.x
@@ -300,6 +301,7 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
+            3.1.x
             5.0.x
             6.0.x
             7.0.x
@@ -307,12 +309,13 @@ jobs:
             9.0.x
             10.0.x
 
-      - name: Restore and build
-        run: |
-          dotnet restore
-          dotnet build --no-restore --configuration Release
+      - name: Restore source projects
+        run: dotnet restore src/
 
-      - name: Pack NuGet packages
+      - name: Build Source Projects (Release)
+        run: dotnet build --no-restore --configuration Release src/
+
+      - name: Pack NuGet Packages
         id: check-packages
         shell: pwsh
         run: |
