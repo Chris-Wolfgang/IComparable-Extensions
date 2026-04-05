@@ -5,7 +5,7 @@
 #
 # SECURITY NOTE:
 # - Uses pull_request_target to run workflow from the trusted main branch, not from the PR branch
-# - All checkout steps use PR refs (refs/pull/*/head) to check out PR code for testing
+# - All checkout steps use PR merge refs (refs/pull/*/merge) to test the merge result
 # - After checkout, configuration files (.editorconfig, BannedSymbols.txt, etc.) are fetched from
 #   the PR's target branch to prevent malicious PRs from disabling analyzers or bypassing code quality checks
 # - Default GITHUB_TOKEN permissions are restricted to read-only repository contents to limit impact if exposed
@@ -19,10 +19,9 @@ env:
   CODECOV_MINIMUM: 90
 
 on:
-  pull_request:
+  pull_request_target:  # Runs from the main branch, not from PR branch
     branches:
       - main
-      - develop
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -39,7 +38,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: refs/pull/${{ github.event.pull_request.number }}/head
+          ref: refs/pull/${{ github.event.pull_request.number }}/merge
           fetch-depth: 0
           persist-credentials: false
 
@@ -113,6 +112,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: refs/pull/${{ github.event.pull_request.number }}/merge
+          persist-credentials: false
 
       - name: Fetch trusted configuration files from base branch
         run: |
@@ -352,6 +354,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: refs/pull/${{ github.event.pull_request.number }}/merge
+          persist-credentials: false
 
       - name: Fetch trusted configuration files from base branch
         shell: bash
@@ -536,6 +541,9 @@ jobs:
     steps:
       - name:  Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: refs/pull/${{ github.event.pull_request.number }}/merge
+          persist-credentials: false
 
       - name: Fetch trusted configuration files from base branch
         run: |
@@ -768,6 +776,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: refs/pull/${{ github.event.pull_request.number }}/merge
+          persist-credentials: false
 
       - name: Fetch trusted configuration files from base branch
         shell: bash
@@ -889,6 +900,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: refs/pull/${{ github.event.pull_request.number }}/merge
+          persist-credentials: false
 
       - name: Fetch trusted configuration files from base branch
         run: |
