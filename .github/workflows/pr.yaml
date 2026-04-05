@@ -26,7 +26,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: refs/pull/${{ github.event.pull_request.number }}/head
+          ref: refs/pull/${{ github.event.pull_request.number }}/merge
           persist-credentials: false
 
       # Fix for .NET 5.0 on Ubuntu 22.04+ - install libssl1.1
@@ -215,7 +215,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: refs/pull/${{ github.event.pull_request.number }}/head
+          ref: refs/pull/${{ github.event.pull_request.number }}/merge
           persist-credentials: false
 
       - name: Setup .NET
@@ -284,7 +284,7 @@ jobs:
       - name:  Checkout code
         uses: actions/checkout@v4
         with:
-          ref: refs/pull/${{ github.event.pull_request.number }}/head
+          ref: refs/pull/${{ github.event.pull_request.number }}/merge
           persist-credentials: false
 
       - name: Setup .NET
@@ -403,7 +403,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: refs/pull/${{ github.event.pull_request.number }}/head
+          ref: refs/pull/${{ github.event.pull_request.number }}/merge
           persist-credentials: false
 
       - name: Setup .NET
@@ -479,7 +479,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: refs/pull/${{ github.event.pull_request.number }}/head
+          ref: refs/pull/${{ github.event.pull_request.number }}/merge
           persist-credentials: false
 
       - name: Install DevSkim CLI
