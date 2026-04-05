@@ -69,7 +69,7 @@ jobs:
               # Convert glob to proper regex: escape dots, then replace * with [^/]*
               pattern="${config_file//./\\.}"
               pattern="${pattern//\*/[^/]*}"
-              git ls-tree -r --name-only trusted-branch | grep -E "^${pattern}$" | while read -r file; do
+              git ls-tree -r --name-only trusted-branch | { grep -E "^${pattern}$" || true; } | while read -r file; do
                 if [ -n "$file" ]; then
                   echo "  ✓ Copying $file from $BASE_REF branch"
                   mkdir -p "$(dirname "$file")"
@@ -140,7 +140,7 @@ jobs:
               # Convert glob to proper regex: escape dots, then replace * with [^/]*
               pattern="${config_file//./\\.}"
               pattern="${pattern//\*/[^/]*}"
-              git ls-tree -r --name-only trusted-branch | grep -E "^${pattern}$" | while read -r file; do
+              git ls-tree -r --name-only trusted-branch | { grep -E "^${pattern}$" || true; } | while read -r file; do
                 if [ -n "$file" ]; then
                   echo "  ✓ Copying $file from $BASE_REF branch"
                   mkdir -p "$(dirname "$file")"
@@ -380,7 +380,7 @@ jobs:
               # Convert glob to proper regex: escape dots, then replace * with [^/]*
               pattern="${config_file//./\\.}"
               pattern="${pattern//\*/[^/]*}"
-              git ls-tree -r --name-only trusted-branch | grep -E "^${pattern}$" | while read -r file; do
+              git ls-tree -r --name-only trusted-branch | { grep -E "^${pattern}$" || true; } | while read -r file; do
                 if [ -n "$file" ]; then
                   echo "  ✓ Copying $file from $BASE_REF branch"
                   mkdir -p "$(dirname "$file")"
@@ -563,7 +563,7 @@ jobs:
               # Convert glob to proper regex: escape dots, then replace * with [^/]*
               pattern="${config_file//./\\.}"
               pattern="${pattern//\*/[^/]*}"
-              git ls-tree -r --name-only trusted-branch | grep -E "^${pattern}$" | while read -r file; do
+              git ls-tree -r --name-only trusted-branch | { grep -E "^${pattern}$" || true; } | while read -r file; do
                 if [ -n "$file" ]; then
                   echo "  ✓ Copying $file from $BASE_REF branch"
                   mkdir -p "$(dirname "$file")"
@@ -796,7 +796,7 @@ jobs:
               # Convert glob to proper regex: escape dots, then replace * with [^/]*
               pattern="${config_file//./\\.}"
               pattern="${pattern//\*/[^/]*}"
-              git ls-tree -r --name-only trusted-branch | grep -E "^${pattern}$" | while read -r file; do
+              git ls-tree -r --name-only trusted-branch | { grep -E "^${pattern}$" || true; } | while read -r file; do
                 if [ -n "$file" ]; then
                   echo "  ✓ Copying $file from $BASE_REF branch"
                   mkdir -p "$(dirname "$file")"
@@ -916,7 +916,7 @@ jobs:
               # Convert glob to proper regex: escape dots, then replace * with [^/]*
               pattern="${config_file//./\\.}"
               pattern="${pattern//\*/[^/]*}"
-              git ls-tree -r --name-only trusted-branch | grep -E "^${pattern}$" | while read -r file; do
+              git ls-tree -r --name-only trusted-branch | { grep -E "^${pattern}$" || true; } | while read -r file; do
                 if [ -n "$file" ]; then
                   echo "  ✓ Copying $file from $BASE_REF branch"
                   mkdir -p "$(dirname "$file")"
