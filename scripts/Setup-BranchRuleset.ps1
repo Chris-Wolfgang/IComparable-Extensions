@@ -112,8 +112,8 @@ try {
         -H "Accept: application/vnd.github+json" `
         -H "X-GitHub-Api-Version: 2022-11-28" `
         "/repos/$Repository/rulesets" `
-        --paginate --slurp `
-        --jq '[.[][] | select(.name == "Protect main branch")]' 2>&1
+        --paginate `
+        --jq '.[] | select(.name == "Protect main branch")' 2>&1
 
     if ($LASTEXITCODE -ne 0) {
         Write-Warning "⚠️  Could not check for existing rulesets (API returned exit code $LASTEXITCODE). Continuing..."
@@ -193,8 +193,6 @@ $rulesetConfig = @{
                 # must NOT have path filters (paths/paths-ignore). If a workflow is path-filtered
                 # and doesn't run for a PR, GitHub will treat the required check as missing and
                 # block the merge. All required status checks must run on every PR.
-                # This also applies to the CodeQL workflow (codeql.yml) which provides the code_scanning
-                # rule below - see that section for details on how CodeQL handles graceful skipping.
                 required_status_checks = @(
                     @{ context = "Stage 1: Linux Tests (.NET 5.0-10.0) + Coverage Gate" },
                     @{ context = "Stage 2a: Windows Tests (.NET 5.0-10.0)" },
@@ -204,24 +202,7 @@ $rulesetConfig = @{
                 )
             }
         },
-        @{
-            type = "code_scanning"
-            parameters = @{
-                # NOTE: CodeQL uses the 'code_scanning' ruleset type instead of 'required_status_checks'
-                # because it has built-in intelligence to handle cases where scans don't run
-                # The workflow (.github/workflows/codeql.yml) has no path filters to ensure
-                # GitHub can properly evaluate this rule. The workflow runs on all PRs and gracefully
-                # skips analysis when there's no C# code, preventing false merge blocks while still
-                # enforcing security scanning when needed.
-                code_scanning_tools = @(
-                    @{
-                        tool = "CodeQL"
-                        security_alerts_threshold = "high_or_higher"
-                        alerts_threshold = "errors"
-                    }
-                )
-            }
-        },
+        # NOTE: code_scanning (CodeQL) is not included because it requires prior CodeQL analyses.
         # NOTE: Copilot code review is not included in this API-created payload because
         # it is not currently supported through the rulesets API. After the ruleset is
         # created, enable Copilot code review settings manually in the GitHub repository UI.
