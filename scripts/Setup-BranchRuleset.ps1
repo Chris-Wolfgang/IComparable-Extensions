@@ -16,10 +16,7 @@
     The ruleset includes:
     - Pull request reviews with configurable approval requirements
     - Required status checks (tests, security scans)
-    - CodeQL code scanning enforcement (High+ severity)
-    - Automatic Copilot code review for pull requests
-    - Copilot review of new pushes and draft PRs
-    - CodeQL standard queries integration with Copilot reviews
+    - Automatic Copilot code review for pull requests (configure manually in UI)
     - Force push and deletion protection
 
 .PARAMETER Repository
@@ -112,8 +109,8 @@ try {
         -H "Accept: application/vnd.github+json" `
         -H "X-GitHub-Api-Version: 2022-11-28" `
         "/repos/$Repository/rulesets" `
-        --paginate `
-        --jq '.[] | select(.name == "Protect main branch")' 2>&1
+        --paginate --slurp `
+        --jq '[.[][] | select(.name == "Protect main branch")]' 2>&1
 
     if ($LASTEXITCODE -ne 0) {
         Write-Warning "⚠️  Could not check for existing rulesets (API returned exit code $LASTEXITCODE). Continuing..."
@@ -252,7 +249,7 @@ try {
         Write-Host "   ✅ Branches must be up to date before merging" -ForegroundColor Gray
         Write-Host "   ✅ Conversation resolution required before merging" -ForegroundColor Gray
         Write-Host "   ✅ Stale reviews dismissed when new commits are pushed" -ForegroundColor Gray
-        Write-Host "   ✅ CodeQL code scanning enforcement (blocks on High+ severity findings)" -ForegroundColor Gray
+        Write-Host "   ⚠️  CodeQL code scanning: enable manually after first CodeQL analysis" -ForegroundColor Yellow
         Write-Host "   ⚠️  Copilot code review: enable manually in repository settings" -ForegroundColor Yellow
         Write-Host "      (Not yet supported through the rulesets API)" -ForegroundColor DarkGray
         Write-Host "   ✅ Force pushes blocked on $BranchName branch" -ForegroundColor Gray
