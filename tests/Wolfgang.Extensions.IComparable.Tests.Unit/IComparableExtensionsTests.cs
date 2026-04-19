@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace Wolfgang.Extensions.IComparable.Tests.Unit;
 
     // ReSharper disable once InconsistentNaming
@@ -25,8 +27,8 @@ namespace Wolfgang.Extensions.IComparable.Tests.Unit;
         [InlineData("2012/1/1", false)]
         public void IsBetween_when_called_on_date_times_returns_expected_result(string value, bool expectedValue)
         {
-            var testValue = DateTime.Parse(value);
-            Assert.Equal(expectedValue, testValue.IsBetween(new DateTime(2011, 1, 1), new DateTime(2011, 12, 31, 23, 59, 59)));
+            var testValue = DateTime.Parse(value, CultureInfo.InvariantCulture);
+            Assert.Equal(expectedValue, testValue.IsBetween(new DateTime(2011, 1, 1, 0, 0, 0, DateTimeKind.Utc), new DateTime(2011, 12, 31, 23, 59, 59, DateTimeKind.Utc)));
         }
 
 
@@ -37,7 +39,7 @@ namespace Wolfgang.Extensions.IComparable.Tests.Unit;
         [InlineData("2018/11/6", false)]
         public void IsBetween_when_called_on_specific_dates_returns_expected_result(DateTime value, bool expectedValue)
         {
-            Assert.Equal(expectedValue, value.IsBetween(new DateTime(2018, 11, 2), new DateTime(2018, 11, 6)));
+            Assert.Equal(expectedValue, value.IsBetween(new DateTime(2018, 11, 2, 0, 0, 0, DateTimeKind.Utc), new DateTime(2018, 11, 6, 0, 0, 0, DateTimeKind.Utc)));
         }
 
 
@@ -115,8 +117,8 @@ namespace Wolfgang.Extensions.IComparable.Tests.Unit;
         [InlineData("2012/1/1", false)]
         public void IsInRange_when_called_on_date_times_returns_expected_result(string value, bool expectedValue)
         {
-            var testValue = DateTime.Parse(value);
-            Assert.Equal(expectedValue, testValue.IsInRange(new DateTime(2011, 1, 1), new DateTime(2011, 12, 31, 23, 59, 59)));
+            var testValue = DateTime.Parse(value, CultureInfo.InvariantCulture);
+            Assert.Equal(expectedValue, testValue.IsInRange(new DateTime(2011, 1, 1, 0, 0, 0, DateTimeKind.Utc), new DateTime(2011, 12, 31, 23, 59, 59, DateTimeKind.Utc)));
         }
 
 
@@ -129,7 +131,7 @@ namespace Wolfgang.Extensions.IComparable.Tests.Unit;
         [InlineData("2018/11/7", false)]
         public void IsInRange_when_called_on_specific_dates_returns_expected_result(DateTime value, bool expectedValue)
         {
-            Assert.Equal(expectedValue, value.IsInRange(new DateTime(2018, 11, 2), new DateTime(2018, 11, 6)));
+            Assert.Equal(expectedValue, value.IsInRange(new DateTime(2018, 11, 2, 0, 0, 0, DateTimeKind.Utc), new DateTime(2018, 11, 6, 0, 0, 0, DateTimeKind.Utc)));
         }
 
 
