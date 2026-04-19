@@ -31,7 +31,10 @@ public static class IComparableExtensions
         T upperBound
     ) where T : IComparable<T>
     {
-        if (value is null) throw new ArgumentNullException(nameof(value));
+        if (value is null)
+        {
+            throw new ArgumentNullException(nameof(value));
+        }
 
         return 0 < value.CompareTo(lowerBound) && value.CompareTo(upperBound) < 0;
     }
@@ -61,7 +64,10 @@ public static class IComparableExtensions
         T upperBound
     ) where T : IComparable<T>
     {
-        if (value is null) throw new ArgumentNullException(nameof(value));
+        if (value is null)
+        {
+            throw new ArgumentNullException(nameof(value));
+        }
 
         return 0 <= value.CompareTo(lowerBound) && value.CompareTo(upperBound) <= 0;
     }
