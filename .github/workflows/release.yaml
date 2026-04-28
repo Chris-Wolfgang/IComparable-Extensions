@@ -364,10 +364,10 @@ jobs:
             10.0.x
 
       - name: Restore source projects
-        run: dotnet restore src/
+        run: dotnet restore
 
       - name: Build Source Projects (Release)
-        run: dotnet build --no-restore --configuration Release src/
+        run: dotnet build --no-restore --configuration Release
 
       - name: Pack NuGet Packages
         id: check-packages
