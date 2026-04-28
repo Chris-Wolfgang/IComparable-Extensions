@@ -185,7 +185,7 @@ IComparable-Extensions/
 │       └── pr.yaml (CI/CD pipeline)
 ├── .editorconfig (Code style rules)
 ├── .gitignore
-├── IComparable Extensions.slnx (Solution file)
+├── IComparable-Extensions.slnx (Solution file)
 ├── README.md
 └── LICENSE
 ```
@@ -319,7 +319,7 @@ Recommended extensions:
 Settings (`.vscode/settings.json`):
 ```json
 {
-  "dotnet.defaultSolution": "IComparable Extensions.slnx",
+  "dotnet.defaultSolution": "IComparable-Extensions.slnx",
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.fixAll": true
