@@ -363,13 +363,12 @@ jobs:
             9.0.x
             10.0.x
 
-      - name: Restore source projects
-        run: dotnet restore
+      - name: Restore and build
+        run: |
+          dotnet restore
+          dotnet build --no-restore --configuration Release
 
-      - name: Build Source Projects (Release)
-        run: dotnet build --no-restore --configuration Release
-
-      - name: Pack NuGet Packages
+      - name: Pack NuGet packages
         id: check-packages
         shell: pwsh
         run: |
@@ -574,6 +573,7 @@ jobs:
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: |
+            3.1.x
             5.0.x
             6.0.x
             7.0.x
