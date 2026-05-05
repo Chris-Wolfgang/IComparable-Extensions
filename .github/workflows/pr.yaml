@@ -324,14 +324,16 @@ jobs:
           echo "✅ Configuration files secured - using versions from main branch"
 
       # Fix for .NET 5.0 on Ubuntu 22.04+ - install libssl1.1 from the focal-security
-      # repository so APT verifies the package via GPG instead of a plain wget download.
+      # repository, with GPG verification bound to the Ubuntu archive keyring that
+      # ships in the base runner image.
       - name: Install OpenSSL 1.1 for .NET 5.0
         run: |
-          # [trusted=yes] skips GPG signature verification — the focal Ubuntu archive
-          # signing key is not always present on newer GitHub-hosted runners, which
-          # caused the apt source to be silently ignored and 'libssl1.1' to fail with
-          # 'has no installation candidate'.
-          echo "deb [trusted=yes] https://security.ubuntu.com/ubuntu focal-security main" | sudo tee /etc/apt/sources.list.d/focal-security.list
+          # signed-by=... pins this source to the Ubuntu archive keyring instead of
+          # relying on apt's default trusted set. Without this, newer GitHub-hosted
+          # runners silently 'Ign' the source and 'libssl1.1' fails with
+          # 'has no installation candidate'. Keyring path is the canonical location
+          # in every Ubuntu image.
+          echo "deb [signed-by=/usr/share/keyrings/ubuntu-archive-keyring.gpg] https://security.ubuntu.com/ubuntu focal-security main" | sudo tee /etc/apt/sources.list.d/focal-security.list
           sudo apt-get update -q
           sudo apt-get install --yes libssl1.1
           sudo rm /etc/apt/sources.list.d/focal-security.list
