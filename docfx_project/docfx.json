@@ -5,7 +5,7 @@
       "src": [
         {
           "files": [
-			"src/<path>/<project>.csproj"
+			"src/**/*.csproj"
           ],
           "src": "../"
         }

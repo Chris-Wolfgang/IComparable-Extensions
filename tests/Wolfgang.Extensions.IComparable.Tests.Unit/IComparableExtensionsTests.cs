@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace Wolfgang.Extensions.IComparable.Tests.Unit;
 
     // ReSharper disable once InconsistentNaming
@@ -23,10 +25,10 @@ namespace Wolfgang.Extensions.IComparable.Tests.Unit;
         [InlineData("2011/7/1", true)]
         [InlineData("2011/12/31 23:59:59", false)]
         [InlineData("2012/1/1", false)]
-        public void IsBetween_When_Called_On_Date_Times_Returns_Expected_Result(string value, bool expectedValue)
+        public void IsBetween_when_called_on_date_times_returns_expected_result(string value, bool expectedValue)
         {
-            var testValue = DateTime.Parse(value);
-            Assert.Equal(expectedValue, testValue.IsBetween(new DateTime(2011, 1, 1), new DateTime(2011, 12, 31, 23, 59, 59)));
+            var testValue = DateTime.Parse(value, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
+            Assert.Equal(expectedValue, testValue.IsBetween(new DateTime(2011, 1, 1, 0, 0, 0, DateTimeKind.Utc), new DateTime(2011, 12, 31, 23, 59, 59, DateTimeKind.Utc)));
         }
 
 
@@ -35,9 +37,10 @@ namespace Wolfgang.Extensions.IComparable.Tests.Unit;
         [InlineData("2018/11/2", false)]
         [InlineData("2018/11/4", true)]
         [InlineData("2018/11/6", false)]
-        public void IsBetween_When_Called_On_Specific_Dates_Returns_Correct_Result(DateTime value, bool expectedValue)
+        public void IsBetween_when_called_on_specific_dates_returns_expected_result(DateTime value, bool expectedValue)
         {
-            Assert.Equal(expectedValue, value.IsBetween(new DateTime(2018, 11, 2), new DateTime(2018, 11, 6)));
+            var utcValue = DateTime.SpecifyKind(value, DateTimeKind.Utc);
+            Assert.Equal(expectedValue, utcValue.IsBetween(new DateTime(2018, 11, 2, 0, 0, 0, DateTimeKind.Utc), new DateTime(2018, 11, 6, 0, 0, 0, DateTimeKind.Utc)));
         }
 
 
@@ -48,7 +51,7 @@ namespace Wolfgang.Extensions.IComparable.Tests.Unit;
         [InlineData("am", true)]
         [InlineData("ay", false)]
         [InlineData("az", false)]
-        public void IsBetween_When_Called_On_Strings_Returns_Expected_Result(string value, bool expectedValue)
+        public void IsBetween_when_called_on_strings_returns_expected_result(string value, bool expectedValue)
         {
             Assert.Equal(expectedValue, value.IsBetween("ab", "ay"));
         }
@@ -61,9 +64,35 @@ namespace Wolfgang.Extensions.IComparable.Tests.Unit;
         [InlineData('m', true)]
         [InlineData('y', false)]
         [InlineData('z', false)]
-        public void IsBetween_When_Called_On_Chars_Returns_Expected_Result(char value, bool expectedValue)
+        public void IsBetween_when_called_on_chars_returns_expected_result(char value, bool expectedValue)
         {
             Assert.Equal(expectedValue, value.IsBetween('b', 'y'));
+        }
+
+
+
+        [Fact]
+        public void IsBetween_when_value_equals_both_bounds_returns_false()
+        {
+            Assert.False(5.IsBetween(5, 5));
+        }
+
+
+
+        [Fact]
+        public void IsBetween_when_bounds_are_inverted_returns_false()
+        {
+            Assert.False(5.IsBetween(10, 1));
+        }
+
+
+
+        [Fact]
+        public void IsBetween_when_value_is_null_throws_argument_null_exception()
+        {
+            string? value = null;
+
+            Assert.Throws<ArgumentNullException>(() => value!.IsBetween("a", "z"));
         }
 
 
@@ -74,7 +103,7 @@ namespace Wolfgang.Extensions.IComparable.Tests.Unit;
         [InlineData(5, true)]
         [InlineData(10, true)]
         [InlineData(11, false)]
-        public void IsInRange_When_Called_On_Integers_Returns_Expected_Result(int value, bool expectedValue)
+        public void IsInRange_when_called_on_integers_returns_expected_result(int value, bool expectedValue)
         {
             Assert.Equal(expectedValue, value.IsInRange(1, 10));
         }
@@ -87,21 +116,24 @@ namespace Wolfgang.Extensions.IComparable.Tests.Unit;
         [InlineData("2011/7/1", true)]
         [InlineData("2011/12/31 23:59:50", true)]
         [InlineData("2012/1/1", false)]
-        public void IsInRange_When_Called_On_Date_Times_Returns_Expected_Result(string value, bool expectedValue)
+        public void IsInRange_when_called_on_date_times_returns_expected_result(string value, bool expectedValue)
         {
-            var testValue = DateTime.Parse(value);
-            Assert.Equal(expectedValue, testValue.IsInRange(new DateTime(2011, 1, 1), new DateTime(2011, 12, 31, 23, 59, 59)));
+            var testValue = DateTime.Parse(value, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
+            Assert.Equal(expectedValue, testValue.IsInRange(new DateTime(2011, 1, 1, 0, 0, 0, DateTimeKind.Utc), new DateTime(2011, 12, 31, 23, 59, 59, DateTimeKind.Utc)));
         }
 
 
 
         [Theory]
-        [InlineData("2018/11/2")]
-        [InlineData("2018/11/4")]
-        [InlineData("2018/11/6")]
-        public void IsInRange_When_Called_On_Specific_Dates_Returns_Correct_Result(DateTime value)
+        [InlineData("2018/11/1", false)]
+        [InlineData("2018/11/2", true)]
+        [InlineData("2018/11/4", true)]
+        [InlineData("2018/11/6", true)]
+        [InlineData("2018/11/7", false)]
+        public void IsInRange_when_called_on_specific_dates_returns_expected_result(DateTime value, bool expectedValue)
         {
-            Assert.True(value.IsInRange(new DateTime(2018, 11, 2), new DateTime(2018, 11, 6)));
+            var utcValue = DateTime.SpecifyKind(value, DateTimeKind.Utc);
+            Assert.Equal(expectedValue, utcValue.IsInRange(new DateTime(2018, 11, 2, 0, 0, 0, DateTimeKind.Utc), new DateTime(2018, 11, 6, 0, 0, 0, DateTimeKind.Utc)));
         }
 
 
@@ -112,7 +144,7 @@ namespace Wolfgang.Extensions.IComparable.Tests.Unit;
         [InlineData("m", true)]
         [InlineData("y", true)]
         [InlineData("z", false)]
-        public void IsInRange_When_Called_On_Strings_Returns_Expected_Result(string value, bool expectedValue)
+        public void IsInRange_when_called_on_strings_returns_expected_result(string value, bool expectedValue)
         {
             Assert.Equal(expectedValue, value.IsInRange("b", "y"));
         }
@@ -125,8 +157,34 @@ namespace Wolfgang.Extensions.IComparable.Tests.Unit;
         [InlineData('m', true)]
         [InlineData('y', true)]
         [InlineData('z', false)]
-        public void IsInRange_When_Called_On_Chars_Returns_Expected_Result(char value, bool expectedValue)
+        public void IsInRange_when_called_on_chars_returns_expected_result(char value, bool expectedValue)
         {
             Assert.Equal(expectedValue, value.IsInRange('b', 'y'));
+        }
+
+
+
+        [Fact]
+        public void IsInRange_when_value_equals_both_bounds_returns_true()
+        {
+            Assert.True(5.IsInRange(5, 5));
+        }
+
+
+
+        [Fact]
+        public void IsInRange_when_bounds_are_inverted_returns_false()
+        {
+            Assert.False(5.IsInRange(10, 1));
+        }
+
+
+
+        [Fact]
+        public void IsInRange_when_value_is_null_throws_argument_null_exception()
+        {
+            string? value = null;
+
+            Assert.Throws<ArgumentNullException>(() => value!.IsInRange("a", "z"));
         }
     }
