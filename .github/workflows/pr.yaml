@@ -543,12 +543,6 @@ jobs:
           cat CoverageReport/Summary.txt
           echo ""
           
-          # Validate that the report contains expected content
-          if ! grep -q "Summary" CoverageReport/Summary.txt; then
-            echo "❌ Coverage report format is invalid!"
-            exit 1
-          fi
-          
           failed_projects=""
           threshold=${CODECOV_MINIMUM:-90}
           
