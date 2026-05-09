@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Development Setup Guide | &lt;title&gt; </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Development Setup Guide | &lt;title&gt; ">
+    
+    
+      <link rel="shortcut icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../styles/docfx.css">
+      <link rel="stylesheet" href="../styles/main.css">
+      <meta property="docfx:navrel" content="">
+      <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+
+        <div id="search-results">
+          <div class="search-list">Search Results for <span></span></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination" data-first=First data-prev=Previous data-next=Next data-last=Last></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="development-setup-guide">Development Setup Guide</h1>
+
+<p>This guide will help you set up your development environment to contribute to Wolfgang.Extensions.IComparable.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<p>Before you begin, ensure you have the following installed:</p>
+<h3 id="required-software">Required Software</h3>
+<ol>
+<li><p><strong>.NET 8.0 SDK</strong> or later</p>
+<ul>
+<li>Download from <a href="https://dotnet.microsoft.com/download">dotnet.microsoft.com</a></li>
+<li>Verify installation: <code>dotnet --version</code></li>
+</ul>
+</li>
+<li><p><strong>Git</strong></p>
+<ul>
+<li>Download from <a href="https://git-scm.com/">git-scm.com</a></li>
+<li>Verify installation: <code>git --version</code></li>
+</ul>
+</li>
+<li><p><strong>A Code Editor</strong> (choose one):</p>
+<ul>
+<li><a href="https://visualstudio.microsoft.com/">Visual Studio 2022</a> (Community, Professional, or Enterprise)</li>
+<li><a href="https://code.visualstudio.com/">Visual Studio Code</a> with C# extension</li>
+<li><a href="https://www.jetbrains.com/rider/">JetBrains Rider</a></li>
+</ul>
+</li>
+</ol>
+<h3 id="recommended-tools">Recommended Tools</h3>
+<ol>
+<li><p><strong>ReportGenerator</strong> (for code coverage reports)</p>
+<pre><code class="lang-bash">dotnet tool install -g dotnet-reportgenerator-globaltool
+</code></pre>
+</li>
+<li><p><strong>DevSkim CLI</strong> (for security scanning)</p>
+<pre><code class="lang-bash">dotnet tool install --global Microsoft.CST.DevSkim.CLI
+</code></pre>
+</li>
+</ol>
+<h2 id="getting-the-source-code">Getting the Source Code</h2>
+<h3 id="1-fork-the-repository">1. Fork the Repository</h3>
+<ol>
+<li>Navigate to <a href="https://github.com/Chris-Wolfgang/IComparable-Extensions">https://github.com/Chris-Wolfgang/IComparable-Extensions</a></li>
+<li>Click the <strong>Fork</strong> button in the upper right</li>
+<li>Select your GitHub account as the destination</li>
+</ol>
+<h3 id="2-clone-your-fork">2. Clone Your Fork</h3>
+<pre><code class="lang-bash"># Clone your fork
+git clone https://github.com/YOUR-USERNAME/IComparable-Extensions.git
+
+# Navigate to the repository
+cd IComparable-Extensions
+
+# Add upstream remote
+git remote add upstream https://github.com/Chris-Wolfgang/IComparable-Extensions.git
+</code></pre>
+<h3 id="3-verify-your-setup">3. Verify Your Setup</h3>
+<pre><code class="lang-bash"># Check remotes
+git remote -v
+
+# Should show:
+# origin    https://github.com/YOUR-USERNAME/IComparable-Extensions.git (fetch)
+# origin    https://github.com/YOUR-USERNAME/IComparable-Extensions.git (push)
+# upstream  https://github.com/Chris-Wolfgang/IComparable-Extensions.git (fetch)
+# upstream  https://github.com/Chris-Wolfgang/IComparable-Extensions.git (push)
+</code></pre>
+<h2 id="building-the-project">Building the Project</h2>
+<h3 id="1-restore-dependencies">1. Restore Dependencies</h3>
+<pre><code class="lang-bash">dotnet restore
+</code></pre>
+<h3 id="2-build-the-solution">2. Build the Solution</h3>
+<pre><code class="lang-bash"># Build in Debug mode
+dotnet build
+
+# Build in Release mode (recommended for testing)
+dotnet build --configuration Release
+</code></pre>
+<p>Expected output:</p>
+<pre><code>Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+</code></pre>
+<h2 id="running-tests">Running Tests</h2>
+<h3 id="run-all-tests">Run All Tests</h3>
+<pre><code class="lang-bash">dotnet test --configuration Release
+</code></pre>
+<h3 id="run-tests-with-code-coverage">Run Tests with Code Coverage</h3>
+<pre><code class="lang-bash"># Run tests and collect coverage
+dotnet test --configuration Release --collect:&quot;XPlat Code Coverage&quot; --results-directory &quot;./TestResults&quot;
+
+# Generate coverage report (if ReportGenerator is installed)
+reportgenerator -reports:&quot;TestResults/**/coverage.cobertura.xml&quot; \
+                -targetdir:&quot;CoverageReport&quot; \
+                -reporttypes:&quot;Html;TextSummary&quot;
+
+# View the report
+# Open CoverageReport/index.html in your browser
+</code></pre>
+<h3 id="run-specific-test-projects">Run Specific Test Projects</h3>
+<pre><code class="lang-bash"># Run only unit tests
+dotnet test tests/Wolfgang.Extensions.IComparable.Tests/Wolfgang.Extensions.IComparable.Tests.csproj
+</code></pre>
+<h2 id="code-quality-checks">Code Quality Checks</h2>
+<h3 id="run-security-scanning">Run Security Scanning</h3>
+<pre><code class="lang-bash"># Run DevSkim security analysis
+devskim analyze --source-code . -f text --output-file devskim-results.txt
+
+# View results
+cat devskim-results.txt
+</code></pre>
+<h3 id="check-code-style">Check Code Style</h3>
+<p>The project uses <code>.editorconfig</code> for consistent code style. Most IDEs will automatically apply these rules.</p>
+<p>To manually check:</p>
+<pre><code class="lang-bash"># Format code
+dotnet format
+
+# Verify formatting
+dotnet format --verify-no-changes
+</code></pre>
+<h2 id="running-benchmarks">Running Benchmarks</h2>
+<p>If you're working on performance improvements:</p>
+<pre><code class="lang-bash"># Navigate to benchmarks
+cd benchmarks
+
+# Run benchmarks
+dotnet run --configuration Release
+</code></pre>
+<h2 id="project-structure">Project Structure</h2>
+<pre><code>IComparable-Extensions/
+├── src/
+│   └── Wolfgang.Extensions.IComparable/
+│       ├── Wolfgang.Extensions.IComparable.csproj
+│       └── IComparableExtensions.cs
+├── tests/
+│   └── Wolfgang.Extensions.IComparable.Tests/
+│       ├── Wolfgang.Extensions.IComparable.Tests.csproj
+│       └── IComparableExtensionsTests.cs
+├── benchmarks/
+│   └── (Benchmark projects)
+├── examples/
+│   └── (Example projects)
+├── docs/
+│   ├── introduction.md
+│   ├── getting-started.md
+│   ├── readme.md
+│   └── setup.md
+├── .github/
+│   └── workflows/
+│       └── pr.yaml (CI/CD pipeline)
+├── .editorconfig (Code style rules)
+├── .gitignore
+├── IComparable-Extensions.slnx (Solution file)
+├── README.md
+└── LICENSE
+</code></pre>
+<h2 id="development-workflow">Development Workflow</h2>
+<h3 id="1-create-a-feature-branch">1. Create a Feature Branch</h3>
+<pre><code class="lang-bash"># Update your main branch
+git checkout main
+git pull upstream main
+
+# Create a new feature branch
+git checkout -b feature/your-feature-name
+</code></pre>
+<h3 id="2-make-your-changes">2. Make Your Changes</h3>
+<ul>
+<li>Write code following the existing style</li>
+<li>Add or update tests for your changes</li>
+<li>Ensure tests pass: <code>dotnet test</code></li>
+<li>Ensure coverage meets requirements (≥80%)</li>
+</ul>
+<h3 id="3-commit-your-changes">3. Commit Your Changes</h3>
+<pre><code class="lang-bash"># Stage your changes
+git add .
+
+# Commit with a descriptive message
+git commit -m &quot;Add feature: description of your changes&quot;
+</code></pre>
+<h3 id="4-push-and-create-pull-request">4. Push and Create Pull Request</h3>
+<pre><code class="lang-bash"># Push to your fork
+git push origin feature/your-feature-name
+</code></pre>
+<p>Then:</p>
+<ol>
+<li>Go to your fork on GitHub</li>
+<li>Click &quot;Compare &amp; pull request&quot;</li>
+<li>Fill out the PR template</li>
+<li>Submit the pull request</li>
+</ol>
+<h2 id="cicd-pipeline">CI/CD Pipeline</h2>
+<p>The project uses GitHub Actions for continuous integration. On every pull request:</p>
+<ol>
+<li><strong>Build Check</strong>: Code is built in Release mode</li>
+<li><strong>Test Execution</strong>: All tests are run</li>
+<li><strong>Code Coverage</strong>: Coverage is collected and must be ≥80%</li>
+<li><strong>Security Scan</strong>: DevSkim analyzes for security vulnerabilities</li>
+<li><strong>Artifacts</strong>: Coverage reports and scan results are uploaded</li>
+</ol>
+<h3 id="local-ci-simulation">Local CI Simulation</h3>
+<p>To simulate the CI pipeline locally:</p>
+<pre><code class="lang-bash"># Clean previous builds
+dotnet clean
+
+# Restore dependencies
+dotnet restore
+
+# Build in Release mode
+dotnet build --no-restore --configuration Release
+
+# Run tests with coverage
+find ./tests -type f -name '*Test*.csproj' | while read proj; do
+  dotnet test &quot;$proj&quot; --no-build --configuration Release \
+    --collect:&quot;XPlat Code Coverage&quot; \
+    --results-directory &quot;./TestResults&quot;
+done
+
+# Generate coverage report
+reportgenerator -reports:&quot;TestResults/**/coverage.cobertura.xml&quot; \
+                -targetdir:&quot;CoverageReport&quot; \
+                -reporttypes:&quot;Html;TextSummary;MarkdownSummaryGithub;CsvSummary&quot;
+
+# Run security scan
+devskim analyze --source-code . -f text --output-file devskim-results.txt -E
+</code></pre>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="build-errors">Build Errors</h3>
+<p><strong>Problem</strong>: <code>The SDK 'Microsoft.NET.Sdk' specified could not be found</code></p>
+<ul>
+<li><strong>Solution</strong>: Install .NET 8.0 SDK from <a href="https://dotnet.microsoft.com/download">dotnet.microsoft.com</a></li>
+</ul>
+<p><strong>Problem</strong>: <code>Package restore failed</code></p>
+<ul>
+<li><strong>Solution</strong>:
+<pre><code class="lang-bash">dotnet nuget locals all --clear
+dotnet restore
+</code></pre>
+</li>
+</ul>
+<h3 id="test-failures">Test Failures</h3>
+<p><strong>Problem</strong>: Tests pass locally but fail in CI</p>
+<ul>
+<li><strong>Solution</strong>: Ensure you're building in Release mode: <code>dotnet test --configuration Release</code></li>
+</ul>
+<p><strong>Problem</strong>: Code coverage below 80%</p>
+<ul>
+<li><strong>Solution</strong>: Add tests for uncovered code paths</li>
+</ul>
+<h3 id="git-issues">Git Issues</h3>
+<p><strong>Problem</strong>: Merge conflicts</p>
+<ul>
+<li><strong>Solution</strong>:
+<pre><code class="lang-bash">git fetch upstream
+git merge upstream/main
+# Resolve conflicts in your editor
+git add .
+git commit -m &quot;Merge upstream changes&quot;
+</code></pre>
+</li>
+</ul>
+<h2 id="editor-configuration">Editor Configuration</h2>
+<h3 id="visual-studio-code">Visual Studio Code</h3>
+<p>Recommended extensions:</p>
+<ul>
+<li>C# (Microsoft)</li>
+<li>C# Dev Kit (Microsoft)</li>
+<li>EditorConfig for VS Code</li>
+</ul>
+<p>Settings (<code>.vscode/settings.json</code>):</p>
+<pre><code class="lang-json">{
+  &quot;dotnet.defaultSolution&quot;: &quot;IComparable-Extensions.slnx&quot;,
+  &quot;editor.formatOnSave&quot;: true,
+  &quot;editor.codeActionsOnSave&quot;: {
+    &quot;source.fixAll&quot;: true
+  }
+}
+</code></pre>
+<h3 id="visual-studio">Visual Studio</h3>
+<p>The solution should work out of the box. Ensure:</p>
+<ul>
+<li>Code cleanup is configured to use <code>.editorconfig</code> rules</li>
+<li>Code analysis is enabled</li>
+</ul>
+<h3 id="jetbrains-rider">JetBrains Rider</h3>
+<p>Rider automatically respects <code>.editorconfig</code>. Additional settings:</p>
+<ul>
+<li>Enable &quot;Reformat code on save&quot;</li>
+<li>Enable &quot;Optimize imports on save&quot;</li>
+</ul>
+<h2 id="getting-help">Getting Help</h2>
+<p>If you encounter issues:</p>
+<ol>
+<li>Check <a href="https://github.com/Chris-Wolfgang/IComparable-Extensions/issues">existing GitHub issues</a></li>
+<li>Review the <a href="../CONTRIBUTING.md">CONTRIBUTING.md</a> guide</li>
+<li>Ask questions in a new GitHub issue</li>
+</ol>
+<h2 id="next-steps">Next Steps</h2>
+<ul>
+<li>Read the <a href="../CONTRIBUTING.md">Contributing Guidelines</a></li>
+<li>Review the <a href="../CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li>Explore the <a href="../examples/">examples</a> folder</li>
+<li>Join the community discussions</li>
+</ul>
+<p>Happy coding! 🚀</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Chris-Wolfgang/IComparable-Extensions/blob/main/docs/setup.md/#L1" class="contribution-link">Edit this page</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In this article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      
+      <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
