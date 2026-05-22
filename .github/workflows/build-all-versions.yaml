@@ -119,8 +119,7 @@ jobs:
             try {
               # Attempt dotnet restore + build; failures are non-fatal because
               # DocFX can still extract metadata from source files.
-              $slnFile = Get-ChildItem -File -ErrorAction SilentlyContinue |
-                         Where-Object { $_.Extension -in @('.sln', '.slnx') } |
+              $slnFile = Get-ChildItem -Filter '*.sln' -ErrorAction SilentlyContinue |
                          Select-Object -First 1
               if ($slnFile) {
                 Write-Host "Restoring $($slnFile.Name)..."
@@ -208,8 +207,7 @@ jobs:
 
           Push-Location $latestWorkDir
           try {
-            $slnFile = Get-ChildItem -File -ErrorAction SilentlyContinue |
-                       Where-Object { $_.Extension -in @('.sln', '.slnx') } |
+            $slnFile = Get-ChildItem -Filter '*.sln' -ErrorAction SilentlyContinue |
                        Select-Object -First 1
             if ($slnFile) {
               Write-Host "Restoring $($slnFile.Name)..."
