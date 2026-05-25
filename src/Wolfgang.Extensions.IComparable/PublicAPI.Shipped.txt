@@ -1,0 +1,4 @@
+#nullable enable
+Wolfgang.Extensions.IComparable.IComparableExtensions
+static Wolfgang.Extensions.IComparable.IComparableExtensions.IsBetween<T>(this T value, T lowerBound, T upperBound) -> bool
+static Wolfgang.Extensions.IComparable.IComparableExtensions.IsInRange<T>(this T value, T lowerBound, T upperBound) -> bool
