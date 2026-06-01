@@ -13,7 +13,7 @@
 		<FileVersion>$([System.Text.RegularExpressions.Regex]::Replace("$(Version)", "[-+].*$", "")).0</FileVersion>
 		<Title>$(AssemblyName)</Title>
 		<Description>A collection of extension methods for IComparable and IComparable&lt;T&gt; types</Description>
-		<PackageProjectUrl>https://github.com/Chris-Wolfgang/Wolfgang.Extensions.IComparable</PackageProjectUrl>
+		<PackageProjectUrl>https://github.com/Chris-Wolfgang/IComparable-Extensions</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/Chris-Wolfgang/IComparable-Extensions.git</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
