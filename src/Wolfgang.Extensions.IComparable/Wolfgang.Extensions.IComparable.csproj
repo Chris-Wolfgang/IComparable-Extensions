@@ -7,8 +7,8 @@
 		<Title>$(AssemblyName)</Title>
 		<Description>A collection of extension methods for IComparable and IComparable&lt;T&gt; types</Description>
 		<PackageProjectUrl>https://github.com/Chris-Wolfgang/Wolfgang.Extensions.IComparable</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/Chris-Wolfgang/IComparable-Extensions.git</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<AssemblyVersion>1.0.0</AssemblyVersion>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
