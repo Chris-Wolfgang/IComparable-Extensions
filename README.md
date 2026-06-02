@@ -88,7 +88,12 @@ using Wolfgang.Extensions.IComparable;
 // custom type — just implement IComparable<T>
 public record Money(decimal Amount, string Currency) : IComparable<Money>
 {
-    public int CompareTo(Money? other) => Amount.CompareTo(other?.Amount ?? 0m);
+    public int CompareTo(Money? other) =>
+        // Per the IComparable<T> contract, any non-null value is
+        // greater than null. Returning Amount.CompareTo(other?.Amount ?? 0m)
+        // would be wrong for negative Amount — a negative Money would
+        // compare as "less than" null instead of greater.
+        other is null ? 1 : Amount.CompareTo(other.Amount);
 }
 
 var price = new Money(19.99m, "USD");
@@ -99,7 +104,10 @@ price.IsBetween(new Money(10m, "USD"), new Money(50m, "USD"));   // true
 
 ```csharp
 string? maybeNull = null;
-maybeNull.IsBetween("a", "z");   // throws ArgumentNullException("value")
+// The `!` keeps the example warning-free under <Nullable>enable</Nullable>;
+// IsBetween's T is non-null, so without it the compiler complains. The
+// runtime behaviour we're demonstrating is still the same:
+maybeNull!.IsBetween("a", "z");   // throws ArgumentNullException("value")
 ```
 
 ---
