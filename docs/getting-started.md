@@ -4,7 +4,10 @@ This guide will help you quickly start using Wolfgang.Extensions.IComparable in 
 
 ## Prerequisites
 
-- .NET 8.0 or later
+- Any .NET runtime that supports **.NET Standard 2.0** or later. That includes:
+  - .NET Framework 4.6.2 and later
+  - .NET Core 2.0 and later
+  - .NET 5, 6, 7, 8, 9, and 10
 - A C# project (any project type: console, web, library, etc.)
 
 ## Installation
