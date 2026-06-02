@@ -10,7 +10,7 @@ Welcome to the Wolfgang.Extensions.IComparable documentation. This site contains
 
 - [Getting Started](docs/getting-started.md) — install and first usage
 - [Introduction](docs/introduction.md) — what the library solves and why
-- [API Reference](https://chris-wolfgang.github.io/IComparable-Extensions/versions/latest/api/Wolfgang.Extensions.IComparable.html) — complete API
+- [API Reference](api/Wolfgang.Extensions.IComparable.html) — complete API
 - [GitHub Repository](https://github.com/Chris-Wolfgang/IComparable-Extensions) — source code
 
 ## About Wolfgang.Extensions.IComparable
@@ -28,7 +28,7 @@ dotnet add package Wolfgang.Extensions.IComparable
 ### 📖 [Getting Started](docs/getting-started.md)
 Step-by-step instructions for installing the package and using `IsBetween` / `IsInRange` in your project.
 
-### 📚 [API Reference](https://chris-wolfgang.github.io/IComparable-Extensions/versions/latest/api/Wolfgang.Extensions.IComparable.html)
+### 📚 [API Reference](api/Wolfgang.Extensions.IComparable.html)
 Complete API documentation automatically generated from source XML comments.
 
 ## Additional Resources
