@@ -13,16 +13,22 @@
 ## Build and Validation
 
 ### Prerequisites
-- **.NET 10.0 SDK** (drives the modern targets; older TFMs build via reference assemblies that the SDK ships).
+- **.NET 10.0 SDK** is the primary requirement and drives the modern src targets (`net8.0`, `net10.0`).
+- CI also installs **.NET 8.0 / 9.0 / 6.0 / 7.0 / 5.0 / 3.1** SDKs so the test project can build and run those TFMs; locally, you only need the ones whose TFMs you actually intend to test. See `.github/workflows/pr.yaml` for the canonical CI matrix.
+- On Windows, the **.NET Framework 4.6.2 / 4.7.2 / 4.8 / 4.8.1 targeting packs** are needed for the `net462`/`net47x`/`net48x` builds of the test project. The .NET SDK ships reference assemblies for the netstandard2.0 src build, but the test project's framework TFMs require the Windows-installed targeting packs (install via Visual Studio's "Individual components → .NET Framework <version> targeting pack" or `scripts/build-pr.ps1` which mirrors the pr.yaml Windows job).
 - The Release build enforces `<TreatWarningsAsErrors>true</TreatWarningsAsErrors>` via `Directory.Build.props` — any analyzer warning is a build error.
 
 ### Local commands
+
+Always pass the solution manifest or a specific project so `dotnet`'s CLI doesn't fall back to directory auto-detection:
+
 ```bash
 # Restore + build everything in Release (the only configuration that matters for CI parity)
-dotnet build -c Release
+dotnet build IComparable-Extensions.slnx -c Release
 
-# Run every TFM of the test project
-dotnet test -c Release --no-build
+# Run every TFM of the test project (point at the csproj explicitly — `dotnet test`
+# from a directory with no project/solution fails)
+dotnet test tests/Wolfgang.Extensions.IComparable.Tests.Unit/Wolfgang.Extensions.IComparable.Tests.Unit.csproj -c Release --no-build
 
 # Build a single TFM if you're iterating fast
 dotnet build src/Wolfgang.Extensions.IComparable/Wolfgang.Extensions.IComparable.csproj -c Release -f net10.0
@@ -69,7 +75,7 @@ root/
 
 ## Coding conventions
 
-These rules come from `C:\Source\GitHub\CLAUDE.md` and the repo's `.editorconfig`. The Release-gate analyzers (Roslynator, Meziantou, SonarAnalyzer, Microsoft.VisualStudio.Threading.Analyzers, AsyncFixer, BannedApiAnalyzers, PublicApiAnalyzers) catch most violations automatically.
+These rules come from the repo's `.editorconfig`, `Directory.Build.props`, and `CONTRIBUTING.md` (the "Code Quality Standards" section). The Release-gate analyzers (Roslynator, Meziantou, SonarAnalyzer, Microsoft.VisualStudio.Threading.Analyzers, AsyncFixer, BannedApiAnalyzers, PublicApiAnalyzers) catch most violations automatically.
 
 - **File-scoped namespaces** everywhere (`namespace X;`, not `namespace X { }`).
 - **Allman brace style**, braces on their own line.
@@ -91,7 +97,8 @@ These rules come from `C:\Source\GitHub\CLAUDE.md` and the repo's `.editorconfig
 
 ## Public API contract
 
-- The public surface is tracked by `Microsoft.CodeAnalysis.PublicApiAnalyzers` via `src/.../PublicAPI.Shipped.txt` and `PublicAPI.Unshipped.txt` when present. Adding a public method without updating those files fails the build with RS0016.
+- `Microsoft.CodeAnalysis.PublicApiAnalyzers` is referenced in `Directory.Build.props` and **activates per-src-project only when `PublicAPI.Shipped.txt` and `PublicAPI.Unshipped.txt` exist alongside that project's csproj** (the `AdditionalFiles` include is conditional on `Exists(...)`). For projects that have those files, adding a public method without updating `Unshipped.txt` fails the build with RS0016 and removing one without removing the `Shipped.txt` entry fails with RS0017.
+- For projects that don't have the baseline files committed yet, the analyzer is dormant — adding/removing public members compiles fine. Activating the analyzer on a new src project means committing both files (start `Shipped.txt` with `#nullable enable` and the current public surface, leave `Unshipped.txt` with just `#nullable enable`).
 - **AssemblyVersion is pinned at `1.0.0.0`** for binding stability across the .NET Framework TFM. Bumping `<Version>` does not bump `AssemblyVersion`. `<FileVersion>` is auto-derived from `<Version>` via a regex-strip property function. See the v1.1.1 CHANGELOG entry for the rationale.
 
 ## Branch model
@@ -111,4 +118,4 @@ These rules come from `C:\Source\GitHub\CLAUDE.md` and the repo's `.editorconfig
 
 ## Trust these instructions
 
-This file has been validated against the v1.1.1 repo state (June 2026). If you find these instructions incomplete or wrong, prefer asking for an updated version over guessing — most fleet conventions live in `C:\Source\GitHub\CLAUDE.md` and the repo-template canonical files.
+This file has been validated against the v1.1.1 repo state (June 2026). If you find these instructions incomplete or wrong, prefer asking for an updated version over guessing — the authoritative in-repo sources are `.editorconfig`, `Directory.Build.props`, `CONTRIBUTING.md`, and the workflow files under `.github/workflows/`.
