@@ -49,7 +49,7 @@ You can contribute in several ways:
 
 This project maintains **extremely high code quality standards** through multiple layers of static analysis and automated enforcement.
 
-### The 7 Analyzers
+### The 8 Analyzers
 
 All code is analyzed by these tools during build:
 
@@ -86,6 +86,16 @@ All code is analyzed by these tools during build:
    - Industry-standard code analysis
    - Security vulnerability detection
    - Code smell identification
+
+8. **Microsoft.CodeAnalysis.PublicApiAnalyzers**
+   - Tracks the public API surface via `PublicAPI.Shipped.txt` /
+     `PublicAPI.Unshipped.txt` alongside each src csproj
+   - Adding a public member without a matching `Unshipped.txt` entry
+     fails the build with RS0016; removing one without removing the
+     `Shipped.txt` entry fails RS0017
+   - Activates per-project via `Directory.Build.props`' `Exists(...)`
+     condition — only fires for src projects that have committed
+     baseline files
 
 ### Async-First Enforcement
 
