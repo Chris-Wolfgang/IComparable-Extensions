@@ -1,12 +1,17 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-    Fixes branch rulesets by disabling existing ones and recreating with the correct configuration.
+    Disables and renames existing branch rulesets so a fresh ruleset can be created without conflicts.
 
 .DESCRIPTION
     This script inspects the existing branch rulesets for a repository, disables all of them,
     and renames any ruleset named "Protect main branch" to "Protect main branch (old)" so that
-    Setup-BranchRuleset.ps1 can create a fresh ruleset without conflicts.
+    a follow-up Setup-BranchRuleset.ps1 invocation can create a fresh ruleset without colliding
+    on names or active enforcement.
+
+    This script does NOT recreate the protection ruleset itself — Setup-BranchRuleset.ps1 (a
+    separate canonical script, available in repo-template) is the recreation step. After
+    running this script, run Setup-BranchRuleset.ps1 to install the fresh ruleset.
 
     The script presents a plan of all changes before executing and prompts for confirmation.
 
@@ -36,6 +41,11 @@
 [CmdletBinding()]
 param(
     [Parameter()]
+    # Same validation as Setup-Labels.ps1: empty (use current repo),
+    # the template placeholder, or owner/repo with no slashes, '@', or
+    # whitespace in either segment. Rejects full GitHub URLs at param-
+    # binding time so they don't become confusing 404s from gh api later.
+    [ValidatePattern('^$|^\{\{GITHUB_USERNAME\}\}/\{\{REPO_NAME\}\}$|^[^/@\s]+/[^/@\s]+$')]
     [string]$Repository = "{{GITHUB_USERNAME}}/{{REPO_NAME}}",
 
     [Parameter()]
