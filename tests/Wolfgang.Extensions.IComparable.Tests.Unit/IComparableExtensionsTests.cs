@@ -187,4 +187,100 @@ public class IComparableExtensionsTests
 
         Assert.Throws<ArgumentNullException>(() => value!.IsInRange("a", "z"));
     }
+
+
+
+    // ---------------------------------------------------------------
+    // T4 audit additions — exercise generic dispatch through a custom
+    // IComparable<T> type, and lock in the *currently undocumented*
+    // behaviour when bound arguments are null. The public XML docs
+    // describe only the value-null contract; bound-null behaviour is
+    // an implementation consequence of deferring to T.CompareTo, and
+    // these tests pin it so a refactor can't silently change it.
+    //
+    // Concretely: the methods only null-check `value`; null bounds
+    // are passed through to T.CompareTo. For string,
+    // "m".CompareTo(null) returns +1, so "m".IsInRange(null, "z")
+    // is true (the lower-bound check passes) and
+    // "m".IsBetween("a", null) is false (the upper-bound check
+    // requires "m".CompareTo(null) < 0, which fails).
+    // ---------------------------------------------------------------
+
+    private sealed class Money : IComparable<Money>
+    {
+        public decimal Amount { get; }
+
+        public Money(decimal amount) => Amount = amount;
+
+        public int CompareTo(Money? other) =>
+            other is null ? 1 : Amount.CompareTo(other.Amount);
+    }
+
+
+
+    [Fact]
+    public void IsBetween_when_called_on_custom_IComparable_T_returns_expected_result()
+    {
+        var ten     = new Money(10m);
+        var twenty  = new Money(20m);
+        var fifteen = new Money(15m);
+
+        Assert.True(fifteen.IsBetween(ten, twenty));
+        Assert.False(ten.IsBetween(ten, twenty));     // strict lower
+        Assert.False(twenty.IsBetween(ten, twenty));  // strict upper
+    }
+
+
+
+    [Fact]
+    public void IsInRange_when_called_on_custom_IComparable_T_returns_expected_result()
+    {
+        var ten     = new Money(10m);
+        var twenty  = new Money(20m);
+        var fifteen = new Money(15m);
+
+        Assert.True(fifteen.IsInRange(ten, twenty));
+        Assert.True(ten.IsInRange(ten, twenty));      // inclusive lower
+        Assert.True(twenty.IsInRange(ten, twenty));   // inclusive upper
+    }
+
+
+
+    [Fact]
+    public void IsBetween_when_lowerBound_is_null_defers_to_CompareTo_contract()
+    {
+        // string.CompareTo(null) returns +1, so 0 < +1 is true for
+        // the lower-bound check, and "m".CompareTo("z") < 0 is true
+        // for the upper-bound check — net result is true.
+        Assert.True("m".IsBetween(null!, "z"));
+    }
+
+
+
+    [Fact]
+    public void IsInRange_when_lowerBound_is_null_defers_to_CompareTo_contract()
+    {
+        Assert.True("m".IsInRange(null!, "z"));
+    }
+
+
+
+    [Fact]
+    public void IsBetween_when_upperBound_is_null_defers_to_CompareTo_contract()
+    {
+        // string.CompareTo(null) returns +1. The upper-bound check
+        // is value.CompareTo(upperBound) < 0 → "m".CompareTo(null) < 0
+        // → 1 < 0 → false. Net result is false.
+        Assert.False("m".IsBetween("a", null!));
+    }
+
+
+
+    [Fact]
+    public void IsInRange_when_upperBound_is_null_defers_to_CompareTo_contract()
+    {
+        // Same reasoning: value.CompareTo(upperBound) <= 0 →
+        // "m".CompareTo(null) <= 0 → 1 <= 0 → false.
+        Assert.False("m".IsInRange("a", null!));
+    }
 }
