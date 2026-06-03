@@ -1,0 +1,23 @@
+Summary
+  Generated on: 6/3/2026 - 2:52:25 AM
+  Coverage date: 6/3/2026 - 2:52:22 AM
+  Parser: Cobertura
+  Assemblies: 1
+  Classes: 1
+  Files: 1
+  Line coverage: 100%
+  Covered lines: 6
+  Uncovered lines: 0
+  Coverable lines: 6
+  Total lines: 74
+  Branch coverage: 100% (8 of 8)
+  Covered branches: 8
+  Total branches: 8
+  Method coverage: 100% (2 of 2)
+  Full method coverage: 100% (2 of 2)
+  Covered methods: 2
+  Fully covered methods: 2
+  Total methods: 2
+
+Wolfgang.Extensions.IComparable                            100%
+  Wolfgang.Extensions.IComparable.IComparableExtensions    100%
