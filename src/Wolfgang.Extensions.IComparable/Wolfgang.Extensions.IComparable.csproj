@@ -3,21 +3,23 @@
 	<PropertyGroup>
 		<TargetFrameworks>net462;netstandard2.0;net8.0;net10.0</TargetFrameworks>
 		<LangVersion>14</LangVersion>
-		<Nullable>enable</Nullable>
-		<Version>1.1.0</Version>
+		<Version>1.1.1</Version>
+		<!-- Pin AssemblyVersion to a fixed binding-stability baseline so consumers
+		     do not need to recompile / add binding redirects on every minor/patch
+		     bump. Bump only on a deliberate breaking API change. FileVersion +
+		     InformationalVersion (the latter auto-derived from <Version>) carry
+		     the actual release version. -->
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<FileVersion>$([System.Text.RegularExpressions.Regex]::Replace("$(Version)", "[-+].*$", "")).0</FileVersion>
 		<Title>$(AssemblyName)</Title>
-		<Authors>Chris Wolfgang</Authors>
 		<Description>A collection of extension methods for IComparable and IComparable&lt;T&gt; types</Description>
-		<Copyright>Copyright 2026 Chris Wolfgang </Copyright>
-		<PackageProjectUrl>https://github.com/Chris-Wolfgang/Wolfgang.Extensions.IComparable</PackageProjectUrl>
+		<PackageProjectUrl>https://github.com/Chris-Wolfgang/IComparable-Extensions</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/Chris-Wolfgang/IComparable-Extensions.git</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<AssemblyVersion>1.0.0</AssemblyVersion>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<SignAssembly>False</SignAssembly>
 		<PackageIcon>icon.png</PackageIcon>
-		<ApplicationIcon>icon.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(TargetFramework)' == 'net8.0' OR
@@ -25,10 +27,6 @@
 							  ">
 		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
-
-	<ItemGroup>
-	  <Content Include="icon.ico" />
-	</ItemGroup>
 
 	<ItemGroup>
 	  <None Include="..\..\assets\icon.png">

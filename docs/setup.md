@@ -119,7 +119,7 @@ reportgenerator -reports:"TestResults/**/coverage.cobertura.xml" \
 
 ```bash
 # Run only unit tests
-dotnet test tests/Wolfgang.Extensions.IComparable.Tests/Wolfgang.Extensions.IComparable.Tests.csproj
+dotnet test tests/Wolfgang.Extensions.IComparable.Tests.Unit/Wolfgang.Extensions.IComparable.Tests.Unit.csproj
 ```
 
 ## Code Quality Checks
@@ -168,8 +168,8 @@ IComparable-Extensions/
 │       ├── Wolfgang.Extensions.IComparable.csproj
 │       └── IComparableExtensions.cs
 ├── tests/
-│   └── Wolfgang.Extensions.IComparable.Tests/
-│       ├── Wolfgang.Extensions.IComparable.Tests.csproj
+│   └── Wolfgang.Extensions.IComparable.Tests.Unit/
+│       ├── Wolfgang.Extensions.IComparable.Tests.Unit.csproj
 │       └── IComparableExtensionsTests.cs
 ├── benchmarks/
 │   └── (Benchmark projects)

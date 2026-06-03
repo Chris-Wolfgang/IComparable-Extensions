@@ -8,31 +8,19 @@ namespace Wolfgang.Extensions.IComparable.DotNet462.Example1
         {
             Console.ForegroundColor = ConsoleColor.White;
 
-            var value = 1;
-            Console.WriteLine("   " + value + " IsBetween 1 and 10: " + value.IsBetween(1, 10));
+            int[] values = { 1, 2, 9, 10 };
 
-            value = 2;
-            Console.WriteLine("   " + value + " IsBetween 1 and 10: " + value.IsBetween(1, 10));
-
-            value = 9;
-            Console.WriteLine("   " + value + " IsBetween 1 and 10: " + value.IsBetween(1, 10));
-
-            value = 10;
-            Console.WriteLine("  " + value + " IsBetween 1 and 10: " + value.IsBetween(1, 10));
+            foreach (var value in values)
+            {
+                Console.WriteLine($"   {value,2} IsBetween 1 and 10: {value.IsBetween(1, 10)}");
+            }
 
             Console.WriteLine();
 
-            value = 1;
-            Console.WriteLine("   " + value + " IsInRange 1 and 10: " + value.IsInRange(1, 10));
-
-            value = 2;
-            Console.WriteLine("   " + value + " IsInRange 1 and 10: " + value.IsInRange(1, 10));
-
-            value = 9;
-            Console.WriteLine("   " + value + " IsInRange 1 and 10: " + value.IsInRange(1, 10));
-
-            value = 10;
-            Console.WriteLine("  " + value + " IsInRange 1 and 10: " + value.IsInRange(1, 10));
+            foreach (var value in values)
+            {
+                Console.WriteLine($"   {value,2} IsInRange 1 and 10: {value.IsInRange(1, 10)}");
+            }
 
             Console.WriteLine();
 
