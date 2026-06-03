@@ -74,3 +74,8 @@ runtime behavior change vs v1.1.0.
   consumers without a binding redirect. (See DateTime-Extensions v1.3.1
   for the post-mortem on what happens when this regression reaches a
   release.)
+
+[Unreleased]: https://github.com/Chris-Wolfgang/IComparable-Extensions/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/Chris-Wolfgang/IComparable-Extensions/compare/v1.1.0...v1.1.1
+[1.1.0]: https://github.com/Chris-Wolfgang/IComparable-Extensions/compare/v1.0.0...v1.1.0
+[1.0.0]: https://github.com/Chris-Wolfgang/IComparable-Extensions/releases/tag/v1.0.0
