@@ -60,6 +60,11 @@ runtime behavior change vs v1.1.0.
   `Fix-BranchRuleset.ps1`).
 - `github/codeql-action/init` and `analyze` bumped v3 → v4 (Node.js
   20 → 24 deprecation).
+- Analyzer/test-tool version bumps folded in from the in-flight
+  Dependabot PRs:
+  - `Meziantou.Analyzer` 3.0.85 → 3.0.98
+  - `SonarAnalyzer.CSharp` 10.25.0 → 10.27.0
+  - `coverlet.collector` 10.0.0 → 10.0.1
 
 ### Fixed
 
