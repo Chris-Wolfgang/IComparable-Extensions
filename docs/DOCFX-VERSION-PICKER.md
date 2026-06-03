@@ -192,8 +192,15 @@ because we're not on github.io).
 
 For workflow-level issues (failed deploys, stale `versions.json`,
 missing version subtrees), the `docfx.yaml` run's per-step output is
-the canonical place to look. `scripts/Validate-DocsDeploy.sh` runs
-at the end of every deploy and catches structural drift.
+the canonical place to look. `scripts/Validate-DocsDeploy.sh` is a
+manual validation script — not wired into `docfx.yaml` — that catches
+structural drift on the deployed site. Run it from the repo root
+after a deploy completes (typically ~30 seconds after the workflow
+finishes):
+
+```bash
+bash scripts/Validate-DocsDeploy.sh
+```
 
 ---
 
