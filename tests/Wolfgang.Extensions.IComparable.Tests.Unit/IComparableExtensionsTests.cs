@@ -283,4 +283,73 @@ public class IComparableExtensionsTests
         // "m".CompareTo(null) <= 0 → 1 <= 0 → false.
         Assert.False("m".IsInRange("a", null!));
     }
+
+
+
+    // ---------------------------------------------------------------
+    // Edge-case integer coverage — negative bounds + value-type
+    // extremes. The behaviour is the same as the positive cases by
+    // construction, but these rows lock in that the implementation
+    // doesn't accidentally specialise on positive numbers (e.g. via
+    // an unsigned compare or an `Abs`-based shortcut introduced
+    // during a future refactor).
+    // ---------------------------------------------------------------
+
+    [Theory]
+    [InlineData(-11, false)]   // below the negative-to-zero range
+    [InlineData(-10, false)]   // exact lower (strict)
+    [InlineData(-5, true)]     // mid
+    [InlineData(0, false)]     // exact upper (strict)
+    [InlineData(1, false)]     // above
+    public void IsBetween_when_called_on_negative_integer_range_returns_expected_result(int value, bool expectedValue)
+    {
+        Assert.Equal(expectedValue, value.IsBetween(-10, 0));
+    }
+
+
+
+    [Theory]
+    [InlineData(-11, false)]   // below
+    [InlineData(-10, true)]    // exact lower (inclusive)
+    [InlineData(-5, true)]     // mid
+    [InlineData(0, true)]      // exact upper (inclusive)
+    [InlineData(1, false)]     // above
+    public void IsInRange_when_called_on_negative_integer_range_returns_expected_result(int value, bool expectedValue)
+    {
+        Assert.Equal(expectedValue, value.IsInRange(-10, 0));
+    }
+
+
+
+    [Fact]
+    public void IsBetween_when_value_equals_int_MaxValue_against_full_range_returns_false()
+    {
+        // strict upper — MaxValue is NOT > MaxValue
+        Assert.False(int.MaxValue.IsBetween(int.MinValue, int.MaxValue));
+    }
+
+
+
+    [Fact]
+    public void IsBetween_when_value_equals_int_MinValue_against_full_range_returns_false()
+    {
+        // strict lower — MinValue is NOT < MinValue
+        Assert.False(int.MinValue.IsBetween(int.MinValue, int.MaxValue));
+    }
+
+
+
+    [Fact]
+    public void IsInRange_when_value_equals_int_MaxValue_against_full_range_returns_true()
+    {
+        Assert.True(int.MaxValue.IsInRange(int.MinValue, int.MaxValue));
+    }
+
+
+
+    [Fact]
+    public void IsInRange_when_value_equals_int_MinValue_against_full_range_returns_true()
+    {
+        Assert.True(int.MinValue.IsInRange(int.MinValue, int.MaxValue));
+    }
 }
