@@ -1,0 +1,173 @@
+{
+  "source_base_path": "D:/a/IComparable-Extensions/IComparable-Extensions/docfx_project",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "Resource",
+      "output": {
+        "resource": {
+          "relative_path": "index.json"
+        }
+      }
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "../docs/DOCFX-VERSION-PICKER.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/DOCFX-VERSION-PICKER.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "../docs/README-FORMATTING.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/README-FORMATTING.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "../docs/RELEASE-WORKFLOW-SETUP.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/RELEASE-WORKFLOW-SETUP.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "../docs/WORKFLOW_SECURITY.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/WORKFLOW_SECURITY.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "../docs/getting-started.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/getting-started.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "../docs/introduction.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/introduction.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "../docs/setup.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/setup.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "../docs/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "docs/toc.html"
+        },
+        ".json": {
+          "relative_path": "docs/toc.json"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.Extensions.IComparable.IComparableExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.Extensions.IComparable.IComparableExtensions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.Extensions.IComparable.IComparableExtensions",
+      "Summary": "<p sourcefile=\"api/Wolfgang.Extensions.IComparable.IComparableExtensions.yml\" sourcestartlinenumber=\"1\">A collection of extension methods for types that implement <xref href=\"System.IComparable%601\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.Extensions.IComparable.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.Extensions.IComparable.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.Extensions.IComparable",
+      "Summary": null
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "api/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/toc.html"
+        },
+        ".json": {
+          "relative_path": "api/toc.json"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "public/version-picker.js",
+      "output": {
+        "resource": {
+          "relative_path": "public/version-picker.js"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "versions.json",
+      "output": {
+        "resource": {
+          "relative_path": "versions.json"
+        }
+      },
+      "version": ""
+    }
+  ],
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}
