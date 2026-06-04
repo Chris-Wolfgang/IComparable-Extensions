@@ -43,12 +43,13 @@
     ],
     "output": "_site",
     "template": [
+      "default",
       "modern",
-      "default"
+      "modern-dark"
     ],
     "globalMetadata": {
-      "_appName": "",
-      "_appTitle": "<title>",
+      "_appName": "Wolfgang.Extensions.IComparable",
+      "_appTitle": "Wolfgang.Extensions.IComparable Documentation",
       "_appLogoPath": "logo.svg",
       "_enableSearch": true,
       "_appFooter": "Made with DocFX <script>(function(){var r='/';if(window.location.hostname.endsWith('.github.io')){var s=window.location.pathname.split('/').filter(Boolean);if(s.length)r='/'+s[0]+'/';}var t=document.createElement('script');t.src=r+'public/version-picker.js';t.async=true;document.head.appendChild(t);})();</script>",
