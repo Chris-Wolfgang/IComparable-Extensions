@@ -10,13 +10,13 @@
       <link rel="icon" href="../favicon.ico">
       <link rel="stylesheet" href="../public/docfx.min.css">
       <link rel="stylesheet" href="../public/main.css">
-      <meta name="docfx:navrel" content="">
-      <meta name="docfx:tocrel" content="toc.html">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="../toc.html">
       
       <meta name="docfx:rel" content="../">
       
       
-      <meta name="docfx:docurl" content="https://github.com/Chris-Wolfgang/IComparable-Extensions/blob/main/docs/introduction.md/#L1">
+      <meta name="docfx:docurl" content="https://github.com/Chris-Wolfgang/IComparable-Extensions/blob/main/docfx_project/docs/introduction.md/#L1">
       <meta name="loc:inThisArticle" content="In this article">
       <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
       <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
@@ -63,23 +63,9 @@
     </header>
 
     <main class="container-xxl">
-      <div class="toc-offcanvas">
-        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
-          <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
-          </div>
-          <div class="offcanvas-body">
-            <nav class="toc" id="toc"></nav>
-          </div>
-        </div>
-      </div>
 
       <div class="content">
         <div class="actionbar">
-          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
-            <i class="bi bi-list"></i>
-          </button>
 
           <nav id="breadcrumb"></nav>
         </div>
@@ -87,12 +73,11 @@
         <article data-uid="">
 <h1 id="introduction">Introduction</h1>
 
+<p>Welcome to Wolfgang.Extensions.IComparable!</p>
 <h2 id="overview">Overview</h2>
-<p><strong>Wolfgang.Extensions.IComparable</strong> is a lightweight .NET library that provides powerful extension methods for types implementing the <code>IComparable&lt;T&gt;</code> interface. This library simplifies common comparison operations, making your code more readable and expressive.</p>
-<h2 id="what-is-icomparable">What is IComparable?</h2>
-<p>The <code>IComparable&lt;T&gt;</code> interface is a fundamental part of .NET that allows objects to be compared for ordering purposes. Types that implement this interface can be sorted and compared using standardized methods.</p>
+<p><strong>Wolfgang.Extensions.IComparable</strong> is a lightweight .NET library that provides extension methods for types implementing the <code>IComparable&lt;T&gt;</code> interface. It simplifies common comparison operations, making range checks read the way you'd say them — <code>value.IsBetween(low, high)</code> instead of <code>value.CompareTo(low) &gt; 0 &amp;&amp; value.CompareTo(high) &lt; 0</code>.</p>
 <h2 id="why-use-this-library">Why Use This Library?</h2>
-<p>When working with comparable types in C#, you often need to check if a value falls within a specific range. Without this library, such checks can be verbose and error-prone:</p>
+<p>Without the library, range checks are verbose and easy to get wrong:</p>
 <pre><code class="lang-csharp">// Without Wolfgang.Extensions.IComparable
 if (value.CompareTo(min) &gt;= 0 &amp;&amp; value.CompareTo(max) &lt;= 0)
 {
@@ -102,54 +87,49 @@ if (value.CompareTo(min) &gt;= 0 &amp;&amp; value.CompareTo(max) &lt;= 0)
 // With Wolfgang.Extensions.IComparable
 if (value.IsInRange(min, max))
 {
-    // Value is in range - much clearer!
+    // Value is in range — much clearer
 }
 </code></pre>
 <h2 id="key-features">Key Features</h2>
 <ul>
-<li><strong>Intuitive API</strong>: Extension methods that read like natural language</li>
-<li><strong>Type-Safe</strong>: Works with any type that implements <code>IComparable&lt;T&gt;</code></li>
-<li><strong>Zero Dependencies</strong>: Lightweight library with no external dependencies</li>
-<li><strong>Well-Tested</strong>: Comprehensive test coverage to ensure reliability</li>
-<li><strong>Performance-Optimized</strong>: Minimal overhead compared to manual comparison operations</li>
+<li><strong><code>IsBetween</code></strong> — strict (exclusive) range check: <code>value &gt; lower &amp;&amp; value &lt; upper</code></li>
+<li><strong><code>IsInRange</code></strong> — inclusive range check: <code>value &gt;= lower &amp;&amp; value &lt;= upper</code></li>
+<li><strong>Type-safe</strong> — works with any type that implements <code>IComparable&lt;T&gt;</code></li>
+<li><strong>Zero dependencies</strong> — pure .NET Standard 2.0 library</li>
+<li><strong>Multi-target</strong> — runs on .NET Framework 4.6.2+, .NET Standard 2.0+, and .NET 8.0+</li>
 </ul>
 <h2 id="available-extension-methods">Available Extension Methods</h2>
 <h3 id="isbetween">IsBetween</h3>
-<p>Determines if a value is <strong>strictly between</strong> two bounds (exclusive comparison):</p>
+<p>Determines if a value is <strong>strictly between</strong> two bounds (exclusive):</p>
 <pre><code class="lang-csharp">int value = 5;
-bool result = value.IsBetween(1, 10); // true (5 &gt; 1 AND 5 &lt; 10)
+bool result = value.IsBetween(1, 10); // true — 5 &gt; 1 AND 5 &lt; 10
 </code></pre>
 <h3 id="isinrange">IsInRange</h3>
-<p>Determines if a value is <strong>within the range</strong> of two bounds (inclusive comparison):</p>
+<p>Determines if a value is <strong>within the range</strong> of two bounds (inclusive):</p>
 <pre><code class="lang-csharp">int value = 5;
-bool result = value.IsInRange(5, 10); // true (5 &gt;= 5 AND 5 &lt;= 10)
+bool result = value.IsInRange(5, 10); // true — 5 &gt;= 5 AND 5 &lt;= 10
 </code></pre>
-<h2 id="use-cases">Use Cases</h2>
-<p>This library is particularly useful in scenarios such as:</p>
-<ul>
-<li><strong>Validation</strong>: Checking if user input falls within acceptable ranges</li>
-<li><strong>Business Logic</strong>: Implementing rules that depend on value ranges</li>
-<li><strong>Data Processing</strong>: Filtering or categorizing data based on value ranges</li>
-<li><strong>Game Development</strong>: Checking bounds for positions, scores, or other metrics</li>
-<li><strong>Financial Applications</strong>: Validating amounts, dates, or other comparable values</li>
-</ul>
 <h2 id="supported-types">Supported Types</h2>
-<p>Any type that implements <code>IComparable&lt;T&gt;</code> can use these extension methods, including:</p>
+<p>Any type implementing <code>IComparable&lt;T&gt;</code> works, including:</p>
 <ul>
-<li>Numeric types: <code>int</code>, <code>double</code>, <code>decimal</code>, <code>float</code>, etc.</li>
-<li>Date and time types: <code>DateTime</code>, <code>DateTimeOffset</code>, <code>TimeSpan</code></li>
-<li>String comparisons</li>
+<li>Numeric types — <code>int</code>, <code>double</code>, <code>decimal</code>, <code>float</code>, <code>long</code>, etc.</li>
+<li>Date/time types — <code>DateTime</code>, <code>DateTimeOffset</code>, <code>TimeSpan</code></li>
+<li><code>string</code> and <code>char</code></li>
 <li>Custom types that implement <code>IComparable&lt;T&gt;</code></li>
 </ul>
-<h2 id="license">License</h2>
-<p>This project is licensed under the Mozilla Public License 2.0. See the <a href="../LICENSE">LICENSE</a> file for details.</p>
-<h2 id="contributing">Contributing</h2>
-<p>We welcome contributions! Please see our <a href="../CONTRIBUTING.md">CONTRIBUTING.md</a> guide for more information.</p>
+<h2 id="getting-help">Getting Help</h2>
+<p>If you need help with Wolfgang.Extensions.IComparable, please:</p>
+<ul>
+<li>Check the <a href="getting-started.html">Getting Started</a> guide</li>
+<li>Review the <a href="https://chris-wolfgang.github.io/IComparable-Extensions/versions/latest/api/Wolfgang.Extensions.IComparable.html">API Reference</a></li>
+<li>Visit the <a href="https://github.com/Chris-Wolfgang/IComparable-Extensions">GitHub repository</a></li>
+<li>Open an issue on <a href="https://github.com/Chris-Wolfgang/IComparable-Extensions/issues">GitHub Issues</a></li>
+</ul>
 
 </article>
 
         <div class="contribution d-print-none">
-          <a href="https://github.com/Chris-Wolfgang/IComparable-Extensions/blob/main/docs/introduction.md/#L1" class="edit-link">Edit this page</a>
+          <a href="https://github.com/Chris-Wolfgang/IComparable-Extensions/blob/main/docfx_project/docs/introduction.md/#L1" class="edit-link">Edit this page</a>
         </div>
 
         <div class="next-article d-print-none border-top" id="nextArticle"></div>

@@ -10,13 +10,13 @@
       <link rel="icon" href="../favicon.ico">
       <link rel="stylesheet" href="../public/docfx.min.css">
       <link rel="stylesheet" href="../public/main.css">
-      <meta name="docfx:navrel" content="">
-      <meta name="docfx:tocrel" content="toc.html">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="../toc.html">
       
       <meta name="docfx:rel" content="../">
       
       
-      <meta name="docfx:docurl" content="https://github.com/Chris-Wolfgang/IComparable-Extensions/blob/main/docs/getting-started.md/#L1">
+      <meta name="docfx:docurl" content="https://github.com/Chris-Wolfgang/IComparable-Extensions/blob/main/docfx_project/docs/getting-started.md/#L1">
       <meta name="loc:inThisArticle" content="In this article">
       <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
       <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
@@ -63,23 +63,9 @@
     </header>
 
     <main class="container-xxl">
-      <div class="toc-offcanvas">
-        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
-          <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
-          </div>
-          <div class="offcanvas-body">
-            <nav class="toc" id="toc"></nav>
-          </div>
-        </div>
-      </div>
 
       <div class="content">
         <div class="actionbar">
-          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
-            <i class="bi bi-list"></i>
-          </button>
 
           <nav id="breadcrumb"></nav>
         </div>
@@ -87,80 +73,46 @@
         <article data-uid="">
 <h1 id="getting-started">Getting Started</h1>
 
-<p>This guide will help you quickly start using Wolfgang.Extensions.IComparable in your .NET projects.</p>
+<p>This guide will help you quickly get up and running with Wolfgang.Extensions.IComparable.</p>
 <h2 id="prerequisites">Prerequisites</h2>
 <ul>
-<li>Any .NET runtime that supports <strong>.NET Standard 2.0</strong> or later. That includes:
-<ul>
-<li>.NET Framework 4.6.2 and later</li>
-<li>.NET Core 2.0 and later</li>
-<li>.NET 5, 6, 7, 8, 9, and 10</li>
-</ul>
-</li>
-<li>A C# project (any project type: console, web, library, etc.)</li>
+<li>.NET 8.0 SDK or later (for development; the library targets .NET Framework 4.6.2+, .NET Standard 2.0, and .NET 8.0+)</li>
 </ul>
 <h2 id="installation">Installation</h2>
-<h3 id="using-nuget-package-manager">Using NuGet Package Manager</h3>
+<h3 id="via-nuget-package-manager">Via NuGet Package Manager</h3>
 <pre><code class="lang-bash">dotnet add package Wolfgang.Extensions.IComparable
 </code></pre>
-<h3 id="using-package-manager-console-visual-studio">Using Package Manager Console (Visual Studio)</h3>
+<h3 id="via-package-manager-console">Via Package Manager Console</h3>
 <pre><code class="lang-powershell">Install-Package Wolfgang.Extensions.IComparable
 </code></pre>
-<h3 id="using-csproj-file">Using .csproj File</h3>
-<p>Add the following package reference to your <code>.csproj</code> file:</p>
-<pre><code class="lang-xml">&lt;ItemGroup&gt;
-  &lt;PackageReference Include=&quot;Wolfgang.Extensions.IComparable&quot; Version=&quot;1.*&quot; /&gt;
-&lt;/ItemGroup&gt;
-</code></pre>
-<h2 id="basic-usage">Basic Usage</h2>
-<h3 id="1-add-the-using-directive">1. Add the Using Directive</h3>
-<p>Add the namespace to your C# file:</p>
+<h2 id="quick-start">Quick Start</h2>
 <pre><code class="lang-csharp">using Wolfgang.Extensions.IComparable;
-</code></pre>
-<h3 id="2-use-isbetween-method">2. Use IsBetween Method</h3>
-<p>Check if a value is strictly between two bounds (exclusive):</p>
-<pre><code class="lang-csharp">int temperature = 25;
 
+int temperature = 25;
+
+// IsBetween — strict (exclusive) bounds
 if (temperature.IsBetween(0, 30))
 {
-    Console.WriteLine(&quot;Temperature is between 0 and 30 (exclusive)&quot;);
+    Console.WriteLine(&quot;Temperature is strictly between 0 and 30&quot;);
 }
-</code></pre>
-<p><strong>Example Results:</strong></p>
-<ul>
-<li><code>5.IsBetween(1, 10)</code> → <code>true</code> (5 is greater than 1 and less than 10)</li>
-<li><code>1.IsBetween(1, 10)</code> → <code>false</code> (1 is not greater than 1)</li>
-<li><code>10.IsBetween(1, 10)</code> → <code>false</code> (10 is not less than 10)</li>
-</ul>
-<h3 id="3-use-isinrange-method">3. Use IsInRange Method</h3>
-<p>Check if a value is within a range (inclusive):</p>
-<pre><code class="lang-csharp">int score = 85;
 
+// IsInRange — inclusive bounds
+int score = 85;
 if (score.IsInRange(0, 100))
 {
-    Console.WriteLine(&quot;Score is within the valid range of 0-100&quot;);
+    Console.WriteLine(&quot;Score is within 0-100 (inclusive)&quot;);
 }
 </code></pre>
-<p><strong>Example Results:</strong></p>
-<ul>
-<li><code>5.IsInRange(1, 10)</code> → <code>true</code> (5 is between 1 and 10)</li>
-<li><code>1.IsInRange(1, 10)</code> → <code>true</code> (1 equals the lower bound)</li>
-<li><code>10.IsInRange(1, 10)</code> → <code>true</code> (10 equals the upper bound)</li>
-</ul>
-<h2 id="common-examples">Common Examples</h2>
-<h3 id="validating-user-input">Validating User Input</h3>
+<h2 id="examples">Examples</h2>
+<h3 id="validating-user-input">Validating user input</h3>
 <pre><code class="lang-csharp">int age = GetUserAge();
 
-if (age.IsInRange(0, 120))
+if (!age.IsInRange(0, 120))
 {
-    Console.WriteLine(&quot;Valid age entered&quot;);
-}
-else
-{
-    Console.WriteLine(&quot;Age must be between 0 and 120&quot;);
+    throw new ArgumentOutOfRangeException(nameof(age), &quot;Age must be between 0 and 120&quot;);
 }
 </code></pre>
-<h3 id="working-with-decimals">Working with Decimals</h3>
+<h3 id="working-with-decimals">Working with decimals</h3>
 <pre><code class="lang-csharp">decimal price = 49.99m;
 
 if (price.IsBetween(0m, 100m))
@@ -168,44 +120,42 @@ if (price.IsBetween(0m, 100m))
     Console.WriteLine(&quot;Price is in the medium range&quot;);
 }
 </code></pre>
-<h3 id="working-with-dates">Working with Dates</h3>
-<pre><code class="lang-csharp">DateTime checkDate = new DateTime(2024, 6, 15);
-DateTime startDate = new DateTime(2024, 1, 1);
-DateTime endDate = new DateTime(2024, 12, 31);
+<h3 id="working-with-dates">Working with dates</h3>
+<pre><code class="lang-csharp">var checkDate = new DateTime(2026, 6, 15);
+var startDate = new DateTime(2026, 1, 1);
+var endDate   = new DateTime(2026, 12, 31);
 
 if (checkDate.IsInRange(startDate, endDate))
 {
-    Console.WriteLine(&quot;Date falls within 2024&quot;);
+    Console.WriteLine(&quot;Date falls within 2026&quot;);
 }
 </code></pre>
-<h3 id="working-with-strings">Working with Strings</h3>
+<h3 id="working-with-strings">Working with strings</h3>
 <pre><code class="lang-csharp">string value = &quot;M&quot;;
 
-// String comparison is alphabetical
+// String comparison is ordinal/cultural per the IComparable&lt;string&gt; contract
 if (value.IsBetween(&quot;A&quot;, &quot;Z&quot;))
 {
     Console.WriteLine(&quot;Value is between A and Z (exclusive)&quot;);
 }
 </code></pre>
-<h3 id="working-with-custom-types">Working with Custom Types</h3>
-<pre><code class="lang-csharp">public class Employee : IComparable&lt;Employee&gt;
+<h3 id="working-with-custom-types">Working with custom types</h3>
+<pre><code class="lang-csharp">public sealed class Employee : IComparable&lt;Employee&gt;
 {
-    public string Name { get; set; }
-    public decimal Salary { get; set; }
-    
-    public int CompareTo(Employee other)
-    {
-        return Salary.CompareTo(other.Salary);
-    }
+    public string Name { get; init; }
+    public decimal Salary { get; init; }
+
+    public int CompareTo(Employee other) =&gt;
+        other is null ? 1 : Salary.CompareTo(other.Salary);
 }
 
-var employee = new Employee { Name = &quot;John&quot;, Salary = 50000 };
-var minSalary = new Employee { Salary = 30000 };
-var maxSalary = new Employee { Salary = 100000 };
+var employee  = new Employee { Name = &quot;John&quot;, Salary = 50_000m };
+var minSalary = new Employee { Salary = 30_000m };
+var maxSalary = new Employee { Salary = 100_000m };
 
 if (employee.IsInRange(minSalary, maxSalary))
 {
-    Console.WriteLine(&quot;Employee salary is within the expected range&quot;);
+    Console.WriteLine(&quot;Salary is within the expected range&quot;);
 }
 </code></pre>
 <h2 id="quick-reference">Quick Reference</h2>
@@ -213,9 +163,9 @@ if (employee.IsInRange(minSalary, maxSalary))
 <thead>
 <tr>
 <th>Method</th>
-<th>Comparison Type</th>
-<th>Lower Bound</th>
-<th>Upper Bound</th>
+<th>Comparison</th>
+<th>Lower</th>
+<th>Upper</th>
 <th>Example</th>
 </tr>
 </thead>
@@ -238,37 +188,26 @@ if (employee.IsInRange(minSalary, maxSalary))
 </table>
 <h2 id="next-steps">Next Steps</h2>
 <ul>
-<li>Explore more <a href="./readme.md">advanced usage examples</a></li>
-<li>Learn about <a href="setup.html">setting up your development environment</a></li>
-<li>Read the full <a href="introduction.html">introduction</a> to understand the library's design</li>
+<li>Explore the <a href="https://chris-wolfgang.github.io/IComparable-Extensions/versions/latest/api/Wolfgang.Extensions.IComparable.html">API Reference</a> for detailed documentation</li>
+<li>Read the <a href="introduction.html">Introduction</a> to learn more about Wolfgang.Extensions.IComparable</li>
+<li>Check out the source on the <a href="https://github.com/Chris-Wolfgang/IComparable-Extensions">GitHub repository</a></li>
 </ul>
-<h2 id="troubleshooting">Troubleshooting</h2>
-<h3 id="namespace-not-found">Namespace Not Found</h3>
-<p>If you get a compile error that the namespace cannot be found:</p>
-<ol>
-<li>Ensure the package is properly installed (<code>dotnet restore</code>)</li>
-<li>Verify you're using .NET 8.0 or later</li>
-<li>Check that your IDE has indexed the new package (restart if necessary)</li>
-</ol>
-<h3 id="method-not-available">Method Not Available</h3>
-<p>If the extension methods don't appear:</p>
-<ol>
-<li>Ensure you've added the <code>using Wolfgang.Extensions.IComparable;</code> directive</li>
-<li>Verify your type implements <code>IComparable&lt;T&gt;</code></li>
-<li>Check that IntelliSense has refreshed (rebuild the solution)</li>
-</ol>
-<h2 id="getting-help">Getting Help</h2>
-<p>If you encounter any issues:</p>
+<h2 id="common-issues">Common Issues</h2>
+<h3 id="method-not-available-on-intellisense">Method not available on IntelliSense</h3>
+<p>Ensure the <code>using Wolfgang.Extensions.IComparable;</code> directive is present and that the type you're calling the extension on implements <code>IComparable&lt;T&gt;</code> (most BCL types do).</p>
+<h3 id="null-arguments">Null arguments</h3>
+<p><code>IsBetween</code> / <code>IsInRange</code> throw <code>ArgumentNullException</code> when the value itself is null. Null bounds are passed through to <code>T.CompareTo</code>, which for <code>string</code> returns <code>+1</code> against null — so the inclusive lower-bound check passes against a null lower bound while the upper-bound check fails against a null upper bound.</p>
+<h2 id="additional-resources">Additional Resources</h2>
 <ul>
-<li>Check the <a href="https://github.com/Chris-Wolfgang/IComparable-Extensions/issues">GitHub Issues</a></li>
-<li>Review the <a href="../examples/">examples</a> in the repository</li>
-<li>Read the <a href="../README.md">API documentation</a></li>
+<li><a href="https://github.com/Chris-Wolfgang/IComparable-Extensions">GitHub Repository</a></li>
+<li><a href="https://github.com/Chris-Wolfgang/IComparable-Extensions/blob/main/CONTRIBUTING.md">Contributing Guidelines</a></li>
+<li><a href="https://github.com/Chris-Wolfgang/IComparable-Extensions/issues">Report an Issue</a></li>
 </ul>
 
 </article>
 
         <div class="contribution d-print-none">
-          <a href="https://github.com/Chris-Wolfgang/IComparable-Extensions/blob/main/docs/getting-started.md/#L1" class="edit-link">Edit this page</a>
+          <a href="https://github.com/Chris-Wolfgang/IComparable-Extensions/blob/main/docfx_project/docs/getting-started.md/#L1" class="edit-link">Edit this page</a>
         </div>
 
         <div class="next-article d-print-none border-top" id="nextArticle"></div>
