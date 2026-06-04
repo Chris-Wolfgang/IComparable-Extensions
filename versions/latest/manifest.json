@@ -146,6 +146,16 @@
     },
     {
       "type": "Resource",
+      "source_relative_path": "logo.svg",
+      "output": {
+        "resource": {
+          "relative_path": "logo.svg"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
       "source_relative_path": "public/version-picker.js",
       "output": {
         "resource": {
