@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>DocFX Version Picker | &lt;title&gt; </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="DocFX Version Picker | &lt;title&gt; ">
+    
+    
+      <link rel="shortcut icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../styles/docfx.css">
+      <link rel="stylesheet" href="../styles/main.css">
+      <meta property="docfx:navrel" content="">
+      <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+
+        <div id="search-results">
+          <div class="search-list">Search Results for <span></span></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination" data-first=First data-prev=Previous data-next=Next data-last=Last></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="docfx-version-picker">DocFX Version Picker</h1>
+
+<p>The docs site shows an in-page version picker (a <code>&lt;select&gt;</code> dropdown in
+the header) so readers on any page can jump between published doc
+versions. The picker is a self-contained JavaScript snippet — DocFX's
+<code>default</code>/<code>modern</code>/<code>modern-dark</code> templates don't ship one natively, so
+this repo implements its own.</p>
+<p>The same picker is in <code>repo-template</code> and fans out unchanged to every
+downstream <code>.NET</code> repo in the fleet.</p>
+<hr>
+<h2 id="how-a-reader-experiences-it">How a reader experiences it</h2>
+<table>
+<thead>
+<tr>
+<th>URL</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/&lt;repo&gt;/</code></td>
+<td>Root redirect → lands on <code>/&lt;repo&gt;/versions/latest/</code> (Microsoft Docs-style UX)</td>
+</tr>
+<tr>
+<td><code>/&lt;repo&gt;/versions/latest/</code> (or any version)</td>
+<td>Real DocFX docs render. The header shows a <code>&lt;select&gt;</code> between the app title and the theme toggle, populated from <code>versions.json</code> and pre-selecting whichever version the current URL is under.</td>
+</tr>
+<tr>
+<td>Pick a different version in the dropdown</td>
+<td>Browser navigates to <code>/&lt;repo&gt;/versions/&lt;picked&gt;/</code></td>
+</tr>
+</tbody>
+</table>
+<p>The &quot;latest&quot; alias is filtered out of the dropdown (redundant — the
+highest-numbered <code>v*</code> row already represents latest); <code>versions.json</code>
+still includes it so external links / scripts can resolve it.</p>
+<hr>
+<h2 id="the-four-moving-parts">The four moving parts</h2>
+<h3 id="1-docfx_projectpublicversion-pickerjs">1. <code>docfx_project/public/version-picker.js</code></h3>
+<p>Browser-side picker (~160 lines). On <code>DOMContentLoaded</code>:</p>
+<ul>
+<li>Detects whether the host is <code>*.github.io</code> and computes the repo
+prefix accordingly — same file works on github.io, on
+<code>docfx build --serve</code> localhost, and on CNAME-served custom domains.</li>
+<li>Fetches <code>versions.json</code> from the site root (default browser cache
+policy — the file changes infrequently).</li>
+<li>Builds a themed <code>&lt;select&gt;</code> (uses Bootstrap CSS variables so it
+follows DocFX modern's light/dark theme; <code>color-scheme: light dark</code>
+makes the OS-rendered popup readable in both modes).</li>
+<li>Inserts the picker into the DocFX header using a prioritised anchor
+list (theme toggle → navbar → search → header); the <code>header</code>
+fallback appends INTO the header, not as a sibling under <code>&lt;html&gt;</code>.</li>
+<li>Strips the gh-pages <code>/&lt;repo&gt;/</code> prefix from navigation URLs when
+off-github.io so localhost / CNAME navigation resolves to
+<code>/versions/&lt;v&gt;/</code> rather than <code>/&lt;repo&gt;/versions/&lt;v&gt;/</code>.</li>
+</ul>
+<p>Falls back silently (no broken page, no empty dropdown) if
+<code>versions.json</code> is missing, malformed, or contains only a <code>latest</code>
+alias after filtering.</p>
+<h3 id="2-docfx_projectdocfxjson">2. <code>docfx_project/docfx.json</code></h3>
+<p>Two changes from a stock DocFX project:</p>
+<pre><code class="lang-jsonc">&quot;resource&quot;: [
+  {
+    &quot;files&quot;: [
+      &quot;logo.svg&quot;,
+      &quot;images/**&quot;,
+      &quot;public/**&quot;,         // ← copies version-picker.js into _site/public/
+      &quot;versions.json&quot;      // ← stub for local dev; workflow overwrites on deploy
+    ]
+  }
+],
+
+&quot;globalMetadata&quot;: {
+  // ...
+  &quot;_appFooter&quot;: &quot;Made with DocFX &lt;script&gt;...&lt;/script&gt;&quot;
+  //                              ^ tiny inline bootstrap that computes
+  //                                the site root and lazy-loads
+  //                                /&lt;repo&gt;/public/version-picker.js
+  //                                into document.head. Inline (not
+  //                                external) because _appFooter is a
+  //                                plain string field, not a Liquid
+  //                                template — page-relative paths
+  //                                wouldn't resolve from nested pages
+  //                                like /api/Foo.html.
+}
+</code></pre>
+<h3 id="3-docfx_projectversionsjson-stub">3. <code>docfx_project/versions.json</code> (stub)</h3>
+<p>Committed as <code>[]</code> (empty array). The <code>docfx.yaml</code> workflow regenerates
+the real <code>versions.json</code> at deploy time from the set of actual <code>v*</code>
+tags that have versioned docs deployed (D6 derivation) and writes it
+to the gh-pages site root. The empty stub is the fanout-safe default —
+no DateTime-Extensions paths leak into other repos when this folder is
+synced fleet-wide.</p>
+<p><strong>Local picker testing</strong> requires populating <code>versions.json</code> manually
+with mock entries (see &quot;Testing locally&quot; below). The picker
+gracefully falls back to &quot;no dropdown&quot; if the stub is empty.</p>
+<h3 id="4-root-indexhtml-redirect--inlined-in-the-workflows">4. Root <code>index.html</code> redirect — inlined in the workflows</h3>
+<blockquote>
+<p><strong>Note (2026-06):</strong> Previous canonical kept the redirect HTML in a
+separate <code>.github/version-picker-template.html</code> file. That file is
+gone — both workflows now build the markup inline as a PowerShell
+string-array. The only dynamic piece is the page title (the repo
+name), so the template-file indirection was pure overhead. See the
+D20-Dice commit <code>b58861a</code> (and the follow-up <code>1b9a7c7</code> that fixed
+a YAML literal-block-scalar trap from an attempted here-string)
+for the original design.</p>
+<p>Where to find the generation in each workflow:</p>
+<ul>
+<li><strong><code>docfx.yaml</code></strong> — the inline HTML is built <strong>inside</strong> the
+<code>Deploy docs to GitHub Pages</code> step (not a step of its own). Look
+for the <code>Generated root index.html (meta-refresh → versions/latest/).</code>
+log line in that step's output.</li>
+<li><strong><code>build-all-versions.yaml</code></strong> — distinct step named
+<code>Generate root index.html (meta-refresh → versions/latest/)</code>,
+visible at the top level of the workflow run.</li>
+</ul>
+</blockquote>
+<p>The inline HTML:</p>
+<ul>
+<li><code>meta http-equiv=&quot;refresh&quot; content=&quot;0; url=versions/latest/&quot;</code> for the instant redirect. <strong>Relative</strong> link — resolves correctly under the GitHub Pages project path <code>/&lt;repo&gt;/</code>.</li>
+<li><code>link rel=&quot;canonical&quot; href=&quot;versions/latest/&quot;</code> for SEO.</li>
+<li><code>setTimeout(function(){ window.location.replace('versions/latest/'); }, 0)</code> JS backup if meta-refresh is blocked.</li>
+<li><code>&lt;noscript&gt;</code> link covers the everything-else case.</li>
+</ul>
+<p>Only the repo name is interpolated via <code>$repoName</code> / <code>$title</code>. No <code>{{TITLE}}</code> / <code>{{VERSION_LIST}}</code> placeholders, no template-file read, no <code>-replace</code> substitution — the workflow shows you exactly what HTML it produces.</p>
+<hr>
+<h2 id="how-it-gets-to-gh-pages">How it gets to gh-pages</h2>
+<p><code>docfx.yaml</code> is <strong>not</strong> triggered directly by <code>push</code> or by pushing a
+tag — it has only <code>workflow_call</code> (invoked by <code>release.yaml</code> after a
+GitHub Release is published) and <code>workflow_dispatch</code> (manual). Two
+paths reach it:</p>
+<pre><code>Path 1 — normal: a GitHub Release is published
+  └─ release.yaml fires (on `release: types: [published]`)
+       └─ release.yaml → calls docfx.yaml as a reusable workflow
+            └─ docfx.yaml runs the deploy steps below
+
+Path 2 — manual: a maintainer runs docfx.yaml from the Actions tab
+  └─ docfx.yaml fires directly (on `workflow_dispatch`)
+       └─ docfx.yaml runs the deploy steps below
+
+The deploy steps that docfx.yaml runs in both cases:
+  ├─ docfx build  → _site/  (includes public/version-picker.js,
+  │                          inline bootstrap in every page's
+  │                          footer via _appFooter)
+  ├─ Generate versions.json from v* tags → _site/versions.json
+  ├─ Deploy _site/ to gh-pages /versions/&lt;v&gt;/  (always)
+  │
+  │  --- The remaining two steps only run when `deploy_as_latest`
+  │      is true (the default; uncheck on workflow_dispatch when
+  │      you're rebuilding an OLDER version and don't want to move
+  │      the &quot;latest&quot; alias):
+  │
+  ├─ Deploy _site/ to gh-pages /versions/latest/   [deploy_as_latest only]
+  └─ Generate root index.html (meta-refresh, inline HTML)
+             → deploy to gh-pages /                [deploy_as_latest only]
+</code></pre>
+<p>A plain <code>git push</code> to <code>main</code> does <strong>not</strong> redeploy the docs — the
+gh-pages content updates only via Path 1 (publishing a GitHub
+Release) or Path 2 (manually running <code>docfx.yaml</code> from the Actions
+tab).</p>
+<p><code>deploy_as_latest</code> defaults to true. The escape hatch is for the
+Path 2 manual case where you want to rebuild and republish the
+docs for an older version (e.g. backporting a doc fix to <code>v1.0.0</code>)
+without overwriting the <code>/versions/latest/</code> alias and the site-root
+<code>index.html</code> (which loads the picker bootstrap; the picker JS itself
+reads <code>versions.json</code> for the version list).</p>
+<p>Result on gh-pages:</p>
+<pre><code>/                      ← redirect to /versions/latest/
+/versions.json         ← available-versions list (drives the picker)
+/versions/latest/      ← latest docs (with picker in header)
+/versions/v1.3.0/      ← versioned docs (with picker)
+/versions/v1.2.0/      ← versioned docs (with picker)
+...
+</code></pre>
+<hr>
+<h2 id="testing-locally">Testing locally</h2>
+<p><code>docfx build --serve</code> doesn't replicate the gh-pages layout — there's
+no <code>/versions/&lt;v&gt;/</code> tree and no auto-generated <code>versions.json</code>. To
+exercise the picker locally:</p>
+<pre><code class="lang-bash">cd docfx_project
+
+# Build src first (DocFX metadata needs the assemblies)
+dotnet build ../src/&lt;package&gt;/&lt;package&gt;.csproj -c Release
+
+# Generate API metadata + build site
+docfx metadata
+docfx build
+
+# Drop a mock versions.json with the URLs the picker will navigate to.
+# Use the repo's own /&lt;repo&gt;/versions/&lt;v&gt;/ scheme so the JS's
+# prefix-stripping path is exercised.
+cat &gt; _site/versions.json &lt;&lt;'JSON'
+[
+  { &quot;version&quot;: &quot;latest&quot;, &quot;url&quot;: &quot;/&lt;repo&gt;/versions/latest/&quot; },
+  { &quot;version&quot;: &quot;v1.0.0&quot;, &quot;url&quot;: &quot;/&lt;repo&gt;/versions/v1.0.0/&quot; }
+]
+JSON
+
+# Optionally, copy _site/* into _site/versions/latest/ etc.
+# so the navigation lands on real pages instead of 404s.
+
+# Serve and visit http://localhost:8081/
+docfx serve _site --port 8081
+</code></pre>
+<p>The picker fetches <code>versions.json</code> from <code>/versions.json</code> (no repo
+prefix on localhost), builds the dropdown, and navigates to
+<code>/versions/&lt;v&gt;/</code> on selection (with the <code>/&lt;repo&gt;/</code> prefix stripped
+because we're not on github.io).</p>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>Where to look</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dropdown missing entirely</td>
+<td><code>version-picker.js</code> not loaded on the page</td>
+<td>DevTools → Network. The page should fetch <code>/&lt;repo&gt;/public/version-picker.js</code>. If 404, check <code>docfx.json</code> <code>resource.files</code> includes <code>public/**</code>.</td>
+</tr>
+<tr>
+<td>Dropdown shows wrong selection</td>
+<td><code>currentVersion</code> derivation in the JS didn't find a <code>/versions/&lt;v&gt;/</code> segment in the URL</td>
+<td>DevTools → Console — log <code>window.location.pathname</code> and re-derive</td>
+</tr>
+<tr>
+<td>Dropdown empty</td>
+<td><code>versions.json</code> fetch failed or returned an array without any non-&quot;latest&quot; entries</td>
+<td>DevTools → Network. The page should fetch <code>/&lt;repo&gt;/versions.json</code> (or <code>/versions.json</code> on localhost) and get a JSON array with <code>version</code>+<code>url</code> entries.</td>
+</tr>
+<tr>
+<td>Popup text invisible (light-on-light or dark-on-dark)</td>
+<td><code>color-scheme: light dark</code> missing or Bootstrap CSS vars not loaded</td>
+<td>Verify <code>version-picker.js</code> is the current version</td>
+</tr>
+<tr>
+<td>Picker appears as sibling of <code>&lt;header&gt;</code> instead of inside it</td>
+<td>Anchor fallback selected <code>header</code> with the wrong insertion mode</td>
+<td>Verify the anchors table has <code>['header', 'append']</code> (not <code>'before'</code>)</td>
+</tr>
+<tr>
+<td>Root <code>/</code> shows old &quot;Select a documentation version&quot; landing page</td>
+<td>The inline-HTML refactor hasn't deployed yet</td>
+<td>In <code>docfx.yaml</code>, look inside the <code>Deploy docs to GitHub Pages</code> step for the <code>Generated root index.html (meta-refresh → versions/latest/).</code> log line. In <code>build-all-versions.yaml</code>, look at the distinct step named <code>Generate root index.html (meta-refresh → versions/latest/)</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>For workflow-level issues (failed deploys, stale <code>versions.json</code>,
+missing version subtrees), the <code>docfx.yaml</code> run's per-step output is
+the canonical place to look. <code>scripts/Validate-DocsDeploy.sh</code> runs
+at the end of every deploy and catches structural drift.</p>
+<hr>
+<h2 id="manual-recovery-for-a-broken-gh-pages">Manual recovery for a broken <code>gh-pages</code></h2>
+<p>If gh-pages ends up in a state the workflow can't repair, <strong>do not run
+a manual cleanup against the gh-pages root</strong> — every versioned subtree
+under <code>versions/</code> is unrecoverable once deleted (the source git tag
+still exists, but the rendered HTML would have to be regenerated by
+running <code>docfx.yaml</code> once per tag via <code>workflow_dispatch</code>).</p>
+<p>Safe recovery: re-run <code>docfx.yaml</code> with <code>workflow_dispatch</code> for each
+affected tag in turn (oldest first). The worktree-based replace
+rebuilds <code>versions/&lt;tag&gt;/</code> cleanly without affecting the others.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Chris-Wolfgang/IComparable-Extensions/blob/main/docs/DOCFX-VERSION-PICKER.md/#L1" class="contribution-link">Edit this page</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In this article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      Made with DocFX <script>(function(){var r='/';if(window.location.hostname.endsWith('.github.io')){var s=window.location.pathname.split('/').filter(Boolean);if(s.length)r='/'+s[0]+'/';}var t=document.createElement('script');t.src=r+'public/version-picker.js';t.async=true;document.head.appendChild(t);})();</script>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

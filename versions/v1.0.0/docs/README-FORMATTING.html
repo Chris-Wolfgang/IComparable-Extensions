@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Code Formatting | &lt;title&gt; </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Code Formatting | &lt;title&gt; ">
+    
+    
+      <link rel="shortcut icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../styles/docfx.css">
+      <link rel="stylesheet" href="../styles/main.css">
+      <meta property="docfx:navrel" content="">
+      <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+
+        <div id="search-results">
+          <div class="search-list">Search Results for <span></span></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination" data-first=First data-prev=Previous data-next=Next data-last=Last></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="code-formatting">Code Formatting</h1>
+
+<p>This repository uses <code>dotnet format</code> to enforce consistent C# code style.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<p>The <code>dotnet format</code> command is <strong>built into the .NET SDK</strong> starting with .NET 6 — no separate tool installation is needed. In practice <code>dotnet format</code> still has to load and evaluate the project, so you need an SDK new enough to handle this repo's target frameworks: use the SDK version(s) installed by <code>.github/workflows/pr.yaml</code> (and <code>global.json</code> if present). The latest stable .NET SDK is generally a safe choice.</p>
+<blockquote>
+<p><strong>Note:</strong> The standalone <code>dotnet-format</code> global tool was deprecated when <code>dotnet format</code> was integrated into the .NET 6 SDK in August 2021.</p>
+</blockquote>
+<h2 id="for-developers">For Developers</h2>
+<h3 id="before-committing">Before Committing</h3>
+<p>Run the formatting script with PowerShell Core (<code>pwsh</code>) on any supported platform:</p>
+<pre><code class="lang-powershell">.\scripts\format.ps1
+</code></pre>
+<p>Or check without making changes:</p>
+<pre><code class="lang-powershell">.\scripts\format.ps1 -Check
+</code></pre>
+<h3 id="manual-formatting">Manual Formatting</h3>
+<pre><code class="lang-bash">dotnet format
+</code></pre>
+<h3 id="verify-without-modifying-files">Verify Without Modifying Files</h3>
+<pre><code class="lang-bash">dotnet format --verify-no-changes
+</code></pre>
+<p>This is useful as a pre-commit guard or in a CI step if the repo opts in to enforcing formatting at PR time. By default, the standard PR workflow does <strong>not</strong> run <code>dotnet format --verify-no-changes</code>; formatting is treated as a developer-side hygiene step driven by <code>.editorconfig</code> and IDE-on-save behavior.</p>
+<h2 id="configuration">Configuration</h2>
+<p>Code style rules are defined in <code>.editorconfig</code> at the repository root. <code>.editorconfig</code> is the source of truth — anything in this document that conflicts with <code>.editorconfig</code> should be considered out of date.</p>
+<h2 id="local-enforcement">Local Enforcement</h2>
+<p>Code formatting is enforced locally via <code>.editorconfig</code> and <code>dotnet format</code>. Run the formatting script before submitting a PR. If the repo has opted into a CI formatting check, the PR workflow will fail on unformatted code; resolve by running <code>.\scripts\format.ps1</code> locally and pushing the resulting changes.</p>
+<h2 id="ide-integration">IDE Integration</h2>
+<p>Most IDEs automatically read <code>.editorconfig</code>:</p>
+<ul>
+<li><strong>Visual Studio</strong>: Built-in support, formats on save (Tools → Options → Text Editor → C# → Code Style)</li>
+<li><strong>VS Code</strong>: Install &quot;EditorConfig for VS Code&quot; extension</li>
+<li><strong>JetBrains Rider</strong>: Built-in support</li>
+</ul>
+<h2 id="formatting-rules">Formatting Rules</h2>
+<p>Authoritative rules live in <code>.editorconfig</code> (and <code>.gitattributes</code> for line endings, which enforces LF across all text file types in this repo — including <code>*.ps1</code>, which historically used CRLF but is now LF for cross-platform shebang compatibility). The list below is a quick orientation; check those files for the binding values:</p>
+<ul>
+<li><strong>Indentation</strong>: 4 spaces for C#, 2 for XML/JSON (per <code>.editorconfig</code>)</li>
+<li><strong>Braces</strong>: Opening brace on its own line</li>
+<li><strong>Line endings</strong>: LF for all text files (per <code>.gitattributes</code>), including PowerShell scripts</li>
+<li><strong>Trailing whitespace</strong>: Removed</li>
+<li><strong>Using directives</strong>: System namespaces first, sorted alphabetically</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Chris-Wolfgang/IComparable-Extensions/blob/main/docs/README-FORMATTING.md/#L1" class="contribution-link">Edit this page</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In this article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      Made with DocFX <script>(function(){var r='/';if(window.location.hostname.endsWith('.github.io')){var s=window.location.pathname.split('/').filter(Boolean);if(s.length)r='/'+s[0]+'/';}var t=document.createElement('script');t.src=r+'public/version-picker.js';t.async=true;document.head.appendChild(t);})();</script>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
