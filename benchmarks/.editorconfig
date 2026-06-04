@@ -1,0 +1,30 @@
+# Benchmark-project analyzer carve-outs (canonical).
+#
+# Benchmark projects inherit `<TreatWarningsAsErrors>true</TreatWarningsAsErrors>`
+# from the root `Directory.Build.props` in Release builds — same bar as
+# src/ and tests/. BenchmarkDotNet code patterns (deliberately naive
+# measured code, `[Benchmark]` methods invoked by reflection, fields
+# mutated by harness, etc.) can trip some analyzer rules that would
+# otherwise be reasonable.
+#
+# This file is the canonical home for benchmark-inappropriate
+# analyzer suppressions. As BDN-typical warnings surface during
+# benchmark expansion, add per-rule severity overrides BELOW the
+# `[*.cs]` section header rather than blanket-disabling TWEA on
+# the folder. Properties placed before any section header are
+# ignored by most EditorConfig parsers — keep entries inside
+# `[*.cs]`.
+
+[*.cs]
+
+# S2933: Fields that are only assigned in the constructor should be readonly.
+# Benchmark inputs are stored in instance fields so the JIT can't constant-fold
+# the call site. Future benchmarks will additionally populate fields via
+# [GlobalSetup] (analyzer can't see the attribute-driven assignment), so we
+# carve this out at the folder level rather than per-class.
+dotnet_diagnostic.S2933.severity = none
+
+# Examples (commented out — uncomment as warnings surface):
+# dotnet_diagnostic.CA1822.severity = none      # methods don't access this
+# dotnet_diagnostic.MA0048.severity = none      # File name does not match
+# dotnet_diagnostic.S1144.severity  = none      # Unused private members (reflection)
