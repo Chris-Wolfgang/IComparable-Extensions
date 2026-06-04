@@ -9,7 +9,9 @@
        The in-page version picker (docfx_project/public/version-picker.js)
        lets readers switch versions from any page once they land there, so
        the root no longer needs to be a "pick a version" landing page —
-       a redirect to /versions/latest/ is the desired UX.
+       a redirect to `versions/latest/` (relative — a leading slash
+       would break under GitHub Pages project sites at `/<repo>/...`)
+       is the desired UX.
 
        meta-refresh works without JavaScript; the JS fallback below kicks
        in if the meta-refresh is blocked by some agent. Visible text +
@@ -47,12 +49,14 @@
   <noscript>
     <p>JavaScript is disabled. <a href="versions/latest/">Click here</a> to continue.</p>
   </noscript>
-  <!-- The docfx.yaml workflow's substitution still looks for {{VERSION_LIST}}
-       but the placeholder is intentionally omitted from this template: a
-       missing pattern is a true no-op for PowerShell's `-replace` (returns
-       the original string unchanged). The in-page <select> dropdown shipped
-       in docfx_project/public/version-picker.js is now the canonical
-       version-selector UI, so no list of links needs to be rendered into
-       the root redirect page. -->
+  <!-- Both the docfx.yaml and build-all-versions.yaml workflows still
+       run a `-replace` on {{VERSION_LIST}}, but the placeholder is
+       intentionally omitted from this template: a missing pattern is a
+       true no-op for PowerShell's `-replace` (returns the original
+       string unchanged), so the substitution silently does nothing. The
+       in-page <select> dropdown shipped in
+       docfx_project/public/version-picker.js is now the canonical
+       version-selector UI, so no list of links needs to be rendered
+       into the root redirect page. -->
 </body>
 </html>
