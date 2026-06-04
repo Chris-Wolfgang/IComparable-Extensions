@@ -173,32 +173,76 @@ synced fleet-wide.</p>
 <p><strong>Local picker testing</strong> requires populating <code>versions.json</code> manually
 with mock entries (see &quot;Testing locally&quot; below). The picker
 gracefully falls back to &quot;no dropdown&quot; if the stub is empty.</p>
-<h3 id="4-githubversion-picker-templatehtml">4. <code>.github/version-picker-template.html</code></h3>
-<p>Used by the <code>docfx.yaml</code> &quot;Generate version-picker index.html&quot; step.
-Renders an auto-redirect page at the gh-pages root:</p>
+<h3 id="4-root-indexhtml-redirect--inlined-in-the-workflows">4. Root <code>index.html</code> redirect — inlined in the workflows</h3>
+<blockquote>
+<p><strong>Note (2026-06):</strong> Previous canonical kept the redirect HTML in a
+separate <code>.github/version-picker-template.html</code> file. That file is
+gone — both workflows now build the markup inline as a PowerShell
+string-array. The only dynamic piece is the page title (the repo
+name), so the template-file indirection was pure overhead. See the
+D20-Dice commit <code>b58861a</code> (and the follow-up <code>1b9a7c7</code> that fixed
+a YAML literal-block-scalar trap from an attempted here-string)
+for the original design.</p>
+<p>Where to find the generation in each workflow:</p>
 <ul>
-<li><code>meta http-equiv=&quot;refresh&quot;</code> for instant redirect</li>
-<li><code>setTimeout</code> JS backup if meta-refresh is blocked</li>
-<li><code>&lt;noscript&gt;</code> link covers the everything-else case</li>
+<li><strong><code>docfx.yaml</code></strong> — the inline HTML is built <strong>inside</strong> the
+<code>Deploy docs to GitHub Pages</code> step (not a step of its own). Look
+for the <code>Generated root index.html (meta-refresh → versions/latest/).</code>
+log line in that step's output.</li>
+<li><strong><code>build-all-versions.yaml</code></strong> — distinct step named
+<code>Generate root index.html (meta-refresh → versions/latest/)</code>,
+visible at the top level of the workflow run.</li>
 </ul>
-<p><code>{{TITLE}}</code> is substituted with the repo name at deploy time;
-<code>{{VERSION_LIST}}</code> is intentionally omitted from the template. A missing
-pattern is a true no-op for PowerShell's <code>-replace</code> (returns the original
-string unchanged), so the workflow runs unchanged; nothing gets injected
-into the root redirect page because the in-page dropdown is now the
-canonical version-selector UI.</p>
+</blockquote>
+<p>The inline HTML:</p>
+<ul>
+<li><code>meta http-equiv=&quot;refresh&quot; content=&quot;0; url=versions/latest/&quot;</code> for the instant redirect. <strong>Relative</strong> link — resolves correctly under the GitHub Pages project path <code>/&lt;repo&gt;/</code>.</li>
+<li><code>link rel=&quot;canonical&quot; href=&quot;versions/latest/&quot;</code> for SEO.</li>
+<li><code>setTimeout(function(){ window.location.replace('versions/latest/'); }, 0)</code> JS backup if meta-refresh is blocked.</li>
+<li><code>&lt;noscript&gt;</code> link covers the everything-else case.</li>
+</ul>
+<p>Only the repo name is interpolated via <code>$repoName</code> / <code>$title</code>. No <code>{{TITLE}}</code> / <code>{{VERSION_LIST}}</code> placeholders, no template-file read, no <code>-replace</code> substitution — the workflow shows you exactly what HTML it produces.</p>
 <hr>
 <h2 id="how-it-gets-to-gh-pages">How it gets to gh-pages</h2>
-<pre><code>push to main / release tag
-  └─ docfx.yaml fires
-       ├─ docfx build  → _site/  (includes public/version-picker.js,
-       │                          inline bootstrap in every page's
-       │                          footer via _appFooter)
-       ├─ Generate versions.json from v* tags → _site/versions.json
-       ├─ Deploy _site/ to gh-pages /versions/&lt;v&gt;/ + /versions/latest/
-       └─ Generate root index.html from version-picker-template.html
-                  → deploy to gh-pages /
+<p><code>docfx.yaml</code> is <strong>not</strong> triggered directly by <code>push</code> or by pushing a
+tag — it has only <code>workflow_call</code> (invoked by <code>release.yaml</code> after a
+GitHub Release is published) and <code>workflow_dispatch</code> (manual). Two
+paths reach it:</p>
+<pre><code>Path 1 — normal: a GitHub Release is published
+  └─ release.yaml fires (on `release: types: [published]`)
+       └─ release.yaml → calls docfx.yaml as a reusable workflow
+            └─ docfx.yaml runs the deploy steps below
+
+Path 2 — manual: a maintainer runs docfx.yaml from the Actions tab
+  └─ docfx.yaml fires directly (on `workflow_dispatch`)
+       └─ docfx.yaml runs the deploy steps below
+
+The deploy steps that docfx.yaml runs in both cases:
+  ├─ docfx build  → _site/  (includes public/version-picker.js,
+  │                          inline bootstrap in every page's
+  │                          footer via _appFooter)
+  ├─ Generate versions.json from v* tags → _site/versions.json
+  ├─ Deploy _site/ to gh-pages /versions/&lt;v&gt;/  (always)
+  │
+  │  --- The remaining two steps only run when `deploy_as_latest`
+  │      is true (the default; uncheck on workflow_dispatch when
+  │      you're rebuilding an OLDER version and don't want to move
+  │      the &quot;latest&quot; alias):
+  │
+  ├─ Deploy _site/ to gh-pages /versions/latest/   [deploy_as_latest only]
+  └─ Generate root index.html (meta-refresh, inline HTML)
+             → deploy to gh-pages /                [deploy_as_latest only]
 </code></pre>
+<p>A plain <code>git push</code> to <code>main</code> does <strong>not</strong> redeploy the docs — the
+gh-pages content updates only via Path 1 (publishing a GitHub
+Release) or Path 2 (manually running <code>docfx.yaml</code> from the Actions
+tab).</p>
+<p><code>deploy_as_latest</code> defaults to true. The escape hatch is for the
+Path 2 manual case where you want to rebuild and republish the
+docs for an older version (e.g. backporting a doc fix to <code>v1.0.0</code>)
+without overwriting the <code>/versions/latest/</code> alias and the site-root
+<code>index.html</code> (which loads the picker bootstrap; the picker JS itself
+reads <code>versions.json</code> for the version list).</p>
 <p>Result on gh-pages:</p>
 <pre><code>/                      ← redirect to /versions/latest/
 /versions.json         ← available-versions list (drives the picker)
@@ -279,20 +323,15 @@ because we're not on github.io).</p>
 </tr>
 <tr>
 <td>Root <code>/</code> shows old &quot;Select a documentation version&quot; landing page</td>
-<td>The <code>version-picker-template.html</code> change didn't deploy</td>
-<td>Check the workflow run's &quot;Generate version-picker index.html&quot; step output</td>
+<td>The inline-HTML refactor hasn't deployed yet</td>
+<td>In <code>docfx.yaml</code>, look inside the <code>Deploy docs to GitHub Pages</code> step for the <code>Generated root index.html (meta-refresh → versions/latest/).</code> log line. In <code>build-all-versions.yaml</code>, look at the distinct step named <code>Generate root index.html (meta-refresh → versions/latest/)</code>.</td>
 </tr>
 </tbody>
 </table>
 <p>For workflow-level issues (failed deploys, stale <code>versions.json</code>,
 missing version subtrees), the <code>docfx.yaml</code> run's per-step output is
-the canonical place to look. <code>scripts/Validate-DocsDeploy.sh</code> is a
-manual validation script — not wired into <code>docfx.yaml</code> — that catches
-structural drift on the deployed site. Run it from the repo root
-after a deploy completes (typically ~30 seconds after the workflow
-finishes):</p>
-<pre><code class="lang-bash">bash scripts/Validate-DocsDeploy.sh
-</code></pre>
+the canonical place to look. <code>scripts/Validate-DocsDeploy.sh</code> runs
+at the end of every deploy and catches structural drift.</p>
 <hr>
 <h2 id="manual-recovery-for-a-broken-gh-pages">Manual recovery for a broken <code>gh-pages</code></h2>
 <p>If gh-pages ends up in a state the workflow can't repair, <strong>do not run
@@ -312,7 +351,7 @@ rebuilds <code>versions/&lt;tag&gt;/</code> cleanly without affecting the others
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/Chris-Wolfgang/IComparable-Extensions/blob/v1.1.1/docs/DOCFX-VERSION-PICKER.md/#L1" class="contribution-link">Edit this page</a>
+                    <a href="https://github.com/Chris-Wolfgang/IComparable-Extensions/blob/main/docs/DOCFX-VERSION-PICKER.md/#L1" class="contribution-link">Edit this page</a>
                   </li>
                 </ul>
               </div>
