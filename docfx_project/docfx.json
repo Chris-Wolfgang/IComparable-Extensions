@@ -5,12 +5,17 @@
       "src": [
         {
           "files": [
-			"src/**/*.csproj"
+            "src/**/*.csproj"
           ],
           "src": "../"
         }
       ],
-      "dest": "api"
+      "dest": "api",
+      "properties": {
+        "TargetFramework": "net8.0"
+      },
+      "disableGitFeatures": false,
+      "disableDefaultFilter": false
     }
   ],
   "build": {
@@ -22,20 +27,13 @@
         "exclude": [
           "_site/**"
         ]
-      },
-      {
-        "files": [
-          "**/*.{md,yml}"
-        ],
-        "src": "../docs",
-        "dest": "docs"
       }
     ],
     "resource": [
       {
         "files": [
-          "images/**",
           "logo.svg",
+          "images/**",
           "public/**",
           "versions.json"
         ]
@@ -54,6 +52,10 @@
       "_enableSearch": true,
       "_appFooter": "Made with DocFX <script>(function(){var r='/';if(window.location.hostname.endsWith('.github.io')){var s=window.location.pathname.split('/').filter(Boolean);if(s.length)r='/'+s[0]+'/';}var t=document.createElement('script');t.src=r+'public/version-picker.js';t.async=true;document.head.appendChild(t);})();</script>",
       "_disableSidebar": false,
+      "_disableTocFilter": false,
+      "_enableDarkMode": true,
+      "colorMode": "dark",
+      "_baseUrl": "https://Chris-Wolfgang.github.io/IComparable-Extensions/",
       "pdf": true
     }
   }

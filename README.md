@@ -34,7 +34,6 @@ This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) f
 - **API Documentation:** https://Chris-Wolfgang.github.io/IComparable-Extensions/
 - **CHANGELOG:** [CHANGELOG.md](CHANGELOG.md)
 - **Contributing Guide:** [CONTRIBUTING.md](CONTRIBUTING.md)
-- **Development Setup:** [docs/setup.md](docs/setup.md)
 
 ---
 
