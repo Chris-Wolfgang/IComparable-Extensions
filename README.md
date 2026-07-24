@@ -111,11 +111,13 @@ maybeNull!.IsBetween("a", "z");   // throws ArgumentNullException("value")
 
 ---
 
-## 🎯 Target frameworks
+## 🎯 Supported Frameworks
 
-Multi-targeted to keep both modern .NET projects and long-tail .NET Framework consumers covered:
+This library targets:
 
-- `net462`
-- `netstandard2.0`
-- `net8.0`
-- `net10.0`
+- **.NET Framework:** 4.6.2
+- **.NET Standard:** 2.0
+- **.NET:** 8.0, 10.0
+
+See the [NuGet package page](https://www.nuget.org/packages/Wolfgang.Extensions.IComparable/) for the authoritative per-TFM compatibility matrix.
+
