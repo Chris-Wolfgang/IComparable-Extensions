@@ -380,11 +380,28 @@ jobs:
             exit 1
           fi
           echo "Inspecting: $SLN"
+          # `--properties=Configuration=Release` aligns the analyzer's view of
+          # the build with the earlier `dotnet build -c Release` step —
+          # otherwise InspectCode defaults to Debug and evaluates preprocessor
+          # symbols / conditional code differently from what actually ships.
+          # `|| true` swallows the tool's exit code (some `jb inspectcode`
+          # versions exit non-zero on any warning, regardless of severity) so
+          # the SARIF-based gate below can decide pass/fail. The
+          # SARIF-presence check right after preserves loud-fail behavior on a
+          # real tool crash (bad args, unparseable solution, etc.) that would
+          # leave inspect.sarif un-produced.
           jb inspectcode "$SLN" \
             --output=inspect.sarif \
             --format=sarif \
             --severity=WARNING \
-            --no-build
+            --properties=Configuration=Release \
+            --no-build \
+            || true
+
+          if [ ! -s inspect.sarif ]; then
+            echo "::error::inspect.sarif was not produced (or is empty) — InspectCode likely crashed before writing output. Failing loudly instead of silently passing an unrun analyzer."
+            exit 1
+          fi
 
       - name: Upload SARIF to Code Scanning
         uses: github/codeql-action/upload-sarif@v4
