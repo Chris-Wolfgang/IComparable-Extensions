@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1784921169840,
+  "lastUpdate": 1787158551484,
   "repoUrl": "https://github.com/Chris-Wolfgang/IComparable-Extensions",
   "entries": {
     "BenchmarkDotNet": [
@@ -360,6 +360,126 @@ window.BENCHMARK_DATA = {
             "value": 49.38113724191984,
             "unit": "ns",
             "range": "± 0.07710690531152257"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "210299580+Chris-Wolfgang@users.noreply.github.com",
+            "name": "Chris Wolfgang",
+            "username": "Chris-Wolfgang"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "369684070fb6f0f957f0ad1c3c993797cdd25cc4",
+          "message": "Merge pull request #226 from Chris-Wolfgang/claude/inspectcode-noise-floor-code\n\nchore(inspectcode): clean up the remaining 14 noise-floor findings",
+          "timestamp": "2026-08-19T12:51:29-04:00",
+          "tree_id": "085278ea360e5fb88243775474c5886ebaa3bf6c",
+          "url": "https://github.com/Chris-Wolfgang/IComparable-Extensions/commit/369684070fb6f0f957f0ad1c3c993797cdd25cc4"
+        },
+        "date": 1787158550135,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.Manual_Int_Inside",
+            "value": 0.36541471009453136,
+            "unit": "ns",
+            "range": "± 0.004793639090420069"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.IsBetween_Int_Inside",
+            "value": 0.476196068028609,
+            "unit": "ns",
+            "range": "± 0.006829441751134652"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.Manual_Int_AtLower",
+            "value": 0.32072897131244343,
+            "unit": "ns",
+            "range": "± 0.0036162571933533285"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.IsBetween_Int_AtLower",
+            "value": 0.3429545871913433,
+            "unit": "ns",
+            "range": "± 0.0038933278296774594"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.Manual_String_Inside",
+            "value": 70.04226108392079,
+            "unit": "ns",
+            "range": "± 0.07858624009242732"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.IsBetween_String_Inside",
+            "value": 73.57927634318669,
+            "unit": "ns",
+            "range": "± 0.2211776210547239"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.Manual_String_AtLower",
+            "value": 2.227837252120177,
+            "unit": "ns",
+            "range": "± 0.018569270482094977"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.IsBetween_String_AtLower",
+            "value": 4.067024340232213,
+            "unit": "ns",
+            "range": "± 0.003699507674023522"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.Manual_Int_Inside",
+            "value": 0.316993015507857,
+            "unit": "ns",
+            "range": "± 0.003962585119614067"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.IsInRange_Int_Inside",
+            "value": 0.42853254328171414,
+            "unit": "ns",
+            "range": "± 0.009036627795020598"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.Manual_Int_AtLower",
+            "value": 0.33616752674182254,
+            "unit": "ns",
+            "range": "± 0.013936485685325297"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.IsInRange_Int_AtLower",
+            "value": 0.4284358670314153,
+            "unit": "ns",
+            "range": "± 0.0017515285184153424"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.Manual_String_Inside",
+            "value": 69.44712481896083,
+            "unit": "ns",
+            "range": "± 0.08240354976034717"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.IsInRange_String_Inside",
+            "value": 69.89964936176936,
+            "unit": "ns",
+            "range": "± 0.12819542359099909"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.Manual_String_AtLower",
+            "value": 37.680920312801994,
+            "unit": "ns",
+            "range": "± 0.04991750736970501"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.IsInRange_String_AtLower",
+            "value": 37.577255527178444,
+            "unit": "ns",
+            "range": "± 0.012704174905825523"
           }
         ]
       }
