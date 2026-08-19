@@ -1,5 +1,5 @@
+// ReSharper disable StringCompareToIsCultureSpecific — Manual_* methods intentionally measure the naive CompareTo idiom this library replaces
 using BenchmarkDotNet.Attributes;
-using Wolfgang.Extensions.IComparable;
 
 namespace Wolfgang.Extensions.IComparable.Benchmarks;
 

@@ -65,22 +65,21 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <!-- A1: PublicApiAnalyzers — track public API surface for breaking-change
-         detection. AdditionalFiles below are opt-in PER PROJECT via Exists():
-         drop PublicAPI.Shipped.txt + PublicAPI.Unshipped.txt into a src
-         project directory and the analyzer activates for that project only.
-         Library projects under src/ should opt in; test / example /
-         benchmark projects should not. Per-repo enablement is tracked as a
-         follow-up maintenance issue. -->
+  <!-- A1: PublicApiAnalyzers — track public API surface for breaking-change
+       detection. The ItemGroup is gated on Exists('PublicAPI.Shipped.txt')
+       so BOTH the analyzer package AND the AdditionalFiles are opt-in per
+       project: drop PublicAPI.Shipped.txt + PublicAPI.Unshipped.txt into a
+       src project directory and the analyzer activates for that project
+       only. Library projects under src/ should opt in; test / example /
+       benchmark projects should not. Without this gate the analyzer loads
+       in every project, sees no declared API, and emits RS0016/RS0037 for
+       every public member — a documented false-positive flood. -->
+  <ItemGroup Condition="Exists('PublicAPI.Shipped.txt')">
     <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="5.6.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Include="PublicAPI.Shipped.txt" Condition="Exists('PublicAPI.Shipped.txt')" />
+    <AdditionalFiles Include="PublicAPI.Shipped.txt" />
     <AdditionalFiles Include="PublicAPI.Unshipped.txt" Condition="Exists('PublicAPI.Unshipped.txt')" />
   </ItemGroup>
 
