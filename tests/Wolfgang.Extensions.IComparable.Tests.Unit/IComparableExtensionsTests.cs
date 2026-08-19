@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 namespace Wolfgang.Extensions.IComparable.Tests.Unit;
@@ -206,6 +207,8 @@ public class IComparableExtensionsTests
     // requires "m".CompareTo(null) < 0, which fails).
     // ---------------------------------------------------------------
 
+    [SuppressMessage("Design", "MA0096:A class that implements IComparable<T> or IComparable should also implement IEquatable<T>", Justification = "Test-only helper; only ordering behavior is exercised.")]
+    [SuppressMessage("Design", "MA0097:A class that implements IComparable<T> or IComparable should override comparison operators", Justification = "Test-only helper; comparison operators are never invoked.")]
     private sealed class Money : IComparable<Money>
     {
         public decimal Amount { get; }
