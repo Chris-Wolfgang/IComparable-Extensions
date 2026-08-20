@@ -24,6 +24,16 @@ public static class IComparableExtensions
     /// <exception cref="ArgumentNullException">
     /// <paramref name="value"/> is <see langword="null"/>.
     /// </exception>
+    /// <example>
+    /// <code>
+    /// using Wolfgang.Extensions.IComparable;
+    ///
+    /// int score = 75;
+    /// bool inOpenRange = score.IsBetween(70, 80);   // true  — 70 &lt; 75 &lt; 80
+    /// bool atLower     = 70.IsBetween(70, 80);      // false — 70 is NOT &gt; 70
+    /// bool atUpper     = 80.IsBetween(70, 80);      // false — 80 is NOT &lt; 80
+    /// </code>
+    /// </example>
     public static bool IsBetween<T>
     (
         this T value,
@@ -57,6 +67,19 @@ public static class IComparableExtensions
     /// <exception cref="ArgumentNullException">
     /// <paramref name="value"/> is <see langword="null"/>.
     /// </exception>
+    /// <example>
+    /// <code>
+    /// using System;
+    /// using Wolfgang.Extensions.IComparable;
+    ///
+    /// DateTime today = DateTime.UtcNow.Date;
+    /// DateTime quarterStart = new DateTime(2026, 4, 1);
+    /// DateTime quarterEnd   = new DateTime(2026, 6, 30);
+    ///
+    /// // True on any Q2 date, including the boundary days.
+    /// bool inQ2 = today.IsInRange(quarterStart, quarterEnd);
+    /// </code>
+    /// </example>
     public static bool IsInRange<T>
     (
         this T value,
