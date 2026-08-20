@@ -1,0 +1,83 @@
+name: Reproducible build
+
+# Build-reproducibility verification (#170).
+#
+# Directory.Build.props sets <Deterministic>true</Deterministic> and
+# release.yaml sets <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+# — both INPUTS to a reproducible build. This workflow *verifies* that
+# input by building the same commit twice, from clean, and sha256sum'ing
+# the outputs. If the DLLs differ byte-for-byte, the "reproducible" claim
+# is false and the workflow fails.
+#
+# Two clean builds run back-to-back on the same runner (a cross-OS diff
+# would need release.yaml-level normalisation that isn't in scope yet).
+# Same runner is still meaningful — it catches non-determinism sources
+# that would foil third-party consumer verification: embedded timestamps,
+# random-order dictionary iteration, uninitialised memory in resource
+# generators.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'Directory.Build.props'
+      - '.github/workflows/reproducible-build.yaml'
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: reproducible-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  reproducible:
+    name: Build twice, diff outputs
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build 1
+        run: |
+          rm -rf src/*/bin src/*/obj
+          dotnet build src/Wolfgang.Extensions.IComparable/Wolfgang.Extensions.IComparable.csproj \
+            -c Release -f net10.0 \
+            -p:ContinuousIntegrationBuild=true \
+            -p:Deterministic=true
+          mkdir -p "$RUNNER_TEMP/build1"
+          cp src/Wolfgang.Extensions.IComparable/bin/Release/net10.0/Wolfgang.Extensions.IComparable.dll "$RUNNER_TEMP/build1/"
+
+      - name: Build 2
+        run: |
+          rm -rf src/*/bin src/*/obj
+          dotnet build src/Wolfgang.Extensions.IComparable/Wolfgang.Extensions.IComparable.csproj \
+            -c Release -f net10.0 \
+            -p:ContinuousIntegrationBuild=true \
+            -p:Deterministic=true
+          mkdir -p "$RUNNER_TEMP/build2"
+          cp src/Wolfgang.Extensions.IComparable/bin/Release/net10.0/Wolfgang.Extensions.IComparable.dll "$RUNNER_TEMP/build2/"
+
+      - name: Compare SHA-256
+        run: |
+          set -e
+          h1=$(sha256sum "$RUNNER_TEMP/build1/Wolfgang.Extensions.IComparable.dll" | awk '{print $1}')
+          h2=$(sha256sum "$RUNNER_TEMP/build2/Wolfgang.Extensions.IComparable.dll" | awk '{print $1}')
+          echo "build 1: $h1"
+          echo "build 2: $h2"
+          if [ "$h1" != "$h2" ]; then
+            echo "::error::Build output is non-deterministic — two clean builds of the same commit produced different bytes."
+            exit 1
+          fi
+          echo "✅ Build reproducible — SHA-256 matches across two clean builds."

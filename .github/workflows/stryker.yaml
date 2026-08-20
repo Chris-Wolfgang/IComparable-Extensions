@@ -13,6 +13,15 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '0 6 * * 0' # weekly Sunday 06:00 UTC
+  # Mutation-score release gate (#160): run on every PR that touches src/
+  # or the test suite. stryker-config.json sets thresholds.break = 80,
+  # so a PR whose mutation score drops below that floor fails the run.
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'stryker-config.json'
+      - '.github/workflows/stryker.yaml'
 
 permissions:
   contents: read
