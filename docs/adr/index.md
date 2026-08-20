@@ -12,3 +12,4 @@ Format is [Michael Nygard's ADR](https://cognitect.com/blog/2011/11/15/documenti
 | [0002](0002-pin-assemblyversion-at-1-0-0-0.md) | Pin `AssemblyVersion` at `1.0.0.0`; bump only on a breaking API change | Accepted |
 | [0003](0003-publicapianalyzers-opt-in-per-project.md) | `PublicApiAnalyzers` is opt-in per project via `Exists('PublicAPI.Shipped.txt')` | Accepted |
 | [0004](0004-explicit-using-system-instead-of-implicit-usings.md) | Explicit `using System;` in src instead of `<ImplicitUsings>enable</ImplicitUsings>` | Accepted |
+| [0005](0005-culture-sensitivity-follows-t-compareto.md) | Culture-sensitivity of `IsBetween` / `IsInRange` follows `T.CompareTo`; the library adds no culture layer | Accepted |
