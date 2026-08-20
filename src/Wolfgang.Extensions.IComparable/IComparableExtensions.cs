@@ -1,4 +1,3 @@
-// ReSharper disable once RedundantUsingDirective — required on net462/netstandard2.0 where ImplicitUsings is off
 using System;
 
 namespace Wolfgang.Extensions.IComparable;
