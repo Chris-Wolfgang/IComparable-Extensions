@@ -1,0 +1,59 @@
+name: AOT smoke
+
+# Trim / Native-AOT compatibility verification (#167).
+#
+# Publishes a tiny console-app consumer with <PublishAot>true</PublishAot>
+# and <PublishTrimmed>true</PublishTrimmed> against the src library, then
+# runs the published binary. Any AOT-hostile pattern (dynamic generic
+# instantiation, reflection on names the trimmer can't see, runtime code
+# generation) fails the publish or the smoke run itself.
+#
+# Runs on Linux only — Windows can't verify Native-AOT properly
+# (reference_aot_local_verify_needs_linux_ci).
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'tests/Wolfgang.Extensions.IComparable.Tests.AotSmoke/**'
+      - '.github/workflows/aot-smoke.yaml'
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: aot-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  aot-smoke:
+    name: PublishAot + run
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Publish AOT smoke consumer
+        run: |
+          dotnet publish tests/Wolfgang.Extensions.IComparable.Tests.AotSmoke/Wolfgang.Extensions.IComparable.Tests.AotSmoke.csproj \
+            -c Release \
+            -r linux-x64 \
+            --self-contained \
+            -o "$RUNNER_TEMP/aot-out"
+
+      - name: Run AOT-published binary
+        run: |
+          set -e
+          "$RUNNER_TEMP/aot-out/Wolfgang.Extensions.IComparable.Tests.AotSmoke"
+          echo "AOT smoke exited cleanly — library survives Native-AOT + trimming."
