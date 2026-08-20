@@ -20,6 +20,16 @@
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<SignAssembly>False</SignAssembly>
 		<PackageIcon>icon.png</PackageIcon>
+
+		<!-- PackageValidation: build fails if the pack introduces a binary-
+		     breaking change vs the last-published version (per issue #210
+		     and the fleet convention documented in the release-cycle
+		     runbook). Intentional breaks are waived via
+		     CompatibilitySuppressions.xml with a specific rule ID + target.
+		     Baseline stays at the last-published version — bump this
+		     line as part of the release PR that ships the next version. -->
+		<EnablePackageValidation>true</EnablePackageValidation>
+		<PackageValidationBaselineVersion>1.1.1</PackageValidationBaselineVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
