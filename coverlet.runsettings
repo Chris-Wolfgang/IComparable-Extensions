@@ -7,6 +7,13 @@
           <Format>cobertura</Format>
           <ExcludeByFile>**/bin/**/*.cs;**/obj/**/*.cs</ExcludeByFile>
           <ExcludeByAttribute>ExcludeFromCodeCoverageAttribute</ExcludeByAttribute>
+          <!-- Include test assemblies in coverage output — the fleet policy
+               (#218) treats test-code line coverage as first-class: dead
+               test helpers, unreachable branches, and fakes nobody calls
+               all become visible in Summary.txt. [ExcludeFromCodeCoverage]
+               remains the last resort after "write a test" and "refactor
+               to make it testable". -->
+          <IncludeTestAssembly>true</IncludeTestAssembly>
         </Configuration>
       </DataCollector>
     </DataCollectors>
