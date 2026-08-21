@@ -83,8 +83,19 @@ jobs:
           save-data-file: false
           github-token: ${{ secrets.GITHUB_TOKEN }}
           # Threshold and gate behaviour.
-          alert-threshold: '150%'
-          fail-on-alert: true
+          #
+          # The extension methods measure at sub-nanosecond scale on the JIT-
+          # inlined hot path (0.3 ns/op range). GitHub-hosted runners cannot
+          # measure at that scale reliably: gh-pages baselines routinely record
+          # near-zero (or literal 0) ns values, and any real measurement then
+          # "regresses" against that noise floor with absurd ratios (100x+,
+          # ∞). Until the noise floor settles — either bigger benchmark
+          # workloads or a dedicated runner — the PR gate stays advisory. The
+          # delta table still lands as a PR comment (which is what #178
+          # actually asked for); the workflow just doesn't fail the PR on it.
+          # Matches the existing benchmarks.yaml pattern on main-merges.
+          alert-threshold: '200%'
+          fail-on-alert: false
           # Post a comment on the PR summarising the delta table.
           comment-on-alert: true
           summary-always: true
