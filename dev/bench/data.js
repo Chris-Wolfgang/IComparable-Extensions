@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1787232501192,
+  "lastUpdate": 1787334555533,
   "repoUrl": "https://github.com/Chris-Wolfgang/IComparable-Extensions",
   "entries": {
     "BenchmarkDotNet": [
@@ -600,6 +600,126 @@ window.BENCHMARK_DATA = {
             "value": 44.19966600338618,
             "unit": "ns",
             "range": "± 0.05548060958707591"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "210299580+Chris-Wolfgang@users.noreply.github.com",
+            "name": "Chris Wolfgang",
+            "username": "Chris-Wolfgang"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "1ccbaca8823fad76fa92d3d448f3c4d52294b463",
+          "message": "Merge pull request #239 from Chris-Wolfgang/vNext\n\nRelease: land 12 maintenance PRs from vNext",
+          "timestamp": "2026-08-21T13:44:55-04:00",
+          "tree_id": "e38d99802f6d4722c8a29df7811710676e676dab",
+          "url": "https://github.com/Chris-Wolfgang/IComparable-Extensions/commit/1ccbaca8823fad76fa92d3d448f3c4d52294b463"
+        },
+        "date": 1787334553751,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.Manual_Int_Inside",
+            "value": 0.0010276089111963909,
+            "unit": "ns",
+            "range": "± 0.0016256469501969018"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.IsBetween_Int_Inside",
+            "value": 0.36752256999413174,
+            "unit": "ns",
+            "range": "± 0.0220628063391077"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.Manual_Int_AtLower",
+            "value": 0.0021037509044011435,
+            "unit": "ns",
+            "range": "± 0.000466522033453287"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.IsBetween_Int_AtLower",
+            "value": 0.3541102595627308,
+            "unit": "ns",
+            "range": "± 0.006670966441867525"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.Manual_String_Inside",
+            "value": 81.43915887673695,
+            "unit": "ns",
+            "range": "± 0.44353353643857196"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.IsBetween_String_Inside",
+            "value": 78.70570913950603,
+            "unit": "ns",
+            "range": "± 0.13147445117227446"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.Manual_String_AtLower",
+            "value": 2.115776831905047,
+            "unit": "ns",
+            "range": "± 0.0058708371211209625"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.IsBetween_String_AtLower",
+            "value": 3.7915148635705314,
+            "unit": "ns",
+            "range": "± 0.007850829693065269"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.Manual_Int_Inside",
+            "value": 0.00435181458791097,
+            "unit": "ns",
+            "range": "± 0.0013148976988580916"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.IsInRange_Int_Inside",
+            "value": 0.36720813686649006,
+            "unit": "ns",
+            "range": "± 0.022030320216861996"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.Manual_Int_AtLower",
+            "value": 0.002169987807671229,
+            "unit": "ns",
+            "range": "± 0.0015554630694150128"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.IsInRange_Int_AtLower",
+            "value": 0.35220538700620335,
+            "unit": "ns",
+            "range": "± 0.0007709402345638703"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.Manual_String_Inside",
+            "value": 80.45019594828288,
+            "unit": "ns",
+            "range": "± 0.07753616267236771"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.IsInRange_String_Inside",
+            "value": 79.01812489827473,
+            "unit": "ns",
+            "range": "± 0.06102936655719937"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.Manual_String_AtLower",
+            "value": 44.451680183410645,
+            "unit": "ns",
+            "range": "± 0.1989333679248956"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.IsInRange_String_AtLower",
+            "value": 47.0193886856238,
+            "unit": "ns",
+            "range": "± 0.05718063038350601"
           }
         ]
       }
