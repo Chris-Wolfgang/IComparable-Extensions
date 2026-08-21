@@ -3,7 +3,11 @@
 	<PropertyGroup>
 		<TargetFrameworks>net462;net472;net48;net481;net5.0;net6.0;net7.0;net8.0;net9.0;net10.0</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
-		<ImplicitUsings>enable</ImplicitUsings>
+		<!-- ImplicitUsings deliberately off — matches src ADR-0004. The
+		     test project targets net462 through net10.0; ImplicitUsings
+		     is only available from net6.0+, so leaving it enabled created
+		     a per-TFM analyzer mismatch (using System; required on the
+		     older TFMs, redundant on the newer ones). Off = uniform. -->
 		<IsPackable>false</IsPackable>
 		<IsTestProject>true</IsTestProject>
 	</PropertyGroup>

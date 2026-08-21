@@ -1,4 +1,3 @@
-using System;
 using Wolfgang.Extensions.IComparable;
 
 // AOT smoke consumer. Exercises every public method on every representative

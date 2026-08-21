@@ -1,4 +1,4 @@
-using System;
+// ReSharper disable StringCompareToIsCultureSpecific — string properties intentionally exercise culture-specific CompareTo per ADR-0005
 using System.Diagnostics.CodeAnalysis;
 using FsCheck;
 using FsCheck.Xunit;
