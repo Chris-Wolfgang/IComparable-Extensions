@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -145,6 +146,7 @@ internal static class DocExampleSource
     }
 
 
+    [SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "The prose comment describes the design rationale for why the walk uses AppContext.BaseDirectory rather than CallerFilePath; it is not commented-out code, but the analyzer's heuristic pattern-matches the member-access + semicolon shape.")]
     private static string FindSrcDirectory()
     {
         // Walk up from AppContext.BaseDirectory looking for a directory that
