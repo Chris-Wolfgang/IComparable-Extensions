@@ -1,23 +1,29 @@
 Summary
-  Generated on: 6/18/2026 - 11:10:32 PM
-  Coverage date: 6/18/2026 - 11:10:27 PM
+  Generated on: 8/21/2026 - 9:55:18 PM
+  Coverage date: 8/21/2026 - 9:55:12 PM
   Parser: Cobertura
-  Assemblies: 1
-  Classes: 1
-  Files: 1
+  Assemblies: 2
+  Classes: 5
+  Files: 4
   Line coverage: 100%
-  Covered lines: 6
+  Covered lines: 217
   Uncovered lines: 0
-  Coverable lines: 6
-  Total lines: 74
-  Branch coverage: 100% (8 of 8)
-  Covered branches: 8
-  Total branches: 8
-  Method coverage: 100% (2 of 2)
-  Full method coverage: 100% (2 of 2)
-  Covered methods: 2
-  Fully covered methods: 2
-  Total methods: 2
+  Coverable lines: 217
+  Total lines: 766
+  Branch coverage: 81.5% (31 of 38)
+  Covered branches: 31
+  Total branches: 38
+  Method coverage: 100% (51 of 51)
+  Full method coverage: 100% (51 of 51)
+  Covered methods: 51
+  Fully covered methods: 51
+  Total methods: 51
 
-Wolfgang.Extensions.IComparable                            100%
-  Wolfgang.Extensions.IComparable.IComparableExtensions    100%
+Wolfgang.Extensions.IComparable                                            100%
+  Wolfgang.Extensions.IComparable.IComparableExtensions                    100%
+
+Wolfgang.Extensions.IComparable.Tests.Unit                                 100%
+  Wolfgang.Extensions.IComparable.Tests.Unit.AllocationTests               100%
+  Wolfgang.Extensions.IComparable.Tests.Unit.CultureInvarianceTests        100%
+  Wolfgang.Extensions.IComparable.Tests.Unit.CultureScope                  100%
+  Wolfgang.Extensions.IComparable.Tests.Unit.IComparableExtensionsTests    100%

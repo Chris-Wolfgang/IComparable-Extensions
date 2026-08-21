@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<coverage version="1.0" date="2026-08-21_21-55-18" tag="">
+  <assembly name="Wolfgang.Extensions.IComparable">
+    <class name="Wolfgang.Extensions.IComparable.IComparableExtensions" coveredlines="6" coverablelines="6" totallines="97" coveredbranches="8" totalbranches="8" coveredcodeelements="2" fullcoveredcodeelements="2" totalcodeelements="2" />
+  </assembly>
+  <assembly name="Wolfgang.Extensions.IComparable.Tests.Unit">
+    <class name="Wolfgang.Extensions.IComparable.Tests.Unit.AllocationTests" coveredlines="66" coverablelines="66" totallines="131" coveredbranches="17" totalbranches="22" coveredcodeelements="7" fullcoveredcodeelements="7" totalcodeelements="7" />
+    <class name="Wolfgang.Extensions.IComparable.Tests.Unit.CultureInvarianceTests" coveredlines="58" coverablelines="58" totallines="180" coveredbranches="3" totalbranches="4" coveredcodeelements="9" fullcoveredcodeelements="9" totalcodeelements="9" />
+    <class name="Wolfgang.Extensions.IComparable.Tests.Unit.CultureScope" coveredlines="12" coverablelines="12" totallines="180" coveredbranches="2" totalbranches="2" coveredcodeelements="2" fullcoveredcodeelements="2" totalcodeelements="2" />
+    <class name="Wolfgang.Extensions.IComparable.Tests.Unit.IComparableExtensionsTests" coveredlines="75" coverablelines="75" totallines="358" coveredbranches="1" totalbranches="2" coveredcodeelements="31" fullcoveredcodeelements="31" totalcodeelements="31" />
+  </assembly>
+</coverage>

@@ -16,7 +16,7 @@
       <meta name="docfx:rel" content="../">
       
       
-      <meta name="docfx:docurl" content="https://github.com/Chris-Wolfgang/IComparable-Extensions/new/main/apiSpec/new?filename=Wolfgang_Extensions_IComparable_IComparableExtensions.md&amp;value=---%0Auid%3A%20Wolfgang.Extensions.IComparable.IComparableExtensions%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="docfx:docurl" content="https://github.com/Chris-Wolfgang/IComparable-Extensions/new/v1.1.2/apiSpec/new?filename=Wolfgang_Extensions_IComparable_IComparableExtensions.md&amp;value=---%0Auid%3A%20Wolfgang.Extensions.IComparable.IComparableExtensions%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
       <meta name="loc:inThisArticle" content="In this article">
       <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
       <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
@@ -75,7 +75,7 @@
 
 
   <h1 id="Wolfgang_Extensions_IComparable_IComparableExtensions" data-uid="Wolfgang.Extensions.IComparable.IComparableExtensions" class="text-break">
-Class IComparableExtensions  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/IComparable-Extensions/blob/main/src/Wolfgang.Extensions.IComparable/IComparableExtensions.cs/#L9"><i class="bi bi-code-slash"></i></a>
+Class IComparableExtensions  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/IComparable-Extensions/blob/v1.1.2/src/Wolfgang.Extensions.IComparable/IComparableExtensions.cs/#L9"><i class="bi bi-code-slash"></i></a>
   </h1>
 
   <div class="facts text-secondary">
@@ -143,7 +143,7 @@ Class IComparableExtensions  <a class="header-action link-secondary" title="View
 
   <h3 id="Wolfgang_Extensions_IComparable_IComparableExtensions_IsBetween__1___0___0___0_" data-uid="Wolfgang.Extensions.IComparable.IComparableExtensions.IsBetween``1(``0,``0,``0)">
   IsBetween&lt;T&gt;(T, T, T)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/IComparable-Extensions/blob/main/src/Wolfgang.Extensions.IComparable/IComparableExtensions.cs/#L27"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/IComparable-Extensions/blob/v1.1.2/src/Wolfgang.Extensions.IComparable/IComparableExtensions.cs/#L37"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Determines if the specified <code class="paramref">value</code> is strictly greater than the
@@ -188,6 +188,14 @@ otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference
 
 
 
+  <h4 class="section" id="Wolfgang_Extensions_IComparable_IComparableExtensions_IsBetween__1___0___0___0__examples">Examples</h4>
+  <pre><code class="lang-csharp">using Wolfgang.Extensions.IComparable;
+
+int score = 75;
+bool inOpenRange = score.IsBetween(70, 80);   // true  — 70 &lt; 75 &lt; 80
+bool atLower     = 70.IsBetween(70, 80);      // false — 70 is NOT &gt; 70
+bool atUpper     = 80.IsBetween(70, 80);      // false — 80 is NOT &lt; 80</code></pre>
+
 
 
   <h4 class="section">Exceptions</h4>
@@ -203,7 +211,7 @@ otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference
 
   <h3 id="Wolfgang_Extensions_IComparable_IComparableExtensions_IsInRange__1___0___0___0_" data-uid="Wolfgang.Extensions.IComparable.IComparableExtensions.IsInRange``1(``0,``0,``0)">
   IsInRange&lt;T&gt;(T, T, T)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/IComparable-Extensions/blob/main/src/Wolfgang.Extensions.IComparable/IComparableExtensions.cs/#L60"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/IComparable-Extensions/blob/v1.1.2/src/Wolfgang.Extensions.IComparable/IComparableExtensions.cs/#L83"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Determines if the specified <code class="paramref">value</code> is greater than or equal to the
@@ -248,6 +256,17 @@ otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference
 
 
 
+  <h4 class="section" id="Wolfgang_Extensions_IComparable_IComparableExtensions_IsInRange__1___0___0___0__examples">Examples</h4>
+  <pre><code class="lang-csharp">using System;
+using Wolfgang.Extensions.IComparable;
+
+DateTime today = DateTime.UtcNow.Date;
+DateTime quarterStart = new DateTime(2026, 4, 1);
+DateTime quarterEnd   = new DateTime(2026, 6, 30);
+
+// True on any Q2 date, including the boundary days.
+bool inQ2 = today.IsInRange(quarterStart, quarterEnd);</code></pre>
+
 
 
   <h4 class="section">Exceptions</h4>
@@ -263,7 +282,7 @@ otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference
 </article>
 
         <div class="contribution d-print-none">
-          <a href="https://github.com/Chris-Wolfgang/IComparable-Extensions/blob/main/src/Wolfgang.Extensions.IComparable/IComparableExtensions.cs/#L9" class="edit-link">Edit this page</a>
+          <a href="https://github.com/Chris-Wolfgang/IComparable-Extensions/blob/v1.1.2/src/Wolfgang.Extensions.IComparable/IComparableExtensions.cs/#L9" class="edit-link">Edit this page</a>
         </div>
 
 
