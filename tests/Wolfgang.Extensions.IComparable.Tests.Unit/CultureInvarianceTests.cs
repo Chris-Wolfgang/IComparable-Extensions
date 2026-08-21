@@ -1,3 +1,4 @@
+// ReSharper disable StringCompareToIsCultureSpecific — these helpers intentionally exercise string.CompareTo's culture-specific behaviour per ADR-0005
 using System;
 using System.Globalization;
 using System.Threading;

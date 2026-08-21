@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Wolfgang.Extensions.IComparable;
 using Xunit.Abstractions;
 
 namespace Wolfgang.Extensions.IComparable.Tests.DocExamples;
@@ -38,7 +33,7 @@ public sealed class DocExampleRotTests
         (
             errors.Length == 0,
             $"Example at {example.File}:{example.Line} failed to compile:\n" +
-            string.Join(Environment.NewLine, errors.Select(d => "  " + d.ToString()))
+            string.Join(Environment.NewLine, errors.Select(d => "  " + d))
         );
     }
 
