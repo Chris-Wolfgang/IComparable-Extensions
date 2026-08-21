@@ -19,6 +19,78 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+## [1.1.2] - 2026-08-21
+
+Infrastructure and quality-hardening round. No public API or runtime
+behaviour change vs v1.1.1 — the shipped `Wolfgang.Extensions.IComparable.dll`
+is functionally identical. All the value in this release is in
+build-time gates, test coverage, and release-path security posture.
+
+### Added
+
+- **Architecture Decision Records** — `docs/adr/` bootstrapped with a
+  Nygard template, an index, and 5 ADRs capturing non-obvious
+  decisions (two methods vs. one bool flag; pinned `AssemblyVersion`;
+  gated `PublicApiAnalyzers`; explicit `using System;` instead of
+  `ImplicitUsings`; culture-sensitivity follows `T.CompareTo`).
+- **Migration guide scaffold** — `docs/migrations/` with a template
+  and process convention (migration guide lands in the same PR as
+  a MAJOR bump, linked from the GitHub Release).
+- **XML `<example>` blocks** on `IsBetween` and `IsInRange`, plus a
+  Roslyn-hosted `.Tests.DocExamples` project that compiles every
+  `<example><code>` block against the real library — doc drift now
+  fails the build.
+- **Globalization / CultureInfo invariance matrix** — 37 test cases
+  under Invariant, en-US, tr-TR, de-DE, zh-CN, ar-SA, ja-JP, plus a
+  dedicated Turkish dotted-I trap test.
+- **Allocation-free hot-path verification** — 6 tests asserting
+  `IsBetween` / `IsInRange` on int, long, double, DateTime allocate
+  0 bytes per call.
+- **Property-based fuzz tests** (`.Tests.Fuzz`) — FsCheck properties
+  verifying the extensions agree with a hand-written `T.CompareTo`
+  chain for every random input, across int / long / double / DateTime
+  / string.
+- **AOT smoke consumer** (`.Tests.AotSmoke`) — a `PublishAot=true` +
+  `PublishTrimmed=true` console app that exercises every public method
+  and gets published + executed on Linux in CI.
+- **`PackageValidation` gate** — `dotnet pack` now fails on a
+  binary-breaking change vs the last-published version (baseline
+  currently 1.1.1). Intentional breaks require an explicit
+  `CompatibilitySuppressions.xml` waiver.
+- **Release path & compromise scope appendix** in `SECURITY.md`.
+- **Test-assembly coverage instrumentation** — `IncludeTestAssembly`
+  in `coverlet.runsettings` makes test-code coverage first-class.
+- **New CI workflows**:
+    - `aot-smoke.yaml` — Trim/AOT compatibility gate on Linux.
+    - `reproducible-build.yaml` — twice-build sha256 diff.
+    - `pr-benchmarks.yaml` — BDN delta table as PR comment (advisory).
+    - `pull_request` trigger added to `stryker.yaml` — mutation-score
+      gate on PRs that touch src / tests (break threshold at 80).
+
+### Changed
+
+- **Release path migrated to NuGet Trusted Publishing (OIDC)** —
+  `release.yaml` now uses `NuGet/login@v1` to mint an ephemeral
+  push key per run via GitHub's OIDC token. The long-lived
+  `NUGET_API_KEY` secret is no longer referenced.
+- **`ImplicitUsings` disabled on the src project** — `using System;`
+  is uniformly required across all four target frameworks (net462,
+  netstandard2.0, net8.0, net10.0). Eliminates a per-TFM analyzer
+  mismatch. No compiled-output change.
+- **`PublicApiAnalyzers` gate** in `Directory.Build.props` — the
+  package reference and its `AdditionalFiles` are now both gated on
+  `Exists('PublicAPI.Shipped.txt')`. Kills a ~500-alert false-positive
+  flood in projects that don't publish an API surface.
+- **README** — dead-link cleanup and Supported Frameworks section
+  aligned with the canonical fleet shape.
+
+### Security
+
+- **Trusted Publishing** (see Changed) removes the long-lived
+  `NUGET_API_KEY` from the release-path dependency chain. Every
+  release now runs against a scoped ephemeral credential from GitHub
+  OIDC.
+
 ## [1.1.1] - 2026-06-01
 
 Canonical maintenance round + binding-stability fix. No public API or
@@ -80,7 +152,8 @@ runtime behavior change vs v1.1.0.
   for the post-mortem on what happens when this regression reaches a
   release.)
 
-[Unreleased]: https://github.com/Chris-Wolfgang/IComparable-Extensions/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/Chris-Wolfgang/IComparable-Extensions/compare/v1.1.2...HEAD
+[1.1.2]: https://github.com/Chris-Wolfgang/IComparable-Extensions/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/Chris-Wolfgang/IComparable-Extensions/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/Chris-Wolfgang/IComparable-Extensions/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/Chris-Wolfgang/IComparable-Extensions/releases/tag/v1.0.0
