@@ -106,7 +106,11 @@ public class AllocationTests
 
     private static void AssertZeroAllocation(Action action)
     {
-        ArgumentNullException.ThrowIfNull(action);
+        // Manual null check instead of ArgumentNullException.ThrowIfNull —
+        // ThrowIfNull is .NET 6+, but the test project also targets net5.0.
+        // GC.GetAllocatedBytesForCurrentThread is on net5.0+, so the whole
+        // class stays gated on NET5_0_OR_GREATER above.
+        if (action is null) throw new ArgumentNullException(nameof(action));
 
         // Warm-up run — JITs the generic method for T = int / DateTime / etc.,
         // and lets any first-call setup work happen outside the measurement window.
