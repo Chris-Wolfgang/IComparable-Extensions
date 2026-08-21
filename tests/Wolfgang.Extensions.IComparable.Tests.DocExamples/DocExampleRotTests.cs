@@ -150,8 +150,8 @@ internal static class DocExampleSource
         // Walk up from AppContext.BaseDirectory looking for a directory that
         // contains src/Wolfgang.Extensions.IComparable/Wolfgang.Extensions.IComparable.csproj.
         // AppContext.BaseDirectory is deterministic under CI's remapped paths;
-        // [CallerFilePath] would bake in the build-machine path and resolve
-        // to /_/... under deterministic builds.
+        // the CallerFilePath attribute would bake in the build-machine path and
+        // resolve to /_/ prefixes under CI deterministic builds.
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
         while (dir is not null)
         {

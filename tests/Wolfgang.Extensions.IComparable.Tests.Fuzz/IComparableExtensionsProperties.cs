@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using FsCheck;
 using FsCheck.Xunit;
 
@@ -22,6 +23,7 @@ namespace Wolfgang.Extensions.IComparable.Tests.Fuzz;
 /// tuning wired into a per-run <see cref="Config"/>; the property attribute
 /// stays at the default here so <c>dotnet test</c> remains fast for PR CI.
 /// </summary>
+[SuppressMessage("Major Code Smell", "S101:Class names should comply with a naming convention", Justification = "Named to mirror the IComparableExtensions class whose properties it fuzzes.")]
 public class IComparableExtensionsProperties
 {
     // -- int -----------------------------------------------------------------
@@ -63,9 +65,8 @@ public class IComparableExtensionsProperties
     public Property IsBetween_on_double_matches_manual_CompareTo() =>
         Prop.ForAll<double, double, double>((value, lower, upper) =>
             double.IsNaN(value) || double.IsNaN(lower) || double.IsNaN(upper)
-                ? true
-                : value.IsBetween(lower, upper)
-                      == (value.CompareTo(lower) > 0 && value.CompareTo(upper) < 0));
+                || value.IsBetween(lower, upper)
+                    == (value.CompareTo(lower) > 0 && value.CompareTo(upper) < 0));
 
 
     // -- DateTime ------------------------------------------------------------
@@ -85,18 +86,16 @@ public class IComparableExtensionsProperties
     public Property IsBetween_on_string_matches_manual_CompareTo() =>
         Prop.ForAll<string, string, string>((value, lower, upper) =>
             value is null
-                ? true
-                : value.IsBetween(lower, upper)
-                      == (value.CompareTo(lower) > 0 && value.CompareTo(upper) < 0));
+                || value.IsBetween(lower, upper)
+                    == (value.CompareTo(lower) > 0 && value.CompareTo(upper) < 0));
 
 
     [Property]
     public Property IsInRange_on_string_matches_manual_CompareTo() =>
         Prop.ForAll<string, string, string>((value, lower, upper) =>
             value is null
-                ? true
-                : value.IsInRange(lower, upper)
-                      == (value.CompareTo(lower) >= 0 && value.CompareTo(upper) <= 0));
+                || value.IsInRange(lower, upper)
+                    == (value.CompareTo(lower) >= 0 && value.CompareTo(upper) <= 0));
 
 
     // -- Cross-method invariants --------------------------------------------
