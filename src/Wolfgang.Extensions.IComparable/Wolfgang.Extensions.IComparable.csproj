@@ -29,7 +29,7 @@
 		     Baseline stays at the last-published version — bump this
 		     line as part of the release PR that ships the next version. -->
 		<EnablePackageValidation>true</EnablePackageValidation>
-		<PackageValidationBaselineVersion>1.1.1</PackageValidationBaselineVersion>
+		<PackageValidationBaselineVersion>1.1.2</PackageValidationBaselineVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
