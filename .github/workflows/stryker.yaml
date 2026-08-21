@@ -29,7 +29,13 @@ permissions:
 jobs:
   stryker:
     name: Run Stryker
-    runs-on: ubuntu-latest
+    # Stryker does an initial solution build before mutating. This repo's
+    # IComparable-Extensions.slnx includes a legacy .NET Framework 4.6.2
+    # example project whose <TargetFrameworkVersion> requires reference
+    # assemblies that are not installed on ubuntu-latest — the initial
+    # build fails with MSB3644 before Stryker mints its first mutant.
+    # windows-latest has .NET Framework reference assemblies built in.
+    runs-on: windows-latest
     timeout-minutes: 60
     steps:
       - name: Check out repo
@@ -78,6 +84,9 @@ jobs:
 
       - name: Run Stryker
         if: steps.check.outputs.found == 'true'
+        # bash is available on windows-latest via Git Bash — same shell contract
+        # the previous ubuntu-latest job used, so the globstar/nullglob shell
+        # logic below stays portable across the switch.
         shell: bash
         run: |
           set -e
