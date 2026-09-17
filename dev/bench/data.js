@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1787351371446,
+  "lastUpdate": 1789611878317,
   "repoUrl": "https://github.com/Chris-Wolfgang/IComparable-Extensions",
   "entries": {
     "BenchmarkDotNet": [
@@ -960,6 +960,126 @@ window.BENCHMARK_DATA = {
             "value": 44.734988778829575,
             "unit": "ns",
             "range": "± 0.16343172552086108"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "210299580+Chris-Wolfgang@users.noreply.github.com",
+            "name": "Chris Wolfgang",
+            "username": "Chris-Wolfgang"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "13e59a49d6603b892046f8966cd3da8de84ab88e",
+          "message": "ci: pin every workflow action to a commit SHA with an exact # vX.Y.Z comment (#270)\n\nRan repo-template's scripts/pin-actions.ps1 -PinTags: tag references become\nSHA pins and major-only comments (# v7) become the exact tag on the pinned\ncommit (# v7.0.1), so zizmor's ref-version-mismatch stops firing when the\nmajor tag moves on. Only the ref/comment text changed. Dependabot keeps the\nprecision it finds, so this stays converted.\n\n5 already exact, 50 line(s) rewritten, 48 tag reference(s), 0 pinned SHA(s) with no tag\n\nRefs Chris-Wolfgang/repo-template#447\n\nCo-authored-by: Chris Wolfgang <cwolfgan@ptd.net>\nCo-authored-by: Claude Opus 5 <noreply@anthropic.com>",
+          "timestamp": "2026-09-16T22:20:24-04:00",
+          "tree_id": "25950ca0eaaeb3039c13047f240e55e6f04e9031",
+          "url": "https://github.com/Chris-Wolfgang/IComparable-Extensions/commit/13e59a49d6603b892046f8966cd3da8de84ab88e"
+        },
+        "date": 1789611877191,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.Manual_Int_Inside",
+            "value": 0.38236554463704425,
+            "unit": "ns",
+            "range": "± 0.026497973937801535"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.IsBetween_Int_Inside",
+            "value": 0.503765003134807,
+            "unit": "ns",
+            "range": "± 0.01271052379458468"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.Manual_Int_AtLower",
+            "value": 0.33553991218407947,
+            "unit": "ns",
+            "range": "± 0.0206428087400449"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.IsBetween_Int_AtLower",
+            "value": 0.32437264422575635,
+            "unit": "ns",
+            "range": "± 0.0025389090824627495"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.Manual_String_Inside",
+            "value": 69.62656629085541,
+            "unit": "ns",
+            "range": "± 0.8698295546585136"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.IsBetween_String_Inside",
+            "value": 73.54830553134282,
+            "unit": "ns",
+            "range": "± 0.1803954646587299"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.Manual_String_AtLower",
+            "value": 2.253827286263307,
+            "unit": "ns",
+            "range": "± 0.051826239592026896"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.IsBetween_String_AtLower",
+            "value": 4.0863316630323725,
+            "unit": "ns",
+            "range": "± 0.02056748871663085"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.Manual_Int_Inside",
+            "value": 0.32063474257787067,
+            "unit": "ns",
+            "range": "± 0.006358491751547444"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.IsInRange_Int_Inside",
+            "value": 0.42366494983434677,
+            "unit": "ns",
+            "range": "± 0.020680237959881755"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.Manual_Int_AtLower",
+            "value": 0.3366767664750417,
+            "unit": "ns",
+            "range": "± 0.0066521999339195165"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.IsInRange_Int_AtLower",
+            "value": 0.4284442203740279,
+            "unit": "ns",
+            "range": "± 0.0022611538903258427"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.Manual_String_Inside",
+            "value": 69.78384633858998,
+            "unit": "ns",
+            "range": "± 0.022683311600816058"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.IsInRange_String_Inside",
+            "value": 69.89495778083801,
+            "unit": "ns",
+            "range": "± 0.11829118038185199"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.Manual_String_AtLower",
+            "value": 38.401718854904175,
+            "unit": "ns",
+            "range": "± 0.09447044925939775"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.IsInRange_String_AtLower",
+            "value": 39.24751486380895,
+            "unit": "ns",
+            "range": "± 0.011682907346252427"
           }
         ]
       }
