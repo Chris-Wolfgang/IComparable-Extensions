@@ -75,7 +75,7 @@
        in every project, sees no declared API, and emits RS0016/RS0037 for
        every public member — a documented false-positive flood. -->
   <ItemGroup Condition="Exists('PublicAPI.Shipped.txt')">
-    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="5.6.0">
+    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="5.6.0" Condition="Exists('PublicAPI.Shipped.txt') or Exists('PublicAPI.Unshipped.txt')">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
