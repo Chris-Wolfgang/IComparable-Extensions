@@ -33,7 +33,7 @@ public sealed class DocExampleRotTests
         (
             errors.Length == 0,
             $"Example at {example.File}:{example.Line} failed to compile:\n" +
-            string.Join(Environment.NewLine, errors.Select(d => "  " + d))
+            string.Join(Environment.NewLine, errors)
         );
     }
 
@@ -62,7 +62,7 @@ internal static class DocExampleSource
 {
     public static IEnumerable<DocExample> Extract()
     {
-        var srcDir = FindSrcDirectory();
+        var srcDir = FindSrcDirectory(AppContext.BaseDirectory);
         var binSeg = $"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}";
         var objSeg = $"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}";
         var files = Directory.EnumerateFiles(srcDir, "*.cs", SearchOption.AllDirectories)
@@ -142,14 +142,14 @@ internal static class DocExampleSource
 
 
     [SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "The prose comment describes the design rationale for why the walk uses AppContext.BaseDirectory rather than CallerFilePath; it is not commented-out code, but the analyzer's heuristic pattern-matches the member-access + semicolon shape.")]
-    private static string FindSrcDirectory()
+    internal static string FindSrcDirectory(string startDirectory)
     {
         // Walk up from AppContext.BaseDirectory looking for a directory that
         // contains src/Wolfgang.Extensions.IComparable/Wolfgang.Extensions.IComparable.csproj.
         // AppContext.BaseDirectory is deterministic under CI's remapped paths;
         // the CallerFilePath attribute would bake in the build-machine path and
         // resolve to /_/ prefixes under CI deterministic builds.
-        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+        var dir = new DirectoryInfo(startDirectory);
         while (dir is not null)
         {
             var candidate = Path.Combine(dir.FullName, "src", "Wolfgang.Extensions.IComparable");
@@ -162,7 +162,7 @@ internal static class DocExampleSource
         }
         throw new DirectoryNotFoundException
         (
-            "Could not locate src/Wolfgang.Extensions.IComparable/ walking up from " + AppContext.BaseDirectory
+            "Could not locate src/Wolfgang.Extensions.IComparable/ walking up from " + startDirectory
         );
     }
 }
@@ -258,6 +258,14 @@ internal static class DocExampleCompiler
         var references = new List<MetadataReference>();
         var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
+        // The library under test — snippets `using Wolfgang.Extensions.IComparable;`
+        // and then call IsBetween/IsInRange on real instances. Added first so the
+        // reference never depends on the test host's TPA list happening to carry it;
+        // the TPA loop below skips it as already seen.
+        var libAssembly = typeof(IComparableExtensions).Assembly.Location;
+        seen.Add(libAssembly);
+        references.Add(MetadataReference.CreateFromFile(libAssembly));
+
         // Test-host trusted-platform-assemblies gives us the BCL closure the test is running against.
         if (AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES") is string tpa)
         {
@@ -268,14 +276,6 @@ internal static class DocExampleCompiler
                 if (!seen.Add(path)) continue;
                 references.Add(MetadataReference.CreateFromFile(path));
             }
-        }
-
-        // The library under test — snippets `using Wolfgang.Extensions.IComparable;`
-        // and then call IsBetween/IsInRange on real instances.
-        var libAssembly = typeof(IComparableExtensions).Assembly.Location;
-        if (!string.IsNullOrEmpty(libAssembly) && seen.Add(libAssembly))
-        {
-            references.Add(MetadataReference.CreateFromFile(libAssembly));
         }
 
         return references;
