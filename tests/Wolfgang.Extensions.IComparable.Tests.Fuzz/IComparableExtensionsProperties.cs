@@ -118,15 +118,15 @@ public class IComparableExtensionsProperties
         Prop.ForAll<string, string>((lower, upper) =>
         {
             string? value = null;
-            try
-            {
-                _ = value!.IsBetween(lower, upper);
-                return false;
-            }
-            catch (ArgumentNullException)
-            {
-                return true;
-            }
+
+            // Assert.Throws fails the property itself when nothing is thrown, so there
+            // is no "return false" branch that a passing run can never execute.
+            var exception = Assert.Throws<ArgumentNullException>
+            (
+                () => value!.IsBetween(lower, upper)
+            );
+
+            return string.Equals(exception.ParamName, nameof(value), StringComparison.Ordinal);
         });
 
 
@@ -135,14 +135,14 @@ public class IComparableExtensionsProperties
         Prop.ForAll<string, string>((lower, upper) =>
         {
             string? value = null;
-            try
-            {
-                _ = value!.IsInRange(lower, upper);
-                return false;
-            }
-            catch (ArgumentNullException)
-            {
-                return true;
-            }
+
+            // Assert.Throws fails the property itself when nothing is thrown, so there
+            // is no "return false" branch that a passing run can never execute.
+            var exception = Assert.Throws<ArgumentNullException>
+            (
+                () => value!.IsInRange(lower, upper)
+            );
+
+            return string.Equals(exception.ParamName, nameof(value), StringComparison.Ordinal);
         });
 }
