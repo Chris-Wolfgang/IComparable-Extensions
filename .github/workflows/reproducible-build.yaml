@@ -1,43 +1,40 @@
-name: Reproducible build
+name: Reproducible Build
 
-# Build-reproducibility verification (#170).
-#
-# Directory.Build.props sets <Deterministic>true</Deterministic> and
-# release.yaml sets <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-# — both INPUTS to a reproducible build. This workflow *verifies* that
-# input by building the same commit twice, from clean, and sha256sum'ing
-# the outputs. If the DLLs differ byte-for-byte, the "reproducible" claim
-# is false and the workflow fails.
-#
-# Two clean builds run back-to-back on the same runner (a cross-OS diff
-# would need release.yaml-level normalisation that isn't in scope yet).
-# Same runner is still meaningful — it catches non-determinism sources
-# that would foil third-party consumer verification: embedded timestamps,
-# random-order dictionary iteration, uninitialised memory in resource
-# generators.
+# Verifies Wolfgang.Extensions.IComparable is a deterministic build: the same commit packed on
+# Ubuntu and on Windows is hashed (.dll/.pdb/.nupkg) and the manifests compared.
+# The compiled assemblies and symbols (.dll/.pdb, every TFM) must be byte-identical across
+# operating systems, or the job fails. Directory.Build.targets normalizes the SDK-generated
+# sources to LF and Directory.Build.props pins the .NET Framework reference assemblies; those
+# were the inputs that differed between Linux and Windows. The .nupkg/.snupkg files are NOT
+# compared: NuGet stamps each zip entry with the pack time and writes platform-specific zip
+# attributes and newlines into its own metadata, so the same commit gives a different package
+# file on every run, even on one OS. See docs/REPRODUCIBLE-BUILD.md (#179) and #328.
 
 on:
-  workflow_dispatch:
   pull_request:
-    paths:
-      - 'src/**'
-      - 'Directory.Build.props'
-      - '.github/workflows/reproducible-build.yaml'
   push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: reproducible-${{ github.ref }}
+  group: reproducible-build-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  reproducible:
-    name: Build twice, diff outputs
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
+  build:
+    name: Pack (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      # Turns on ContinuousIntegrationBuild in Directory.Build.props, which
+      # enables DeterministicSourcePaths + normalized (SourceLink) path mapping.
+      CI: 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -47,37 +44,86 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: 10.0.x
 
-      - name: Build 1
-        run: |
-          rm -rf src/*/bin src/*/obj
-          dotnet build src/Wolfgang.Extensions.IComparable/Wolfgang.Extensions.IComparable.csproj \
-            -c Release -f net10.0 \
-            -p:ContinuousIntegrationBuild=true \
-            -p:Deterministic=true
-          mkdir -p "$RUNNER_TEMP/build1"
-          cp src/Wolfgang.Extensions.IComparable/bin/Release/net10.0/Wolfgang.Extensions.IComparable.dll "$RUNNER_TEMP/build1/"
+      - name: Pack (deterministic)
+        run: >
+          dotnet pack src/Wolfgang.Extensions.IComparable/Wolfgang.Extensions.IComparable.csproj
+          -c Release
+          -p:ContinuousIntegrationBuild=true
+          -p:Deterministic=true
+          -o artifacts
 
-      - name: Build 2
+      - name: Hash outputs
+        shell: bash
+        env:
+          RUNNER_OS_NAME: ${{ matrix.os }}
         run: |
-          rm -rf src/*/bin src/*/obj
-          dotnet build src/Wolfgang.Extensions.IComparable/Wolfgang.Extensions.IComparable.csproj \
-            -c Release -f net10.0 \
-            -p:ContinuousIntegrationBuild=true \
-            -p:Deterministic=true
-          mkdir -p "$RUNNER_TEMP/build2"
-          cp src/Wolfgang.Extensions.IComparable/bin/Release/net10.0/Wolfgang.Extensions.IComparable.dll "$RUNNER_TEMP/build2/"
+          set -euo pipefail
+          manifest="manifest.txt"
+          : > "$manifest"
 
-      - name: Compare SHA-256
+          # Packed package(s): key by file name (identical across OS).
+          while IFS= read -r f; do
+            printf '%s  %s\n' "$(sha256sum "$f" | cut -d' ' -f1)" "${f##*/}" >> "$manifest"
+          done < <(find artifacts -type f \( -name '*.nupkg' -o -name '*.snupkg' \) | sort)
+
+          # Compiled library, one per TFM: key by TFM-relative path.
+          base="src/Wolfgang.Extensions.IComparable/bin/Release"
+          while IFS= read -r f; do
+            rel="${f#"$base"/}"
+            printf '%s  %s\n' "$(sha256sum "$f" | cut -d' ' -f1)" "$rel" >> "$manifest"
+          done < <(find "$base" -type f \( -name 'Wolfgang.Extensions.IComparable.dll' -o -name 'Wolfgang.Extensions.IComparable.pdb' \) | sort)
+
+          sort -k2 "$manifest" -o "$manifest"
+          echo "--- ${RUNNER_OS_NAME} output hashes ---"
+          cat "$manifest"
+
+      - name: Upload manifest
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: repro-manifest-${{ matrix.os }}
+          path: manifest.txt
+          if-no-files-found: error
+
+  compare:
+    name: Compare hashes
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Ubuntu manifest
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: repro-manifest-ubuntu-latest
+          path: ubuntu
+
+      - name: Download Windows manifest
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: repro-manifest-windows-latest
+          path: windows
+
+      - name: Compare
+        shell: bash
         run: |
-          set -e
-          h1=$(sha256sum "$RUNNER_TEMP/build1/Wolfgang.Extensions.IComparable.dll" | awk '{print $1}')
-          h2=$(sha256sum "$RUNNER_TEMP/build2/Wolfgang.Extensions.IComparable.dll" | awk '{print $1}')
-          echo "build 1: $h1"
-          echo "build 2: $h2"
-          if [ "$h1" != "$h2" ]; then
-            echo "::error::Build output is non-deterministic — two clean builds of the same commit produced different bytes."
+          set -euo pipefail
+          echo "Ubuntu manifest:"
+          cat ubuntu/manifest.txt
+          echo
+          echo "Windows manifest:"
+          cat windows/manifest.txt
+          echo
+          # Hard failure on the compiled outputs. If this fails, diff the per-TFM .pdb documents
+          # and the referenced-assembly records first: a generated source written with a
+          # different newline, or a different reference assembly, was the cause that
+          # Directory.Build.targets and Directory.Build.props now remove.
+          # Package files are excluded: they embed pack-time timestamps, so they differ on
+          # every run (see the header of this workflow).
+          grep -vE '\.s?nupkg$' ubuntu/manifest.txt > ubuntu/assemblies.txt
+          grep -vE '\.s?nupkg$' windows/manifest.txt > windows/assemblies.txt
+          if diff -u ubuntu/assemblies.txt windows/assemblies.txt; then
+            echo "Reproducible: Ubuntu and Windows produced byte-identical assemblies and symbols."
+          else
+            echo "::error::Assemblies or symbols differ across runners - the build is not byte-identical cross-OS."
             exit 1
           fi
-          echo "✅ Build reproducible — SHA-256 matches across two clean builds."
