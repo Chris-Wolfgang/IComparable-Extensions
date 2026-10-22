@@ -40,12 +40,16 @@ This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) f
 
 ## ✨ Methods
 
-All methods are generic extension methods on `T where T : IComparable<T>`. Both throw `ArgumentNullException` when `value` is `null`.
+All methods are generic extension methods on `T where T : IComparable<T>`. Each throws `ArgumentNullException` when `value` is `null`; the other arguments are passed to `T.CompareTo` unchanged.
 
 | Method | Bound semantics | Returns `true` when |
 |---|---|---|
 | `value.IsBetween(lowerBound, upperBound)` | **Exclusive** on both ends | `lowerBound < value < upperBound` |
 | `value.IsInRange(lowerBound, upperBound)` | **Inclusive** on both ends | `lowerBound ≤ value ≤ upperBound` |
+| `value.IsGreaterThan(other)` | Strict | `value > other` |
+| `value.IsGreaterThanOrEqualTo(other)` | Inclusive | `value ≥ other` |
+| `value.IsLessThan(other)` | Strict | `value < other` |
+| `value.IsLessThanOrEqualTo(other)` | Inclusive | `value ≤ other` |
 
 The distinction matters when `value` exactly equals one of the bounds: `IsBetween` returns `false`, `IsInRange` returns `true`. Pick the one whose contract you want.
 

@@ -1,1 +1,5 @@
 #nullable enable
+static Wolfgang.Extensions.IComparable.IComparableExtensions.IsGreaterThan<T>(this T value, T other) -> bool
+static Wolfgang.Extensions.IComparable.IComparableExtensions.IsGreaterThanOrEqualTo<T>(this T value, T other) -> bool
+static Wolfgang.Extensions.IComparable.IComparableExtensions.IsLessThan<T>(this T value, T other) -> bool
+static Wolfgang.Extensions.IComparable.IComparableExtensions.IsLessThanOrEqualTo<T>(this T value, T other) -> bool

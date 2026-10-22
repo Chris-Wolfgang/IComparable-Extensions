@@ -6,7 +6,7 @@ namespace Wolfgang.Extensions.IComparable;
 /// A collection of extension methods for types that implement <see cref="IComparable{T}"/>.
 /// </summary>
 // ReSharper disable once InconsistentNaming
-public static class IComparableExtensions
+public static partial class IComparableExtensions
 {
     /// <summary>
     /// Determines if the specified <paramref name="value"/> is strictly greater than the
