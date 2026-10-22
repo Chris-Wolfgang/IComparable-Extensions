@@ -192,6 +192,30 @@ public class QueryableRangeExtensionsTests
 
 
 
+    [Fact]
+    public void WhereBetween_when_source_and_keySelector_are_both_null_reports_source()
+    {
+        IQueryable<Product> source = null!;
+
+        var exception = Assert.Throws<ArgumentNullException>(() => source.WhereBetween((Expression<Func<Product, decimal>>)null!, 1m, 2m));
+
+        Assert.Equal("source", exception.ParamName);
+    }
+
+
+
+    [Fact]
+    public void WhereInRange_when_source_and_keySelector_are_both_null_reports_source()
+    {
+        IQueryable<Product> source = null!;
+
+        var exception = Assert.Throws<ArgumentNullException>(() => source.WhereInRange((Expression<Func<Product, decimal>>)null!, 1m, 2m));
+
+        Assert.Equal("source", exception.ParamName);
+    }
+
+
+
     private static LambdaExpression PredicateOf<TSource>(IQueryable<TSource> query)
     {
         var where = (MethodCallExpression)query.Expression;

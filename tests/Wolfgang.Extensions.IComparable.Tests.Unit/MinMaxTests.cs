@@ -291,4 +291,64 @@ public class MinMaxTests
     {
         Assert.Equal('c', "cab".Max());
     }
+
+
+
+    [Fact]
+    public void Max_when_the_first_element_is_the_largest_returns_it()
+    {
+        Assert.Equal(5, 1.Max(new List<int> { 5, 3 }));
+    }
+
+
+
+    [Fact]
+    public void Min_when_the_first_element_is_the_smallest_returns_it()
+    {
+        Assert.Equal(1, 9.Min(new List<int> { 1, 3 }));
+    }
+
+
+
+    [Fact]
+    public void Min_with_an_empty_sequence_when_value_is_null_throws_ArgumentNullException_first()
+    {
+        string? value = null;
+
+        var exception = Assert.Throws<ArgumentNullException>(() => value!.Min(Enumerable.Empty<string>()));
+
+        Assert.Equal("value", exception.ParamName);
+    }
+
+
+
+    [Fact]
+    public void Max_with_an_empty_sequence_when_value_is_null_throws_ArgumentNullException_first()
+    {
+        string? value = null;
+
+        var exception = Assert.Throws<ArgumentNullException>(() => value!.Max(Enumerable.Empty<string>()));
+
+        Assert.Equal("value", exception.ParamName);
+    }
+
+
+
+    [Fact]
+    public void Min_when_the_sequence_is_empty_explains_why()
+    {
+        var exception = Assert.Throws<ArgumentException>(() => 5.Min(Enumerable.Empty<int>()));
+
+        Assert.StartsWith("The sequence contains no elements.", exception.Message, StringComparison.Ordinal);
+    }
+
+
+
+    [Fact]
+    public void Max_when_the_sequence_is_empty_explains_why()
+    {
+        var exception = Assert.Throws<ArgumentException>(() => 5.Max(Enumerable.Empty<int>()));
+
+        Assert.StartsWith("The sequence contains no elements.", exception.Message, StringComparison.Ordinal);
+    }
 }
