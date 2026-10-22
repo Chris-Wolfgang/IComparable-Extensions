@@ -55,6 +55,13 @@ All methods are generic extension methods on `T where T : IComparable<T>`. Each 
 | `value.NearestTo(candidates, distance)`, `value.NearestTo(distance, c1, c2, ...)` | You supply the distance (`(a, b) => Math.Abs(a - b)`); ties return the earliest candidate | The candidate closest to `value` (`ArgumentException` if there is none) |
 | `value.Clamp(min, max)` | Inclusive; `ArgumentException` if `min > max` | Returns `min` if `value < min`, `max` if `value > max`, else `value` |
 
+For `IQueryable<T>` (Entity Framework and other LINQ providers), `QueryableRangeExtensions` builds the same checks as an expression tree the provider can translate to SQL instead of evaluating them client-side:
+
+| Method | Translates to |
+|---|---|
+| `query.WhereBetween(x => x.Key, lowerBound, upperBound)` | `WHERE Key > @lower AND Key < @upper` |
+| `query.WhereInRange(x => x.Key, lowerBound, upperBound)` | `WHERE Key >= @lower AND Key <= @upper` |
+
 The distinction matters when `value` exactly equals one of the bounds: `IsBetween` returns `false`, `IsInRange` returns `true`. Pick the one whose contract you want.
 
 ---
