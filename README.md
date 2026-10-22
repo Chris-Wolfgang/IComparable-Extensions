@@ -50,6 +50,7 @@ All methods are generic extension methods on `T where T : IComparable<T>`. Each 
 | `value.IsGreaterThanOrEqualTo(other)` | Inclusive | `value ≥ other` |
 | `value.IsLessThan(other)` | Strict | `value < other` |
 | `value.IsLessThanOrEqualTo(other)` | Inclusive | `value ≤ other` |
+| `value.Clamp(min, max)` | Inclusive; `ArgumentException` if `min > max` | Returns `min` if `value < min`, `max` if `value > max`, else `value` |
 
 The distinction matters when `value` exactly equals one of the bounds: `IsBetween` returns `false`, `IsInRange` returns `true`. Pick the one whose contract you want.
 

@@ -30,6 +30,9 @@ Check("IsGreaterThanOrEqualTo on int", 5.IsGreaterThanOrEqualTo(5),         expe
 Check("IsLessThan on DateTime",       quarterStart.IsLessThan(quarterEnd), expected: true);
 Check("IsLessThanOrEqualTo on string", "a".IsLessThanOrEqualTo("a"),       expected: true);
 
+Check("Clamp on int above",            15.Clamp(1, 10) == 10,              expected: true);
+Check("Clamp on DateTime below",       new DateTime(2026, 1, 1).Clamp(quarterStart, quarterEnd) == quarterStart, expected: true);
+
 // Argument-null path — the constructor of ArgumentNullException itself is a
 // classic AOT / trim casualty. Force it once so a broken exception path
 // crashes the smoke, not a downstream consumer.
