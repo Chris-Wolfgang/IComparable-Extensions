@@ -112,6 +112,14 @@ maybeNull!.IsBetween("a", "z");   // throws ArgumentNullException("value")
 
 ---
 
+## 🔍 Verify the build
+
+Every release can be checked independently: the package's assemblies are byte-for-byte
+reproducible from the tagged source, each release attaches a `reproducible-build-manifest.json`
+with their expected hashes, and packages carry a SLSA build-provenance attestation. See
+[docs/REPRODUCIBLE-BUILD.md](docs/REPRODUCIBLE-BUILD.md) and the *Verifying the supply chain*
+section of [SECURITY.md](SECURITY.md).
+
 ## 🎯 Supported Frameworks
 
 This library targets:
