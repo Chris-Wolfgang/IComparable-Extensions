@@ -50,6 +50,12 @@ on:
 permissions:
   contents: read  # Default to read-only; the build-and-deploy job overrides with write
 
+concurrency:
+  # Every deploy rewrites gh-pages; serialize them with build-all-versions.yaml, which
+  # pushes to the same branch (#340). Never cancel a deploy that is already pushing.
+  group: gh-pages-docs-deploy
+  cancel-in-progress: false
+
 jobs:
   build-and-deploy:
     name: Build & Deploy Documentation
