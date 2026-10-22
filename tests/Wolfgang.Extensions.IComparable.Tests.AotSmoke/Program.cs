@@ -37,6 +37,8 @@ Check("Min on int params",             7.Min(3, 9, 5) == 3,                 expe
 Check("Max on DateTime",               quarterStart.Max(quarterEnd) == quarterEnd, expected: true);
 Check("Max on string sequence",        string.Equals("a".Max(new[] { "c", "b" }.AsEnumerable()), "c", StringComparison.Ordinal), expected: true);
 
+Check("NearestTo on int",              5.NearestTo((a, b) => Math.Abs(a - b), 1, 3, 8, 12) == 3, expected: true);
+
 // Argument-null path — the constructor of ArgumentNullException itself is a
 // classic AOT / trim casualty. Force it once so a broken exception path
 // crashes the smoke, not a downstream consumer.
