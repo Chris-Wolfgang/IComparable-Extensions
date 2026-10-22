@@ -29,7 +29,7 @@ if (value.IsInRange(min, max))
 - **`IsBetween`** — strict (exclusive) range check: `value > lower && value < upper`
 - **`IsInRange`** — inclusive range check: `value >= lower && value <= upper`
 - **Type-safe** — works with any type that implements `IComparable<T>`
-- **Zero dependencies** — pure .NET Standard 2.0 library
+- **No package dependencies** — the package references nothing at run time
 - **Multi-target** — runs on .NET Framework 4.6.2+, .NET Standard 2.0+, and .NET 8.0+
 
 ## Available Extension Methods
