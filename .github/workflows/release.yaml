@@ -689,8 +689,10 @@ jobs:
       # id-token: write is what allows NuGet/login to exchange the GitHub
       # OIDC token for an ephemeral push key. contents: read is inherited
       # from the workflow-level default but restated here for clarity —
-      # explicit permission blocks tighten the job's scope.
+      # explicit permission blocks tighten the job's scope. The same OIDC token also
+      # signs the provenance attestation (#163).
       id-token: write
+      attestations: write   # record the SLSA build-provenance attestation on GitHub
       contents: read
     steps:
       - name: Setup .NET
@@ -710,6 +712,53 @@ jobs:
         with:
           name: nuget-packages
           path: ./packages
+
+      # SLSA build provenance (#163): a signed attestation binding each packed .nupkg (by
+      # SHA-256 digest) to the exact repository, commit and workflow run that produced
+      # it, using the job's OIDC identity - no signing key to manage, the same keyless
+      # model as the NuGet trusted-publishing login below. Attest BEFORE pushing so the
+      # provenance covers the exact bytes published; consumers verify with
+      # `gh attestation verify <pkg>.nupkg --repo <owner>/<repo>
+      # --signer-workflow <owner>/<repo>/.github/workflows/release.yaml` (SECURITY.md).
+      # Package *signing* (an author signature `nuget verify` checks) is separate and
+      # needs a code-signing certificate (#215).
+      - name: Attest build provenance for packages
+        id: attest
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: './packages/*.nupkg'
+
+      # The attestation above is recorded in GitHub's attestation store, which is what
+      # `gh attestation verify` reads. Tooling that audits the RELEASE PAGE - OpenSSF
+      # Scorecard's Signed-Releases check among it - looks for an asset whose name ends
+      # in .intoto.jsonl instead. The bundle the action writes IS that document, so it
+      # is copied under a deterministic name and handed to update-release-artifacts,
+      # which owns contents: write. This job keeps contents: read on purpose.
+      - name: Stage the provenance bundle for the release
+        shell: bash
+        env:
+          BUNDLE_PATH: ${{ steps.attest.outputs.bundle-path }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          # attest-build-provenance builds this path with Node path.join, so on a Windows
+          # runner it arrives with backslashes; normalise so the step does not depend on
+          # MSYS path translation. The substitution is a no-op on a POSIX path.
+          BUNDLE_PATH="${BUNDLE_PATH//\\//}"
+          if [ ! -f "$BUNDLE_PATH" ]; then
+            echo "::error::attest-build-provenance reported no bundle at '$BUNDLE_PATH'"
+            exit 1
+          fi
+          mkdir -p ./provenance
+          cp "$BUNDLE_PATH" "./provenance/${GITHUB_REPOSITORY##*/}-${TAG_NAME}.intoto.jsonl"
+          ls -l ./provenance
+
+      - name: Upload the provenance bundle for the release job
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: provenance-bundle
+          path: ./provenance/*.intoto.jsonl
+          if-no-files-found: error
 
       - name: Login to NuGet via Trusted Publishing (OIDC)
         id: nuget-login
@@ -791,6 +840,12 @@ jobs:
       - name: Zip coverage report
         run: zip -r release-coverage.zip ./release-coverage
 
+      - name: Download provenance bundle
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: provenance-bundle
+          path: ./provenance
+
       # `gh` is pre-installed on the runner, so no third-party action is needed
       # to upload release assets (zizmor superfluous-actions).
       - name: Attach artifacts to release
@@ -800,6 +855,6 @@ jobs:
           TAG_NAME: ${{ github.event.release.tag_name }}
         run: |
           shopt -s nullglob
-          files=(./nuget-packages/*.nupkg ./nuget-packages/*.snupkg ./nuget-packages/*.bom.json release-coverage.zip)
+          files=(./nuget-packages/*.nupkg ./nuget-packages/*.snupkg ./nuget-packages/*.bom.json ./provenance/*.intoto.jsonl release-coverage.zip)
           echo "Uploading ${#files[@]} asset(s) to release $TAG_NAME"
           gh release upload "$TAG_NAME" "${files[@]}" --clobber
