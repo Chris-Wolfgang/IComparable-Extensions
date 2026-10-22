@@ -1,6 +1,8 @@
 <Project>
   <PropertyGroup>
-    <LangVersion>12.0</LangVersion>
+    <!-- One C# language version for every project (#340): 14 is the version the .NET 10
+         SDK (the repo's required SDK) ships. Projects should not override it. -->
+    <LangVersion>14</LangVersion>
     <!-- Enable nullable reference types for every SDK-style C# project.
          The condition excludes:
            - F# (.fsproj) and VB (.vbproj) — by the .csproj check
