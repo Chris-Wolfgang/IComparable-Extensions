@@ -4,3 +4,9 @@ static Wolfgang.Extensions.IComparable.IComparableExtensions.IsGreaterThanOrEqua
 static Wolfgang.Extensions.IComparable.IComparableExtensions.IsLessThan<T>(this T value, T other) -> bool
 static Wolfgang.Extensions.IComparable.IComparableExtensions.IsLessThanOrEqualTo<T>(this T value, T other) -> bool
 static Wolfgang.Extensions.IComparable.IComparableExtensions.Clamp<T>(this T value, T min, T max) -> T
+static Wolfgang.Extensions.IComparable.IComparableExtensions.Min<T>(this T value, T other) -> T
+static Wolfgang.Extensions.IComparable.IComparableExtensions.Min<T>(this T value, T other, params T[]! others) -> T
+static Wolfgang.Extensions.IComparable.IComparableExtensions.Min<T>(this T value, System.Collections.Generic.IEnumerable<T>! others) -> T
+static Wolfgang.Extensions.IComparable.IComparableExtensions.Max<T>(this T value, T other) -> T
+static Wolfgang.Extensions.IComparable.IComparableExtensions.Max<T>(this T value, T other, params T[]! others) -> T
+static Wolfgang.Extensions.IComparable.IComparableExtensions.Max<T>(this T value, System.Collections.Generic.IEnumerable<T>! others) -> T
