@@ -17,8 +17,8 @@
 		<RepositoryUrl>https://github.com/Chris-Wolfgang/IComparable-Extensions.git</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageTags>icomparable;range;between;extension-methods;comparison</PackageTags>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<SignAssembly>False</SignAssembly>
 		<PackageIcon>icon.png</PackageIcon>
 
 		<!-- PackageValidation: build fails if the pack introduces a binary-
