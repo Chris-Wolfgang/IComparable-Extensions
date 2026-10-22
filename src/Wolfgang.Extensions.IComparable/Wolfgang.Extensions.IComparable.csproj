@@ -32,6 +32,16 @@
 		<PackageValidationBaselineVersion>1.1.2</PackageValidationBaselineVersion>
 	</PropertyGroup>
 
+	<!-- Repository baseline item 18 (#266): declare the library trim- and native-AOT-
+	     compatible on the TFMs that support it (net8.0+). This turns on the ILLink / AOT /
+	     single-file analyzers at build time, so a trim-unsafe API fails the Release build
+	     (warnings are errors) instead of surfacing in a consumer's publish. net462 and
+	     netstandard2.0 cannot declare it (NETSDK1210). -->
+	<PropertyGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))">
+		<IsAotCompatible>true</IsAotCompatible>
+		<IsTrimmable>true</IsTrimmable>
+	</PropertyGroup>
+
 	<ItemGroup>
 	  <None Include="..\..\assets\icon.png">
 	    <Pack>True</Pack>
