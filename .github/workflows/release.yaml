@@ -561,6 +561,68 @@ jobs:
           }
 
 
+      # Reproducible-build manifest (#179): the expected SHA-256 of every assembly and symbol
+      # file inside each package, plus the SDK and commit that produced them, attached to the
+      # GitHub Release so a third party can rebuild the tag and compare
+      # (docs/REPRODUCIBLE-BUILD.md). The .nupkg/.snupkg hashes are recorded for reference
+      # only: NuGet stamps the pack time into every zip entry, so a rebuild never matches
+      # them; the .dll/.pdb entries are what must match.
+      - name: Generate reproducible-build manifest
+        if: steps.check-packages.outputs.has-packages == 'true'
+        shell: pwsh
+        env:
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+          function Get-Sha256Hex([byte[]] $bytes) {
+            $sha = [System.Security.Cryptography.SHA256]::Create()
+            try { return ([System.BitConverter]::ToString($sha.ComputeHash($bytes)) -replace '-', '').ToLowerInvariant() }
+            finally { $sha.Dispose() }
+          }
+
+          $packages = @(Get-ChildItem -Path 'nuget-packages' -File | Where-Object { $_.Extension -in '.nupkg', '.snupkg' } | Sort-Object Name)
+          if ($packages.Count -eq 0) {
+            Write-Error 'No packages found in nuget-packages/ - cannot write the reproducible-build manifest.'
+          }
+
+          $entries = foreach ($package in $packages) {
+            $zip = [System.IO.Compression.ZipFile]::OpenRead($package.FullName)
+            try {
+              $assemblies = foreach ($entry in ($zip.Entries | Where-Object { $_.FullName -match '\.(dll|pdb)$' } | Sort-Object FullName)) {
+                $stream = $entry.Open()
+                try {
+                  $buffer = New-Object System.IO.MemoryStream
+                  $stream.CopyTo($buffer)
+                  [ordered]@{ path = $entry.FullName; sha256 = Get-Sha256Hex $buffer.ToArray() }
+                }
+                finally { $stream.Dispose() }
+              }
+            }
+            finally { $zip.Dispose() }
+
+            [ordered]@{
+              file   = $package.Name
+              sha256 = (Get-FileHash -Algorithm SHA256 -Path $package.FullName).Hash.ToLowerInvariant()
+              files  = @($assemblies)
+            }
+          }
+
+          $manifest = [ordered]@{
+            schema     = 1
+            repository = "$env:GITHUB_REPOSITORY"
+            tag        = "$env:TAG_NAME"
+            commit     = "$env:GITHUB_SHA"
+            sdk        = (dotnet --version).Trim()
+            note       = 'Compare the files[].sha256 values (assemblies and symbols). Package file hashes differ on every pack because NuGet stamps the pack time.'
+            packages   = @($entries)
+          }
+
+          $out = Join-Path 'nuget-packages' 'reproducible-build-manifest.json'
+          $manifest | ConvertTo-Json -Depth 6 | Set-Content -Path $out -Encoding utf8NoBOM
+          Get-Content $out
+
       - name: Upload NuGet packages
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -855,6 +917,6 @@ jobs:
           TAG_NAME: ${{ github.event.release.tag_name }}
         run: |
           shopt -s nullglob
-          files=(./nuget-packages/*.nupkg ./nuget-packages/*.snupkg ./nuget-packages/*.bom.json ./provenance/*.intoto.jsonl release-coverage.zip)
+          files=(./nuget-packages/*.nupkg ./nuget-packages/*.snupkg ./nuget-packages/*.bom.json ./nuget-packages/reproducible-build-manifest*.json ./provenance/*.intoto.jsonl release-coverage.zip)
           echo "Uploading ${#files[@]} asset(s) to release $TAG_NAME"
           gh release upload "$TAG_NAME" "${files[@]}" --clobber
