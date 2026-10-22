@@ -10,3 +10,5 @@ static Wolfgang.Extensions.IComparable.IComparableExtensions.Min<T>(this T value
 static Wolfgang.Extensions.IComparable.IComparableExtensions.Max<T>(this T value, T other) -> T
 static Wolfgang.Extensions.IComparable.IComparableExtensions.Max<T>(this T value, T other, params T[]! others) -> T
 static Wolfgang.Extensions.IComparable.IComparableExtensions.Max<T>(this T value, System.Collections.Generic.IEnumerable<T>! others) -> T
+static Wolfgang.Extensions.IComparable.IComparableExtensions.NearestTo<T, TDistance>(this T value, System.Collections.Generic.IEnumerable<T>! candidates, System.Func<T, T, TDistance>! distance) -> T
+static Wolfgang.Extensions.IComparable.IComparableExtensions.NearestTo<T, TDistance>(this T value, System.Func<T, T, TDistance>! distance, params T[]! candidates) -> T
