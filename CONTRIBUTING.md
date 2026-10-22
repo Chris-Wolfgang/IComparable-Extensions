@@ -127,12 +127,12 @@ await Task.WhenAll(tasks);
 // Banned
 File.ReadAllText(path);
 stream.Read(buffer, 0, count);
-streamReader.ReadLine();
+File.WriteAllText(path, contents);
 
 // Required
 await File.ReadAllTextAsync(path);
 await stream.ReadAsync(buffer, 0, count);
-await streamReader.ReadLineAsync();
+await File.WriteAllTextAsync(path, contents);
 ```
 
 #### ❌ Thread Blocking
