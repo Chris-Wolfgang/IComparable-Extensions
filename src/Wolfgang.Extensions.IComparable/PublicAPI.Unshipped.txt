@@ -12,3 +12,6 @@ static Wolfgang.Extensions.IComparable.IComparableExtensions.Max<T>(this T value
 static Wolfgang.Extensions.IComparable.IComparableExtensions.Max<T>(this T value, System.Collections.Generic.IEnumerable<T>! others) -> T
 static Wolfgang.Extensions.IComparable.IComparableExtensions.NearestTo<T, TDistance>(this T value, System.Collections.Generic.IEnumerable<T>! candidates, System.Func<T, T, TDistance>! distance) -> T
 static Wolfgang.Extensions.IComparable.IComparableExtensions.NearestTo<T, TDistance>(this T value, System.Func<T, T, TDistance>! distance, params T[]! candidates) -> T
+static Wolfgang.Extensions.IComparable.QueryableRangeExtensions.WhereBetween<TSource, TKey>(this System.Linq.IQueryable<TSource>! source, System.Linq.Expressions.Expression<System.Func<TSource, TKey>!>! keySelector, TKey lowerBound, TKey upperBound) -> System.Linq.IQueryable<TSource>!
+static Wolfgang.Extensions.IComparable.QueryableRangeExtensions.WhereInRange<TSource, TKey>(this System.Linq.IQueryable<TSource>! source, System.Linq.Expressions.Expression<System.Func<TSource, TKey>!>! keySelector, TKey lowerBound, TKey upperBound) -> System.Linq.IQueryable<TSource>!
+Wolfgang.Extensions.IComparable.QueryableRangeExtensions
