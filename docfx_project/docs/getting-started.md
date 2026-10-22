@@ -4,7 +4,8 @@ This guide will help you quickly get up and running with Wolfgang.Extensions.ICo
 
 ## Prerequisites
 
-- .NET 8.0 SDK or later (for development; the library targets .NET Framework 4.6.2+, .NET Standard 2.0, and .NET 8.0+)
+- To use the package: any project targeting .NET Framework 4.6.2+, .NET Standard 2.0, or .NET 8.0+
+- To build this repository: the .NET 10.0 SDK (the library also targets `net10.0`)
 
 ## Installation
 

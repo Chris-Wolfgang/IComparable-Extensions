@@ -41,14 +41,26 @@ dotnet test  tests/Wolfgang.Extensions.IComparable.Tests.Unit/Wolfgang.Extension
 
 | Workflow | Purpose | Triggers on |
 |---|---|---|
-| `.github/workflows/pr.yaml` | Multi-stage validation: Linux + Windows + macOS, coverage gate, security scans | `pull_request_target` against `main` |
-| `.github/workflows/release.yaml` | NuGet publish + docs deploy | GitHub Release published |
+| `.github/workflows/pr.yaml` | Multi-stage validation: gitleaks, changelog fragment check, InspectCode, Linux + Windows + macOS tests with coverage gates, DevSkim | `pull_request` against `main` + `push` to `main` |
+| `.github/workflows/protected-files.yaml` | Protected Files Guard: refuses a PR that mixes protected config with other changes (never checks out PR code) | `pull_request_target` |
+| `.github/workflows/release.yaml` | Validate, pack, SBOM, NuGet publish via Trusted Publishing (OIDC), docs deploy, release assets | GitHub Release published |
 | `.github/workflows/docfx.yaml` | DocFX site → `gh-pages` | `workflow_call` (from `release.yaml`) and `workflow_dispatch` |
-| `.github/workflows/codeql.yaml` | CodeQL security-extended scan | weekly + on PR |
-| `.github/workflows/stryker.yaml` | Stryker.NET mutation testing | weekly + `workflow_dispatch` |
-| `.github/workflows/build-all-versions.yaml` | Builds every released tag's docs onto `gh-pages/versions/v<n>/` | manual |
+| `.github/workflows/build-all-versions.yaml` | Builds every released tag's docs onto `gh-pages/versions/v<n>/` | `workflow_dispatch` |
+| `.github/workflows/codeql.yaml` | CodeQL security-extended scan | PR + push + weekly |
+| `.github/workflows/semgrep.yaml` | Semgrep SAST (hash-pinned install) | PR + push + `workflow_dispatch` |
+| `.github/workflows/actions-audit.yaml` | actionlint + zizmor on the workflow files | PR + push + `workflow_dispatch` |
+| `.github/workflows/scorecard.yaml` | OSSF Scorecard | push to `main` + weekly + branch-protection changes |
+| `.github/workflows/license-audit.yaml` | Transitive license allow-list + third-party notices | PR + push + weekly |
+| `.github/workflows/sbom.yaml` | CycloneDX SBOM artifact | PR + push + `workflow_dispatch` |
+| `.github/workflows/sourcelink.yaml` | `dotnet sourcelink test` on the net10.0 PDB | PR + push + `workflow_dispatch` |
+| `.github/workflows/reproducible-build.yaml` | Builds the same commit twice from clean and compares the output hashes | PR + push + `workflow_dispatch` |
+| `.github/workflows/aot-smoke.yaml` | `PublishAot + run` of `Tests.AotSmoke` on Linux | PR + push + `workflow_dispatch` |
+| `.github/workflows/stryker.yaml` | Stryker.NET mutation testing + survivor issue | PR + weekly + `workflow_dispatch` |
+| `.github/workflows/benchmarks.yaml` | BenchmarkDotNet → `gh-pages` chart | push to `main` + `workflow_dispatch` |
+| `.github/workflows/pr-benchmarks.yaml` | BenchmarkDotNet delta table as a PR comment (advisory) | PR + `workflow_dispatch` |
+| `.github/workflows/security-alerts.yml` | Files/updates issues for open security alerts | nightly + `workflow_dispatch` |
 
-`pr.yaml` only fires for PRs targeting `main`. PRs targeting the per-repo integration branch (`vNext`) skip CI — verify multi-TFM builds locally before stacking on vNext.
+`pr.yaml` only fires for PRs targeting `main`. PRs targeting other branches (a stacked PR's base, or a `vNext` integration branch) skip it, so run `scripts/build-pr.ps1` locally before stacking.
 
 ## Source layout
 
@@ -62,14 +74,19 @@ root/
 │       └── PublicAPI.Shipped.txt      # Tracked public surface (when present)
 ├── tests/
 │   ├── .editorconfig                  # Test-specific analyzer relaxations
-│   └── Wolfgang.Extensions.IComparable.Tests.Unit/
-│       └── IComparableExtensionsTests.cs
+│   ├── Wolfgang.Extensions.IComparable.Tests.Unit/        # Unit, culture and allocation tests (net462-net10.0)
+│   ├── Wolfgang.Extensions.IComparable.Tests.DocExamples/ # Compiles every XML-doc <example> (doc-rot gate)
+│   ├── Wolfgang.Extensions.IComparable.Tests.Fuzz/        # FsCheck properties vs a manual CompareTo chain
+│   └── Wolfgang.Extensions.IComparable.Tests.AotSmoke/    # PublishAot console app run by aot-smoke.yaml
+├── benchmarks/
+│   └── Wolfgang.Extensions.IComparable.Benchmarks/        # BenchmarkDotNet (benchmarks.yaml, pr-benchmarks.yaml)
 ├── examples/
 │   ├── Wolfgang.Extensions.IComparable.DotNet462.Example1/   # legacy MSBuild
 │   └── Wolfgang.Extensions.IComparable.DotNet8.Example1/     # SDK-style
 ├── assets/icon.png + icon.ico         # Package assets
 ├── docfx_project/                     # Docs site source
-├── docs/                              # Hand-authored markdown (getting-started, setup, etc.)
+├── docs/                              # Hand-authored markdown (ADRs, release setup, workflow security)
+├── changelog/unreleased/              # One fragment per src/ change; assembled at release time
 └── scripts/                           # PowerShell + bash helpers (build-pr, format, Setup-Labels, …)
 ```
 
@@ -104,9 +121,9 @@ These rules come from the repo's `.editorconfig`, `Directory.Build.props`, and `
 ## Branch model
 
 - `main` is the release branch.
-- `vNext` is the per-repo integration branch for the in-flight release (folds in canonical-protected + canonical-unprotected + maintenance work). The current vNext is targeting v1.1.1.
-- Feature/maintenance work stacks onto `vNext` via `stack/<topic>` branches. PRs target `vNext` (not `main`) so they don't trigger pr.yaml's main-only multi-stage validation; run `scripts/build-pr.ps1` locally instead.
-- `vNext → main` is one large admin-bypass merge (the protected-files guard is expected to fire on the workflow / DBP / editorconfig drift).
+- The latest release is v1.1.2 (2026-08-21). A `vNext` integration branch is cut from `main` only when a release cycle needs one.
+- Work lands as small PRs against `main` (or stacked on each other, merged bottom-up). Protected configuration files (workflows, `Directory.Build.*`, `.editorconfig`, `BannedSymbols.txt`, …) go in a PR of their own: the Protected Files Guard fails a PR that mixes them with other changes, and passes a configuration-only PR for review.
+- Every PR that changes `src/` adds a fragment under `changelog/unreleased/` (or carries the `no-changelog` label).
 
 ## Don't
 
@@ -118,4 +135,4 @@ These rules come from the repo's `.editorconfig`, `Directory.Build.props`, and `
 
 ## Trust these instructions
 
-This file has been validated against the v1.1.1 repo state (June 2026). If you find these instructions incomplete or wrong, prefer asking for an updated version over guessing — the authoritative in-repo sources are `.editorconfig`, `Directory.Build.props`, `CONTRIBUTING.md`, and the workflow files under `.github/workflows/`.
+This file has been validated against the repository state after v1.1.2 (October 2026). If you find these instructions incomplete or wrong, prefer asking for an updated version over guessing — the authoritative in-repo sources are `.editorconfig`, `Directory.Build.props`, `CONTRIBUTING.md`, and the workflow files under `.github/workflows/`.
