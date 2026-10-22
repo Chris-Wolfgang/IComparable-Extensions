@@ -34,10 +34,12 @@ public class IComparableExtensionsProperties
             == (value.CompareTo(lower) > 0 && value.CompareTo(upper) < 0);
 
 
+
     [Property]
     public bool IsInRange_on_int_matches_manual_CompareTo(int value, int lower, int upper) =>
         value.IsInRange(lower, upper)
             == (value.CompareTo(lower) >= 0 && value.CompareTo(upper) <= 0);
+
 
 
     // -- long ----------------------------------------------------------------
@@ -48,10 +50,12 @@ public class IComparableExtensionsProperties
             == (value.CompareTo(lower) > 0 && value.CompareTo(upper) < 0);
 
 
+
     [Property]
     public bool IsInRange_on_long_matches_manual_CompareTo(long value, long lower, long upper) =>
         value.IsInRange(lower, upper)
             == (value.CompareTo(lower) >= 0 && value.CompareTo(upper) <= 0);
+
 
 
     // -- double --------------------------------------------------------------
@@ -69,12 +73,14 @@ public class IComparableExtensionsProperties
                     == (value.CompareTo(lower) > 0 && value.CompareTo(upper) < 0));
 
 
+
     // -- DateTime ------------------------------------------------------------
 
     [Property]
     public bool IsInRange_on_DateTime_matches_manual_CompareTo(DateTime value, DateTime lower, DateTime upper) =>
         value.IsInRange(lower, upper)
             == (value.CompareTo(lower) >= 0 && value.CompareTo(upper) <= 0);
+
 
 
     // -- string --------------------------------------------------------------
@@ -90,12 +96,14 @@ public class IComparableExtensionsProperties
                     == (value.CompareTo(lower) > 0 && value.CompareTo(upper) < 0));
 
 
+
     [Property]
     public Property IsInRange_on_string_matches_manual_CompareTo() =>
         Prop.ForAll<string, string, string>((value, lower, upper) =>
             value is null
                 || value.IsInRange(lower, upper)
                     == (value.CompareTo(lower) >= 0 && value.CompareTo(upper) <= 0));
+
 
 
     // -- Cross-method invariants --------------------------------------------
@@ -105,10 +113,12 @@ public class IComparableExtensionsProperties
         !value.IsBetween(lower, upper) || value.IsInRange(lower, upper);
 
 
+
     [Property]
     public Property IsBetween_implies_IsInRange_on_string() =>
         Prop.ForAll<string, string, string>((value, lower, upper) =>
             value is null || !value.IsBetween(lower, upper) || value.IsInRange(lower, upper));
+
 
 
     // -- Null-receiver contract ---------------------------------------------
@@ -128,6 +138,7 @@ public class IComparableExtensionsProperties
 
             return string.Equals(exception.ParamName, nameof(value), StringComparison.Ordinal);
         });
+
 
 
     [Property]
