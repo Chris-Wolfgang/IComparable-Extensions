@@ -1,5 +1,7 @@
 // ReSharper disable StringCompareToIsCultureSpecific — these helpers intentionally exercise string.CompareTo's culture-specific behaviour per ADR-0005
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Globalization;
 using System.Threading;
 
@@ -34,50 +36,80 @@ public class CultureInvarianceTests
     };
 
 
+
+    // Each culture crossed with each boundary row, so a failure names the exact
+    // culture + value instead of stopping at the first assertion of a block.
+    public static IEnumerable<object[]> IntIsBetweenCases() =>
+        Cross
+        (
+            new object[] { 5, true },
+            new object[] { 1, false },     // exclusive lower
+            new object[] { 10, false },    // exclusive upper
+            new object[] { 0, false },
+            new object[] { 11, false }
+        );
+
+
+
+    public static IEnumerable<object[]> IntIsInRangeCases() =>
+        Cross
+        (
+            new object[] { 5, true },
+            new object[] { 1, true },      // inclusive lower
+            new object[] { 10, true },     // inclusive upper
+            new object[] { 0, false },
+            new object[] { 11, false }
+        );
+
+
+
+    // Days offset from 2026-04-01 (Q2 start); Q2 ends at day 90 (2026-06-30).
+    public static IEnumerable<object[]> DateTimeIsInRangeCases() =>
+        Cross
+        (
+            new object[] { 44, true },     // 2026-05-15, mid Q2
+            new object[] { 0, true },      // Q2 start
+            new object[] { 90, true },     // Q2 end
+            new object[] { -1, false },    // 2026-03-31
+            new object[] { 91, false }     // 2026-07-01
+        );
+
+
+
     [Theory]
-    [MemberData(nameof(Cultures))]
-    public void IsBetween_on_int_is_culture_invariant(string cultureName)
+    [MemberData(nameof(IntIsBetweenCases))]
+    public void IsBetween_on_int_is_culture_invariant(string cultureName, int value, bool expected)
     {
         using var _ = new CultureScope(cultureName);
 
-        Assert.True(5.IsBetween(1, 10));
-        Assert.False(1.IsBetween(1, 10));       // exclusive lower
-        Assert.False(10.IsBetween(1, 10));      // exclusive upper
-        Assert.False(0.IsBetween(1, 10));
-        Assert.False(11.IsBetween(1, 10));
+        Assert.Equal(expected, value.IsBetween(1, 10));
     }
 
 
+
     [Theory]
-    [MemberData(nameof(Cultures))]
-    public void IsInRange_on_int_is_culture_invariant(string cultureName)
+    [MemberData(nameof(IntIsInRangeCases))]
+    public void IsInRange_on_int_is_culture_invariant(string cultureName, int value, bool expected)
     {
         using var _ = new CultureScope(cultureName);
 
-        Assert.True(5.IsInRange(1, 10));
-        Assert.True(1.IsInRange(1, 10));        // inclusive lower
-        Assert.True(10.IsInRange(1, 10));       // inclusive upper
-        Assert.False(0.IsInRange(1, 10));
-        Assert.False(11.IsInRange(1, 10));
+        Assert.Equal(expected, value.IsInRange(1, 10));
     }
 
 
+
     [Theory]
-    [MemberData(nameof(Cultures))]
-    public void IsInRange_on_DateTime_is_culture_invariant(string cultureName)
+    [MemberData(nameof(DateTimeIsInRangeCases))]
+    public void IsInRange_on_DateTime_is_culture_invariant(string cultureName, int dayOffset, bool expected)
     {
         using var _ = new CultureScope(cultureName);
 
         var q2Start = new DateTime(2026, 4, 1);
         var q2End = new DateTime(2026, 6, 30);
-        var midQ2 = new DateTime(2026, 5, 15);
 
-        Assert.True(midQ2.IsInRange(q2Start, q2End));
-        Assert.True(q2Start.IsInRange(q2Start, q2End));
-        Assert.True(q2End.IsInRange(q2Start, q2End));
-        Assert.False(new DateTime(2026, 3, 31).IsInRange(q2Start, q2End));
-        Assert.False(new DateTime(2026, 7, 1).IsInRange(q2Start, q2End));
+        Assert.Equal(expected, q2Start.AddDays(dayOffset).IsInRange(q2Start, q2End));
     }
+
 
 
     [Theory]
@@ -99,6 +131,7 @@ public class CultureInvarianceTests
     }
 
 
+
     [Theory]
     [MemberData(nameof(Cultures))]
     public void IsBetween_on_string_agrees_with_string_CompareTo_under_culture(string cultureName)
@@ -111,6 +144,7 @@ public class CultureInvarianceTests
         AssertMatchesCompareToStrict("z", "a", "z");   // at upper — exclusive so must be false
         AssertMatchesCompareToStrict("A", "a", "z");
     }
+
 
 
     [Theory]
@@ -132,11 +166,19 @@ public class CultureInvarianceTests
     }
 
 
+
+    private static IEnumerable<object[]> Cross(params object[][] rows) =>
+        Cultures
+            .SelectMany(culture => rows.Select(row => new[] { culture[0], row[0], row[1] }));
+
+
+
     private static void AssertMatchesCompareTo(string value, string lower, string upper)
     {
         var expected = value.CompareTo(lower) >= 0 && value.CompareTo(upper) <= 0;
         Assert.Equal(expected, value.IsInRange(lower, upper));
     }
+
 
 
     private static void AssertMatchesCompareToStrict(string value, string lower, string upper)
@@ -145,6 +187,7 @@ public class CultureInvarianceTests
         Assert.Equal(expected, value.IsBetween(lower, upper));
     }
 }
+
 
 
 /// <summary>
@@ -159,6 +202,7 @@ internal sealed class CultureScope : IDisposable
     private readonly CultureInfo _originalUI;
 
 
+
     public CultureScope(string cultureName)
     {
         _originalCurrent = Thread.CurrentThread.CurrentCulture;
@@ -171,6 +215,7 @@ internal sealed class CultureScope : IDisposable
         Thread.CurrentThread.CurrentCulture = culture;
         Thread.CurrentThread.CurrentUICulture = culture;
     }
+
 
 
     public void Dispose()
