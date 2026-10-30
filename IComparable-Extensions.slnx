@@ -47,4 +47,7 @@
     <Project Path="tests/Wolfgang.Extensions.IComparable.Tests.Fuzz/Wolfgang.Extensions.IComparable.Tests.Fuzz.csproj" />
     <Project Path="tests/Wolfgang.Extensions.IComparable.Tests.Unit/Wolfgang.Extensions.IComparable.Tests.Unit.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Wolfgang.Extensions.IComparable.Tests.Aot/Wolfgang.Extensions.IComparable.Tests.Aot.csproj" />
+  </Folder>
 </Solution>
