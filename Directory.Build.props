@@ -127,7 +127,7 @@
   <ItemGroup>
     <!-- SourceLink: embed source provenance into PDBs so debuggers can step
          into NuGet package code from GitHub. -->
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.401">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.403">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
