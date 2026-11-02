@@ -14,10 +14,8 @@ name: AOT smoke
 on:
   workflow_dispatch:
   pull_request:
-    paths:
-      - 'src/**'
-      - 'tests/Wolfgang.Extensions.IComparable.Tests.AotSmoke/**'
-      - '.github/workflows/aot-smoke.yaml'
+    # No paths filter: this check is to be a required status check, and a required
+    # check must report on every PR (a skipped workflow never reports and blocks the merge).
   push:
     branches: [main]
 
