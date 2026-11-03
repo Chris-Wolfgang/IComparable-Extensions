@@ -1,0 +1,22 @@
+# Overrides applied when compiling semgrep.txt (uv pip compile --override).
+#
+# mcp: semgrep pins mcp==1.29.0 (1.180.0 through 1.182.1 alike), and every mcp
+# from 1.8.0 up to 1.29.x is affected by GHSA-84m7-p3x7-pcfv (unbounded session
+# accumulation in the StreamableHTTP transport), fixed in 1.30.0. semgrep imports mcp
+# only in its MCP server, never in `semgrep scan`, which is all semgrep.yaml runs.
+# semgrep.yaml installs with --no-deps so pip does not re-apply semgrep's pin. Delete
+# this line once a semgrep release allows mcp 1.30.
+mcp>=1.30.0,<2
+#
+# opentelemetry: semgrep pins the OpenTelemetry family to ~=1.37.0 / ~=0.58b0 (1.180.0
+# through 1.183.0 alike), and opentelemetry-api <= 1.45.0 is affected by
+# GHSA-xcq7-p3pf-p88h (unbounded tracestate parsing), fixed in 1.45.1. opentelemetry-sdk
+# and the exporter pin the api exactly, so the whole family moves together to the
+# 1.45.1 / 0.66b1 release train. semgrep only creates spans when tracing is turned on
+# (`--trace`), which semgrep.yaml never passes. Delete these lines once a semgrep release
+# allows opentelemetry-api 1.45.1.
+opentelemetry-api>=1.45.1,<2
+opentelemetry-sdk>=1.45.1,<2
+opentelemetry-exporter-otlp-proto-http>=1.45.1,<2
+opentelemetry-instrumentation-requests>=0.66b1,<1
+opentelemetry-instrumentation-threading>=0.66b1,<1
