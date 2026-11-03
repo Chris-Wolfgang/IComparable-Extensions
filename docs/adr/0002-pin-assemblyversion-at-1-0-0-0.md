@@ -7,7 +7,7 @@
 
 MSBuild defaults `AssemblyVersion` to `$(Version)` unless overridden. On the .NET Framework (and any consumer using the CLR's strong-name binding), a change to `AssemblyVersion` requires a binding redirect in the consumer's config for the reference to resolve. Minor and patch releases that bump `AssemblyVersion` therefore force every consumer that ships an `app.config` / `web.config` to add or update a `<bindingRedirect>` — a mechanical cost with zero user-visible benefit.
 
-For a library whose target audience explicitly includes long-tail `net462` / `netstandard2.0` consumers (see [ADR-0004](0004-multi-tfm-includes-net462-and-netstandard20.md)), that cost is real.
+For a library whose target audience explicitly includes long-tail `net462` / `netstandard2.0` consumers (the package targets `net462`, `netstandard2.0`, `net8.0` and `net10.0`), that cost is real.
 
 ## Decision
 

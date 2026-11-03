@@ -51,7 +51,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Wolfgang.Extensions.IComparable\Wolfgang.Extensions.IComparable.csproj">
-      <Project>{a71d9ae1-ded7-e24c-b4fa-6776a28e52b8}</Project>
       <Name>Wolfgang.Extensions.IComparable</Name>
     </ProjectReference>
   </ItemGroup>
