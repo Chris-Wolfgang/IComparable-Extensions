@@ -20,6 +20,7 @@ public sealed class DocExampleRotTests
         DocExampleSource.Extract().Select(e => new object[] { e });
 
 
+
     [Theory]
     [MemberData(nameof(Examples))]
     public void doc_example_compiles(DocExample example)
@@ -38,6 +39,7 @@ public sealed class DocExampleRotTests
     }
 
 
+
     [Fact]
     public void at_least_one_example_was_extracted()
     {
@@ -52,6 +54,7 @@ public sealed class DocExampleRotTests
         );
     }
 }
+
 
 
 /// <summary>
@@ -78,6 +81,7 @@ internal static class DocExampleSource
             }
         }
     }
+
 
 
     private static IEnumerable<DocExample> ExtractFromFile(string file)
@@ -141,6 +145,7 @@ internal static class DocExampleSource
     }
 
 
+
     [SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "The prose comment describes the design rationale for why the walk uses AppContext.BaseDirectory rather than CallerFilePath; it is not commented-out code, but the analyzer's heuristic pattern-matches the member-access + semicolon shape.")]
     internal static string FindSrcDirectory(string startDirectory)
     {
@@ -166,6 +171,7 @@ internal static class DocExampleSource
         );
     }
 }
+
 
 
 /// <summary>
@@ -220,6 +226,7 @@ internal static class DocExampleCompiler
     }
 
 
+
     private static (IReadOnlyList<string> Usings, string Body, int BodyLineOffset) SplitUsingsAndBody(string code)
     {
         var lines = code.Split('\n');
@@ -253,6 +260,7 @@ internal static class DocExampleCompiler
     }
 
 
+
     private static IReadOnlyList<MetadataReference> BuildReferences()
     {
         var references = new List<MetadataReference>();
@@ -283,6 +291,7 @@ internal static class DocExampleCompiler
 }
 
 
+
 /// <summary>
 /// One extracted <c>&lt;example&gt;&lt;code&gt;</c> block. Serializable so xunit can name
 /// the theory case with the source location.
@@ -297,6 +306,7 @@ public sealed class DocExample : IXunitSerializable
     }
 
 
+
     public DocExample(string file, int line, string code)
     {
         File = file ?? throw new ArgumentNullException(nameof(file));
@@ -305,11 +315,17 @@ public sealed class DocExample : IXunitSerializable
     }
 
 
+
     public string File { get; private set; }
+
+
 
     public int Line { get; private set; }
 
+
+
     public string Code { get; private set; }
+
 
 
     public void Serialize(IXunitSerializationInfo info)
@@ -321,6 +337,7 @@ public sealed class DocExample : IXunitSerializable
     }
 
 
+
     public void Deserialize(IXunitSerializationInfo info)
     {
         ArgumentNullException.ThrowIfNull(info);
@@ -328,6 +345,7 @@ public sealed class DocExample : IXunitSerializable
         Line = info.GetValue<int>(nameof(Line));
         Code = info.GetValue<string>(nameof(Code));
     }
+
 
 
     public override string ToString() =>
