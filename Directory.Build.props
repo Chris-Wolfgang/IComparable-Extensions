@@ -1,6 +1,8 @@
 <Project>
   <PropertyGroup>
-    <LangVersion>12.0</LangVersion>
+    <!-- One C# language version for every project (#340): 14 is the version the .NET 10
+         SDK (the repo's required SDK) ships. Projects should not override it. -->
+    <LangVersion>14</LangVersion>
     <!-- Enable nullable reference types for every SDK-style C# project.
          The condition excludes:
            - F# (.fsproj) and VB (.vbproj) — by the .csproj check
@@ -54,7 +56,7 @@
     </PackageReference>
 
     <!-- Microsoft Threading Analyzers - Thread safety -->
-    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="18.7.23">
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="18.12.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -66,7 +68,7 @@
     </PackageReference>
 
     <!-- Meziantou - Comprehensive code quality -->
-    <PackageReference Include="Meziantou.Analyzer" Version="3.0.299">
+    <PackageReference Include="Meziantou.Analyzer" Version="3.0.318">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -116,6 +118,16 @@
     <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
+  <ItemGroup Condition="$(_RelativeProjectDir.StartsWith('src/')) and $(TargetFramework.StartsWith('net4'))">
+    <!-- Byte-identical output across operating systems (#328). The portable PDB records every
+         referenced assembly's timestamp and MVID. For .NET Framework TFMs the SDK uses the
+         machine's installed targeting pack when there is one (Windows) and this NuGet package
+         when there is not (Linux). They are different builds of the same reference assemblies,
+         so the same commit produced different PDBs, and therefore different DLLs, per OS.
+         Referencing the package explicitly makes every OS compile against it. -->
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All" />
+  </ItemGroup>
+
   <ItemGroup Condition="$(_RelativeProjectDir.StartsWith('src/')) and Exists('$(MSBuildProjectDirectory)/obj/THIRD-PARTY-NOTICES.md')">
     <!-- Third-party attribution: scripts/third-party-notices.ps1 renders the
          package's transitive NuGet closure to obj/THIRD-PARTY-NOTICES.md
@@ -127,7 +139,7 @@
   <ItemGroup>
     <!-- SourceLink: embed source provenance into PDBs so debuggers can step
          into NuGet package code from GitHub. -->
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.401">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.403">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
