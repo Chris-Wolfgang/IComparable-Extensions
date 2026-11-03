@@ -113,6 +113,14 @@ maybeNull!.IsBetween("a", "z");   // throws ArgumentNullException("value")
 
 ---
 
+## 🔍 Verify the build
+
+Every release can be checked independently: the package's assemblies are byte-for-byte
+reproducible from the tagged source, each release attaches a `reproducible-build-manifest.json`
+with their expected hashes, and packages carry a SLSA build-provenance attestation. See
+[docs/REPRODUCIBLE-BUILD.md](docs/REPRODUCIBLE-BUILD.md) and the *Verifying the supply chain*
+section of [SECURITY.md](SECURITY.md).
+
 ## 🎯 Supported Frameworks
 
 This library targets:
@@ -122,6 +130,15 @@ This library targets:
 - **.NET:** 8.0, 10.0
 
 See the [NuGet package page](https://www.nuget.org/packages/Wolfgang.Extensions.IComparable/) for the authoritative per-TFM compatibility matrix.
+
+
+
+## Native AOT
+
+This library is trim- and Native AOT-compatible. **.NET 10 is the lowest version on which Native
+AOT is supported**: on every pull request the unit suite is compiled and run as a native binary
+(`tests/Wolfgang.Extensions.IComparable.Tests.Aot`). The .NET 8 build passes the trim/AOT analyzers but is not executed
+natively, so Native AOT on .NET 8 is not a supported scenario.
 
 
 
