@@ -15,6 +15,11 @@ on:
 permissions:
   contents: read  # Default to read-only; the build-and-deploy job overrides with write
 
+concurrency:
+  # Shares docfx.yaml's group: both push to gh-pages, so they must not overlap (#340).
+  group: gh-pages-docs-deploy
+  cancel-in-progress: false
+
 jobs:
   build-and-deploy:
     name: Build & Deploy All Versioned Docs

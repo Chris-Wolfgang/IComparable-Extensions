@@ -4,7 +4,8 @@ This guide will help you quickly get up and running with Wolfgang.Extensions.ICo
 
 ## Prerequisites
 
-- .NET 8.0 SDK or later (for development; the library targets .NET Framework 4.6.2+, .NET Standard 2.0, and .NET 8.0+)
+- To use the package: any project targeting .NET Framework 4.6.2+, .NET Standard 2.0, or .NET 8.0+
+- To build this repository: the .NET 10.0 SDK (the library also targets `net10.0`)
 
 ## Installation
 
@@ -83,7 +84,8 @@ if (checkDate.IsInRange(startDate, endDate))
 ```csharp
 string value = "M";
 
-// String comparison is ordinal/cultural per the IComparable<string> contract
+// string.CompareTo(string) is culture-sensitive (CurrentCulture), so the result
+// follows the current culture; see ADR-0005
 if (value.IsBetween("A", "Z"))
 {
     Console.WriteLine("Value is between A and Z (exclusive)");
@@ -95,10 +97,10 @@ if (value.IsBetween("A", "Z"))
 ```csharp
 public sealed class Employee : IComparable<Employee>
 {
-    public string Name { get; init; }
+    public string Name { get; init; } = string.Empty;
     public decimal Salary { get; init; }
 
-    public int CompareTo(Employee other) =>
+    public int CompareTo(Employee? other) =>
         other is null ? 1 : Salary.CompareTo(other.Salary);
 }
 

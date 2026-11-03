@@ -23,7 +23,7 @@
 
 .PARAMETER CoverageThreshold
     Minimum line coverage for PRODUCTION assemblies (anything under src/).
-    Defaults to 90. Mirrors CODECOV_MINIMUM in pr.yaml.
+    Defaults to 95. Mirrors CODECOV_MINIMUM in pr.yaml.
 
 .PARAMETER TestCoverageThreshold
     Minimum line coverage for TEST assemblies (anything under tests/).
@@ -39,7 +39,7 @@ param(
     [switch]$SkipTests,
     [switch]$SkipCoverage,
     [switch]$SkipSecurity,
-    [int]$CoverageThreshold = 90,
+    [int]$CoverageThreshold = 95,
     [int]$TestCoverageThreshold = 100
 )
 
@@ -243,7 +243,11 @@ if (-not $SkipTests -and -not $SkipCoverage -and $failed.Count -eq 0) {
     $coverageFiles = Get-ChildItem -Path TestResults -Recurse -Filter coverage.cobertura.xml -ErrorAction SilentlyContinue
 
     if (-not $coverageFiles) {
-        Write-Host "No coverage files found — skipping"
+        # pr.yaml fails here rather than skipping: tests ran, so no coverage file means the
+        # collector produced nothing and the gate cannot run - and a gate that cannot run must
+        # fail, or a local "all checks passed" hides a broken collector (#308).
+        Write-Fail "No coverage files found - the collector produced nothing, so the coverage gate cannot run"
+        $failed += "Coverage"
     }
     else {
         # ReportGenerator is pinned in .config/dotnet-tools.json, exactly as pr.yaml

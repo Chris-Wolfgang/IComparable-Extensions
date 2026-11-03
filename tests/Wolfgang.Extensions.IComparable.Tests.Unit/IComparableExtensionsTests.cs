@@ -117,6 +117,7 @@ public class IComparableExtensionsTests
     [InlineData("2011/1/1", true)]
     [InlineData("2011/7/1", true)]
     [InlineData("2011/12/31 23:59:50", true)]
+    [InlineData("2011/12/31 23:59:59", true)]
     [InlineData("2012/1/1", false)]
     public void IsInRange_when_called_on_date_times_returns_expected_result(string value, bool expectedValue)
     {
@@ -208,44 +209,26 @@ public class IComparableExtensionsTests
     // requires "m".CompareTo(null) < 0, which fails).
     // ---------------------------------------------------------------
 
-    [SuppressMessage("Design", "MA0096:A class that implements IComparable<T> or IComparable should also implement IEquatable<T>", Justification = "Test-only helper; only ordering behavior is exercised.")]
-    [SuppressMessage("Design", "MA0097:A class that implements IComparable<T> or IComparable should override comparison operators", Justification = "Test-only helper; comparison operators are never invoked.")]
-    private sealed class Money : IComparable<Money>
+    [Theory]
+    [InlineData(15, true)]
+    [InlineData(10, false)]   // strict lower
+    [InlineData(20, false)]   // strict upper
+    public void IsBetween_when_called_on_custom_IComparable_T_returns_expected_result(int amount, bool expectedValue)
     {
-        public decimal Amount { get; }
-
-        public Money(decimal amount) => Amount = amount;
-
-        public int CompareTo(Money? other) =>
-            other is null ? 1 : Amount.CompareTo(other.Amount);
+        Assert.Equal(expectedValue, new Money(amount).IsBetween(new Money(10m), new Money(20m)));
     }
 
 
 
-    [Fact]
-    public void IsBetween_when_called_on_custom_IComparable_T_returns_expected_result()
+    [Theory]
+    [InlineData(15, true)]
+    [InlineData(10, true)]    // inclusive lower
+    [InlineData(20, true)]    // inclusive upper
+    [InlineData(9, false)]
+    [InlineData(21, false)]
+    public void IsInRange_when_called_on_custom_IComparable_T_returns_expected_result(int amount, bool expectedValue)
     {
-        var ten     = new Money(10m);
-        var twenty  = new Money(20m);
-        var fifteen = new Money(15m);
-
-        Assert.True(fifteen.IsBetween(ten, twenty));
-        Assert.False(ten.IsBetween(ten, twenty));     // strict lower
-        Assert.False(twenty.IsBetween(ten, twenty));  // strict upper
-    }
-
-
-
-    [Fact]
-    public void IsInRange_when_called_on_custom_IComparable_T_returns_expected_result()
-    {
-        var ten     = new Money(10m);
-        var twenty  = new Money(20m);
-        var fifteen = new Money(15m);
-
-        Assert.True(fifteen.IsInRange(ten, twenty));
-        Assert.True(ten.IsInRange(ten, twenty));      // inclusive lower
-        Assert.True(twenty.IsInRange(ten, twenty));   // inclusive upper
+        Assert.Equal(expectedValue, new Money(amount).IsInRange(new Money(10m), new Money(20m)));
     }
 
 
@@ -355,5 +338,19 @@ public class IComparableExtensionsTests
     public void IsInRange_when_value_equals_int_MinValue_against_full_range_returns_true()
     {
         Assert.True(int.MinValue.IsInRange(int.MinValue, int.MaxValue));
+    }
+
+
+
+    [SuppressMessage("Design", "MA0096:A class that implements IComparable<T> or IComparable should also implement IEquatable<T>", Justification = "Test-only helper; only ordering behavior is exercised.")]
+    [SuppressMessage("Design", "MA0097:A class that implements IComparable<T> or IComparable should override comparison operators", Justification = "Test-only helper; comparison operators are never invoked.")]
+    private sealed class Money : IComparable<Money>
+    {
+        public decimal Amount { get; }
+
+        public Money(decimal amount) => Amount = amount;
+
+        public int CompareTo(Money? other) =>
+            other is null ? 1 : Amount.CompareTo(other.Amount);
     }
 }

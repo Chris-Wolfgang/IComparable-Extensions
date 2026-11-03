@@ -2,7 +2,6 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>net462;netstandard2.0;net8.0;net10.0</TargetFrameworks>
-		<LangVersion>14</LangVersion>
 		<Version>1.1.2</Version>
 		<!-- Pin AssemblyVersion to a fixed binding-stability baseline so consumers
 		     do not need to recompile / add binding redirects on every minor/patch
@@ -12,13 +11,13 @@
 		<AssemblyVersion>1.0.0.0</AssemblyVersion>
 		<FileVersion>$([System.Text.RegularExpressions.Regex]::Replace("$(Version)", "[-+].*$", "")).0</FileVersion>
 		<Title>$(AssemblyName)</Title>
-		<Description>A collection of extension methods for IComparable and IComparable&lt;T&gt; types</Description>
+		<Description>IsBetween and IsInRange range-check extension methods for any type that implements IComparable&lt;T&gt;</Description>
 		<PackageProjectUrl>https://github.com/Chris-Wolfgang/IComparable-Extensions</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/Chris-Wolfgang/IComparable-Extensions.git</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageTags>icomparable;range;between;extension-methods;comparison</PackageTags>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<SignAssembly>False</SignAssembly>
 		<PackageIcon>icon.png</PackageIcon>
 
 		<!-- PackageValidation: build fails if the pack introduces a binary-
@@ -30,6 +29,16 @@
 		     line as part of the release PR that ships the next version. -->
 		<EnablePackageValidation>true</EnablePackageValidation>
 		<PackageValidationBaselineVersion>1.1.2</PackageValidationBaselineVersion>
+	</PropertyGroup>
+
+	<!-- Repository baseline item 18 (#266): declare the library trim- and native-AOT-
+	     compatible on the TFMs that support it (net8.0+). This turns on the ILLink / AOT /
+	     single-file analyzers at build time, so a trim-unsafe API fails the Release build
+	     (warnings are errors) instead of surfacing in a consumer's publish. net462 and
+	     netstandard2.0 cannot declare it (NETSDK1210). -->
+	<PropertyGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))">
+		<IsAotCompatible>true</IsAotCompatible>
+		<IsTrimmable>true</IsTrimmable>
 	</PropertyGroup>
 
 	<ItemGroup>
