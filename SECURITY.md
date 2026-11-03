@@ -84,3 +84,9 @@ compare.
 Together these close the chain: **reproducible build** (the bits match the source) →
 **provenance** (this repository's workflow produced the
 bytes) → **signature** (nuget.org has not altered them since) → **SBOM** (what is inside).
+
+## Security posture score
+
+The repository's OpenSSF Scorecard score is shown by the badge in the README. Its score floor,
+baseline and the findings accepted on purpose are documented in
+[docs/SCORECARD.md](docs/SCORECARD.md).
