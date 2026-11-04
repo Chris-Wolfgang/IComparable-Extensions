@@ -74,5 +74,19 @@ the package's dependency graph for vulnerability scanning and license review. Th
 no run-time package dependencies; `license-audit.yaml` checks the full transitive closure
 against an allow-list on every pull request and weekly.
 
-Together these close the chain: **provenance** (this repository's workflow produced the
+### 4. Reproducible build
+
+The assemblies and symbols are byte-for-byte reproducible from the tagged source. Each
+release attaches `reproducible-build-manifest.json` with their expected SHA-256 values;
+[docs/REPRODUCIBLE-BUILD.md](docs/REPRODUCIBLE-BUILD.md) shows how to rebuild a tag and
+compare.
+
+Together these close the chain: **reproducible build** (the bits match the source) →
+**provenance** (this repository's workflow produced the
 bytes) → **signature** (nuget.org has not altered them since) → **SBOM** (what is inside).
+
+## Security posture score
+
+The repository's OpenSSF Scorecard score is shown by the badge in the README. Its score floor,
+baseline and the findings accepted on purpose are documented in
+[docs/SCORECARD.md](docs/SCORECARD.md).
