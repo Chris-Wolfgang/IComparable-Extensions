@@ -20,6 +20,7 @@ public class AllocationTests
     private const int Iterations = 10_000;
 
 
+
     [Fact]
     public void IsBetween_on_int_allocates_zero_bytes()
     {
@@ -33,6 +34,7 @@ public class AllocationTests
     }
 
 
+
     [Fact]
     public void IsInRange_on_int_allocates_zero_bytes()
     {
@@ -44,6 +46,7 @@ public class AllocationTests
             }
         });
     }
+
 
 
     [Fact]
@@ -62,6 +65,7 @@ public class AllocationTests
     }
 
 
+
     [Fact]
     public void IsInRange_on_DateTime_allocates_zero_bytes()
     {
@@ -78,6 +82,7 @@ public class AllocationTests
     }
 
 
+
     [Fact]
     public void IsBetween_on_long_allocates_zero_bytes()
     {
@@ -91,6 +96,7 @@ public class AllocationTests
     }
 
 
+
     [Fact]
     public void IsBetween_on_double_allocates_zero_bytes()
     {
@@ -102,6 +108,7 @@ public class AllocationTests
             }
         });
     }
+
 
 
     private static void AssertZeroAllocation(Action action)
