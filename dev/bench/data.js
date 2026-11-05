@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1789909218279,
+  "lastUpdate": 1793902832626,
   "repoUrl": "https://github.com/Chris-Wolfgang/IComparable-Extensions",
   "entries": {
     "BenchmarkDotNet": [
@@ -1200,6 +1200,126 @@ window.BENCHMARK_DATA = {
             "value": 29.74259529511134,
             "unit": "ns",
             "range": "± 0.5623206145041217"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "210299580+Chris-Wolfgang@users.noreply.github.com",
+            "name": "Chris Wolfgang",
+            "username": "Chris-Wolfgang"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "cb48ff98773a4257ee37a2916cc83ae4f6b7569d",
+          "message": "ci: add fuzz.yaml, weekly 100,000-case run of Tests.Fuzz (#157) (#350)\n\nRuns every [FuzzProperty] at FSCHECK_MAX_TESTS=100000 on a weekly\nschedule and workflow_dispatch; on failure uploads the TRX log and files\nan issue labelled 'maintenance - testing' with replay instructions.\n\nRefs #157\n\nCo-authored-by: Claude Fable 5.1 <noreply@anthropic.com>",
+          "timestamp": "2026-11-05T13:16:04-05:00",
+          "tree_id": "0b4605e40d887e7032ec430f3a84424420e8d688",
+          "url": "https://github.com/Chris-Wolfgang/IComparable-Extensions/commit/cb48ff98773a4257ee37a2916cc83ae4f6b7569d"
+        },
+        "date": 1793902830856,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.Manual_Int_Inside",
+            "value": 0.3733586370944977,
+            "unit": "ns",
+            "range": "± 0.006545498372869252"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.IsBetween_Int_Inside",
+            "value": 0.4860180529455344,
+            "unit": "ns",
+            "range": "± 0.008275783599251765"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.Manual_Int_AtLower",
+            "value": 0.30767350022991496,
+            "unit": "ns",
+            "range": "± 0.004036226396137898"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.IsBetween_Int_AtLower",
+            "value": 0.3274039787550767,
+            "unit": "ns",
+            "range": "± 0.007187469009328813"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.Manual_String_Inside",
+            "value": 69.47419251998265,
+            "unit": "ns",
+            "range": "± 0.028057252870370933"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.IsBetween_String_Inside",
+            "value": 71.69145860274632,
+            "unit": "ns",
+            "range": "± 0.08027978241896731"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.Manual_String_AtLower",
+            "value": 2.2224758118391037,
+            "unit": "ns",
+            "range": "± 0.0028928776140428594"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.IsBetween_String_AtLower",
+            "value": 4.153640938301881,
+            "unit": "ns",
+            "range": "± 0.06537883374589638"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.Manual_Int_Inside",
+            "value": 0.31319518511494,
+            "unit": "ns",
+            "range": "± 0.00527940232269079"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.IsInRange_Int_Inside",
+            "value": 0.4350038170814514,
+            "unit": "ns",
+            "range": "± 0.03327331579269756"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.Manual_Int_AtLower",
+            "value": 0.32616690049568814,
+            "unit": "ns",
+            "range": "± 0.0036539609025601364"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.IsInRange_Int_AtLower",
+            "value": 0.4239437219997247,
+            "unit": "ns",
+            "range": "± 0.019150318597084152"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.Manual_String_Inside",
+            "value": 69.58249257008235,
+            "unit": "ns",
+            "range": "± 0.05005277732495788"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.IsInRange_String_Inside",
+            "value": 69.8738984266917,
+            "unit": "ns",
+            "range": "± 0.13610439789596981"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.Manual_String_AtLower",
+            "value": 37.89358514547348,
+            "unit": "ns",
+            "range": "± 0.12620996374349222"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.IsInRange_String_AtLower",
+            "value": 37.832298735777535,
+            "unit": "ns",
+            "range": "± 0.15483825233259177"
           }
         ]
       }
