@@ -57,12 +57,10 @@
     <Project Path="src/Wolfgang.Extensions.IComparable/Wolfgang.Extensions.IComparable.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Wolfgang.Extensions.IComparable.Tests.Aot/Wolfgang.Extensions.IComparable.Tests.Aot.csproj" />
     <Project Path="tests/Wolfgang.Extensions.IComparable.Tests.AotSmoke/Wolfgang.Extensions.IComparable.Tests.AotSmoke.csproj" />
     <Project Path="tests/Wolfgang.Extensions.IComparable.Tests.DocExamples/Wolfgang.Extensions.IComparable.Tests.DocExamples.csproj" />
     <Project Path="tests/Wolfgang.Extensions.IComparable.Tests.Fuzz/Wolfgang.Extensions.IComparable.Tests.Fuzz.csproj" />
     <Project Path="tests/Wolfgang.Extensions.IComparable.Tests.Unit/Wolfgang.Extensions.IComparable.Tests.Unit.csproj" />
-  </Folder>
-  <Folder Name="/tests/">
-    <Project Path="tests/Wolfgang.Extensions.IComparable.Tests.Aot/Wolfgang.Extensions.IComparable.Tests.Aot.csproj" />
   </Folder>
 </Solution>
