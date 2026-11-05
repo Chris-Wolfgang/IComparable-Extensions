@@ -1,0 +1,73 @@
+name: "Continuous Fuzz"
+
+# Long-running counterpart of tests/Wolfgang.Extensions.IComparable.Tests.Fuzz (#157). PR CI runs
+# those FsCheck properties at the default 100 cases each; this weekly run scales every
+# [FuzzProperty] to 100,000 cases through FSCHECK_MAX_TESTS. A failure uploads the test log
+# (FsCheck prints the shrunk counter-example and a Replay seed) and files an issue; pass the
+# seed as [FuzzProperty(Replay = "...")] to replay the case locally.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 8 * * 6'  # weekly Saturday 08:00 UTC
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fuzz-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  fuzz:
+    name: "Run fuzz properties (100,000 cases per property)"
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      issues: write  # to file an issue on a fuzz-discovered failure
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68  # v6.0.0
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Run fuzz properties
+        env:
+          FSCHECK_MAX_TESTS: '100000'
+        run: >
+          dotnet test tests/Wolfgang.Extensions.IComparable.Tests.Fuzz/Wolfgang.Extensions.IComparable.Tests.Fuzz.csproj
+          --configuration Release
+          --logger "console;verbosity=detailed"
+          --logger "trx;LogFileName=fuzz.trx"
+          --results-directory fuzz-results
+
+      - name: Upload fuzz results
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
+        with:
+          name: fuzz-results
+          path: fuzz-results/
+          retention-days: 30
+
+      - name: File an issue on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          REPO: ${{ github.repository }}
+        run: |
+          body=$(printf '%s\n\n%s\n\n%s\n' \
+            "The weekly \`fuzz.yaml\` run failed at 100,000 cases per property." \
+            "Run: ${RUN_URL} (the \`fuzz-results\` artifact holds the TRX log)." \
+            "FsCheck's failure message names the shrunk counter-example and a Replay seed. Add it as \`[FuzzProperty(Replay = \"<seed>\")]\` on the failing property to replay the case locally, then commit a regression test.")
+          gh issue create \
+            --repo "$REPO" \
+            --title "Continuous fuzz found a failing case ($(date -u +%Y-%m-%d))" \
+            --label "maintenance - testing" \
+            --body "$body"
