@@ -45,6 +45,12 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  # A newer push to the same PR supersedes the running mutation run (#340). Scheduled and
+  # manual runs on main share the main ref and queue instead of overlapping.
+  group: stryker-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   detect:
     name: Detect Stryker configuration

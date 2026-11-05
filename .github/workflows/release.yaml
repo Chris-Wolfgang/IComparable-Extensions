@@ -9,7 +9,7 @@ permissions:
   contents: read  # Default to read-only; individual jobs declare write where required
 
 env:
-  CODECOV_MINIMUM: 90
+  CODECOV_MINIMUM: 95
 
 concurrency:
   # Serialize releases so a duplicate / re-published Release event can't run two
@@ -277,7 +277,7 @@ jobs:
           $coverageFiles = Get-ChildItem -Path "TestResults" -Recurse -Filter "coverage.cobertura.xml" -ErrorAction SilentlyContinue
 
           if ($coverageFiles.Count -eq 0) {
-            Write-Error "❌ No coverage files found - coverage data is required to enforce the 90% threshold"
+            Write-Error "❌ No coverage files found - coverage data is required to enforce the 95% threshold"
             exit 1
           }
 
@@ -296,7 +296,7 @@ jobs:
 
           # Parse coverage and enforce threshold per module (matching pr.yaml)
           $summaryContent = Get-Content CoverageReport/Summary.txt
-          $threshold = if ($env:CODECOV_MINIMUM) { [int]$env:CODECOV_MINIMUM } else { 90 }
+          $threshold = if ($env:CODECOV_MINIMUM) { [int]$env:CODECOV_MINIMUM } else { 95 }
           $failedModules = @()
           $coverageFound = $false
 
@@ -572,6 +572,68 @@ jobs:
           }
 
 
+      # Reproducible-build manifest (#179): the expected SHA-256 of every assembly and symbol
+      # file inside each package, plus the SDK and commit that produced them, attached to the
+      # GitHub Release so a third party can rebuild the tag and compare
+      # (docs/REPRODUCIBLE-BUILD.md). The .nupkg/.snupkg hashes are recorded for reference
+      # only: NuGet stamps the pack time into every zip entry, so a rebuild never matches
+      # them; the .dll/.pdb entries are what must match.
+      - name: Generate reproducible-build manifest
+        if: steps.check-packages.outputs.has-packages == 'true'
+        shell: pwsh
+        env:
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+          function Get-Sha256Hex([byte[]] $bytes) {
+            $sha = [System.Security.Cryptography.SHA256]::Create()
+            try { return ([System.BitConverter]::ToString($sha.ComputeHash($bytes)) -replace '-', '').ToLowerInvariant() }
+            finally { $sha.Dispose() }
+          }
+
+          $packages = @(Get-ChildItem -Path 'nuget-packages' -File | Where-Object { $_.Extension -in '.nupkg', '.snupkg' } | Sort-Object Name)
+          if ($packages.Count -eq 0) {
+            Write-Error 'No packages found in nuget-packages/ - cannot write the reproducible-build manifest.'
+          }
+
+          $entries = foreach ($package in $packages) {
+            $zip = [System.IO.Compression.ZipFile]::OpenRead($package.FullName)
+            try {
+              $assemblies = foreach ($entry in ($zip.Entries | Where-Object { $_.FullName -match '\.(dll|pdb)$' } | Sort-Object FullName)) {
+                $stream = $entry.Open()
+                try {
+                  $buffer = New-Object System.IO.MemoryStream
+                  $stream.CopyTo($buffer)
+                  [ordered]@{ path = $entry.FullName; sha256 = Get-Sha256Hex $buffer.ToArray() }
+                }
+                finally { $stream.Dispose() }
+              }
+            }
+            finally { $zip.Dispose() }
+
+            [ordered]@{
+              file   = $package.Name
+              sha256 = (Get-FileHash -Algorithm SHA256 -Path $package.FullName).Hash.ToLowerInvariant()
+              files  = @($assemblies)
+            }
+          }
+
+          $manifest = [ordered]@{
+            schema     = 1
+            repository = "$env:GITHUB_REPOSITORY"
+            tag        = "$env:TAG_NAME"
+            commit     = "$env:GITHUB_SHA"
+            sdk        = (dotnet --version).Trim()
+            note       = 'Compare the files[].sha256 values (assemblies and symbols). Package file hashes differ on every pack because NuGet stamps the pack time.'
+            packages   = @($entries)
+          }
+
+          $out = Join-Path 'nuget-packages' 'reproducible-build-manifest.json'
+          $manifest | ConvertTo-Json -Depth 6 | Set-Content -Path $out -Encoding utf8NoBOM
+          Get-Content $out
+
       - name: Upload NuGet packages
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -700,8 +762,10 @@ jobs:
       # id-token: write is what allows NuGet/login to exchange the GitHub
       # OIDC token for an ephemeral push key. contents: read is inherited
       # from the workflow-level default but restated here for clarity —
-      # explicit permission blocks tighten the job's scope.
+      # explicit permission blocks tighten the job's scope. The same OIDC token also
+      # signs the provenance attestation (#163).
       id-token: write
+      attestations: write   # record the SLSA build-provenance attestation on GitHub
       contents: read
     steps:
       - name: Setup .NET
@@ -721,6 +785,53 @@ jobs:
         with:
           name: nuget-packages
           path: ./packages
+
+      # SLSA build provenance (#163): a signed attestation binding each packed .nupkg (by
+      # SHA-256 digest) to the exact repository, commit and workflow run that produced
+      # it, using the job's OIDC identity - no signing key to manage, the same keyless
+      # model as the NuGet trusted-publishing login below. Attest BEFORE pushing so the
+      # provenance covers the exact bytes published; consumers verify with
+      # `gh attestation verify <pkg>.nupkg --repo <owner>/<repo>
+      # --signer-workflow <owner>/<repo>/.github/workflows/release.yaml` (SECURITY.md).
+      # Package *signing* (an author signature `nuget verify` checks) is separate and
+      # needs a code-signing certificate (#215).
+      - name: Attest build provenance for packages
+        id: attest
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: './packages/*.nupkg'
+
+      # The attestation above is recorded in GitHub's attestation store, which is what
+      # `gh attestation verify` reads. Tooling that audits the RELEASE PAGE - OpenSSF
+      # Scorecard's Signed-Releases check among it - looks for an asset whose name ends
+      # in .intoto.jsonl instead. The bundle the action writes IS that document, so it
+      # is copied under a deterministic name and handed to update-release-artifacts,
+      # which owns contents: write. This job keeps contents: read on purpose.
+      - name: Stage the provenance bundle for the release
+        shell: bash
+        env:
+          BUNDLE_PATH: ${{ steps.attest.outputs.bundle-path }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          # attest-build-provenance builds this path with Node path.join, so on a Windows
+          # runner it arrives with backslashes; normalise so the step does not depend on
+          # MSYS path translation. The substitution is a no-op on a POSIX path.
+          BUNDLE_PATH="${BUNDLE_PATH//\\//}"
+          if [ ! -f "$BUNDLE_PATH" ]; then
+            echo "::error::attest-build-provenance reported no bundle at '$BUNDLE_PATH'"
+            exit 1
+          fi
+          mkdir -p ./provenance
+          cp "$BUNDLE_PATH" "./provenance/${GITHUB_REPOSITORY##*/}-${TAG_NAME}.intoto.jsonl"
+          ls -l ./provenance
+
+      - name: Upload the provenance bundle for the release job
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: provenance-bundle
+          path: ./provenance/*.intoto.jsonl
+          if-no-files-found: error
 
       - name: Login to NuGet via Trusted Publishing (OIDC)
         id: nuget-login
@@ -802,6 +913,12 @@ jobs:
       - name: Zip coverage report
         run: zip -r release-coverage.zip ./release-coverage
 
+      - name: Download provenance bundle
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: provenance-bundle
+          path: ./provenance
+
       # `gh` is pre-installed on the runner, so no third-party action is needed
       # to upload release assets (zizmor superfluous-actions).
       - name: Attach artifacts to release
@@ -811,6 +928,6 @@ jobs:
           TAG_NAME: ${{ github.event.release.tag_name }}
         run: |
           shopt -s nullglob
-          files=(./nuget-packages/*.nupkg ./nuget-packages/*.snupkg ./nuget-packages/*.bom.json release-coverage.zip)
+          files=(./nuget-packages/*.nupkg ./nuget-packages/*.snupkg ./nuget-packages/*.bom.json ./nuget-packages/reproducible-build-manifest*.json ./provenance/*.intoto.jsonl release-coverage.zip)
           echo "Uploading ${#files[@]} asset(s) to release $TAG_NAME"
           gh release upload "$TAG_NAME" "${files[@]}" --clobber
