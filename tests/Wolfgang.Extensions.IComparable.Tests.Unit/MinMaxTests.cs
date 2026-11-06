@@ -52,7 +52,7 @@ public class MinMaxTests
     [Fact]
     public void Min_when_called_on_strings_agrees_with_string_CompareTo()
     {
-        var expected = "pear".CompareTo("apple") < 0 ? "pear" : "apple";
+        var expected = string.Compare("pear", "apple", StringComparison.CurrentCulture) < 0 ? "pear" : "apple";
 
         Assert.Equal(expected, "pear".Min("apple"));
     }
@@ -210,7 +210,7 @@ public class MinMaxTests
     [Fact]
     public void Min_when_the_sequence_is_null_throws_ArgumentNullException()
     {
-        var exception = Assert.Throws<ArgumentNullException>(() => 5.Min((IEnumerable<int>)null!));
+        var exception = Assert.Throws<ArgumentNullException>(() => 5.Min(null!));
 
         Assert.Equal("others", exception.ParamName);
     }
@@ -220,7 +220,7 @@ public class MinMaxTests
     [Fact]
     public void Max_when_the_sequence_is_null_throws_ArgumentNullException()
     {
-        var exception = Assert.Throws<ArgumentNullException>(() => 5.Max((IEnumerable<int>)null!));
+        var exception = Assert.Throws<ArgumentNullException>(() => 5.Max(null!));
 
         Assert.Equal("others", exception.ParamName);
     }
