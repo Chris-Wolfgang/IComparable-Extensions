@@ -109,4 +109,24 @@ public class ClampTests
 
         Assert.Equal("value", exception.ParamName);
     }
+
+
+
+    [Fact]
+    public void Clamp_when_value_equals_the_maximum_returns_the_value_instance()
+    {
+        var value = new string('c', 1);
+
+        Assert.Same(value, value.Clamp("b", "c"));
+    }
+
+
+
+    [Fact]
+    public void Clamp_when_bounds_are_inverted_explains_why()
+    {
+        var exception = Assert.Throws<ArgumentException>(() => 5.Clamp(10, 1));
+
+        Assert.StartsWith("The minimum must be less than or equal to the maximum.", exception.Message, StringComparison.Ordinal);
+    }
 }

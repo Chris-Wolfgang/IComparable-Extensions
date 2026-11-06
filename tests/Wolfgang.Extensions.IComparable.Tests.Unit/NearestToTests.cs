@@ -159,4 +159,14 @@ public class NearestToTests
 
         Assert.Equal("value", exception.ParamName);
     }
+
+
+
+    [Fact]
+    public void NearestTo_when_there_is_no_candidate_explains_why()
+    {
+        var exception = Assert.Throws<ArgumentException>(() => 5.NearestTo(Enumerable.Empty<int>(), IntDistance));
+
+        Assert.StartsWith("The candidates contain no non-null element.", exception.Message, StringComparison.Ordinal);
+    }
 }
