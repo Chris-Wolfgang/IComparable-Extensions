@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793902832626,
+  "lastUpdate": 1793927977504,
   "repoUrl": "https://github.com/Chris-Wolfgang/IComparable-Extensions",
   "entries": {
     "BenchmarkDotNet": [
@@ -1320,6 +1320,126 @@ window.BENCHMARK_DATA = {
             "value": 37.832298735777535,
             "unit": "ns",
             "range": "± 0.15483825233259177"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "210299580+Chris-Wolfgang@users.noreply.github.com",
+            "name": "Chris Wolfgang",
+            "username": "Chris-Wolfgang"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "e2c184e39107c5b39177db064c751fd6c225b14f",
+          "message": "docs: describe the current CI model (pull_request + protected-files guard, Trusted Publishing) (#335) (#355)\n\n- docs/WORKFLOW_SECURITY.md: synced from repo-template (pr.yaml on\n  pull_request, protected-files.yaml as the only pull_request_target\n  workflow, job split for the SARIF upload). The protected list matches\n  this repo's protected-files.yaml (it does not guard .github/requirements).\n- docs/RELEASE-WORKFLOW-SETUP.md: synced from repo-template and adapted:\n  NuGet Trusted Publishing policy instead of NUGET_API_KEY, the current\n  required-check names, all seven release.yaml jobs; no attestation or\n  THIRD-PARTY-NOTICES step (this release.yaml has neither yet).\n- .github/copilot-instructions.md: all 18 workflows with real triggers,\n  every test project and benchmarks in the layout, current branch model\n  and release (v1.1.2).\n- README: PR badge ?event=pull_request, release badge ?event=release, and\n  the Coverage badge (docfx.yaml already publishes badge.json).\n- getting-started: building needs the .NET 10 SDK.\n\nRefs #335\n\nCo-authored-by: Claude Fable 5.1 <noreply@anthropic.com>",
+          "timestamp": "2026-11-05T20:14:16-05:00",
+          "tree_id": "316f86b7fa36468c9243d5047f09950ce6c71e6d",
+          "url": "https://github.com/Chris-Wolfgang/IComparable-Extensions/commit/e2c184e39107c5b39177db064c751fd6c225b14f"
+        },
+        "date": 1793927976164,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.Manual_Int_Inside",
+            "value": 0.00047291194399197895,
+            "unit": "ns",
+            "range": "± 0.00041548384856677676"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.IsBetween_Int_Inside",
+            "value": 0.2737340567012628,
+            "unit": "ns",
+            "range": "± 0.0007132708565483404"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.Manual_Int_AtLower",
+            "value": 0.0005844713499148687,
+            "unit": "ns",
+            "range": "± 0.0007483920680067195"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.IsBetween_Int_AtLower",
+            "value": 0.276299895097812,
+            "unit": "ns",
+            "range": "± 0.0041305616027539"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.Manual_String_Inside",
+            "value": 59.15060873826345,
+            "unit": "ns",
+            "range": "± 0.07415305154778196"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.IsBetween_String_Inside",
+            "value": 58.30869980653127,
+            "unit": "ns",
+            "range": "± 0.05166381920967788"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.Manual_String_AtLower",
+            "value": 1.6447428166866302,
+            "unit": "ns",
+            "range": "± 0.005383525637525447"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.IsBetween_String_AtLower",
+            "value": 3.02098805954059,
+            "unit": "ns",
+            "range": "± 0.024133555998418797"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.Manual_Int_Inside",
+            "value": 0.002413703128695488,
+            "unit": "ns",
+            "range": "± 0.0005649218291682409"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.IsInRange_Int_Inside",
+            "value": 0.276851665849487,
+            "unit": "ns",
+            "range": "± 0.0015201628590168278"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.Manual_Int_AtLower",
+            "value": 0.0008531411488850912,
+            "unit": "ns",
+            "range": "± 0.000475287347712487"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.IsInRange_Int_AtLower",
+            "value": 0.27426033094525337,
+            "unit": "ns",
+            "range": "± 0.0003006355319214164"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.Manual_String_Inside",
+            "value": 60.090097745259605,
+            "unit": "ns",
+            "range": "± 0.25372380538223444"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.IsInRange_String_Inside",
+            "value": 59.962958097457886,
+            "unit": "ns",
+            "range": "± 0.06443184853846347"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.Manual_String_AtLower",
+            "value": 39.88282956679662,
+            "unit": "ns",
+            "range": "± 0.050445450582011886"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.IsInRange_String_AtLower",
+            "value": 33.00976068774859,
+            "unit": "ns",
+            "range": "± 0.003200339028507151"
           }
         ]
       }
