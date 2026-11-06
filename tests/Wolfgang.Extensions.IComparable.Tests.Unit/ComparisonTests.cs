@@ -93,7 +93,7 @@ public class ComparisonTests
     [Fact]
     public void IsLessThan_when_called_on_strings_agrees_with_string_CompareTo()
     {
-        Assert.Equal("apple".CompareTo("banana") < 0, "apple".IsLessThan("banana"));
+        Assert.Equal(string.Compare("apple", "banana", StringComparison.CurrentCulture) < 0, "apple".IsLessThan("banana"));
     }
 
 
