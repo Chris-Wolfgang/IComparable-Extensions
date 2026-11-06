@@ -32,7 +32,7 @@ public static partial class IComparableExtensions
     public static T Min<T>
     (
         this T value,
-        T other
+        T? other
     ) where T : IComparable<T>
     {
         if (value is null)
@@ -72,7 +72,7 @@ public static partial class IComparableExtensions
     public static T Min<T>
     (
         this T value,
-        T other,
+        T? other,
         params T[] others
     ) where T : IComparable<T>
     {
@@ -182,7 +182,7 @@ public static partial class IComparableExtensions
     public static T Max<T>
     (
         this T value,
-        T other
+        T? other
     ) where T : IComparable<T>
     {
         if (value is null)
@@ -222,7 +222,7 @@ public static partial class IComparableExtensions
     public static T Max<T>
     (
         this T value,
-        T other,
+        T? other,
         params T[] others
     ) where T : IComparable<T>
     {
