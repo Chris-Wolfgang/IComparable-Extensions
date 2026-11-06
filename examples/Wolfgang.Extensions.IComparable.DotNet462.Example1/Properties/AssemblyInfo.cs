@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Wolfgang.Extensions.IComparable.DotNet462.Example1")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Chris Wolfgang")]
 [assembly: AssemblyProduct("Wolfgang.Extensions.IComparable.DotNet462.Example1")]
-[assembly: AssemblyCopyright("Copyright ©  2026")]
+[assembly: AssemblyCopyright("Copyright © 2026 Chris Wolfgang")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
