@@ -4,12 +4,13 @@ Extension methods for `IComparable<T>` that make ordering and range checks read 
 
 [![NuGet](https://img.shields.io/nuget/v/Wolfgang.Extensions.IComparable.svg?logo=nuget&label=NuGet)](https://www.nuget.org/packages/Wolfgang.Extensions.IComparable)
 [![NuGet downloads](https://img.shields.io/nuget/dt/Wolfgang.Extensions.IComparable.svg?logo=nuget&label=downloads)](https://www.nuget.org/packages/Wolfgang.Extensions.IComparable)
-[![PR build](https://img.shields.io/github/actions/workflow/status/Chris-Wolfgang/IComparable-Extensions/pr.yaml?event=pull_request_target&label=PR%20build&logo=github)](https://github.com/Chris-Wolfgang/IComparable-Extensions/actions/workflows/pr.yaml)
-[![Release](https://img.shields.io/github/actions/workflow/status/Chris-Wolfgang/IComparable-Extensions/release.yaml?label=release&logo=github)](https://github.com/Chris-Wolfgang/IComparable-Extensions/actions/workflows/release.yaml)
+[![PR build](https://img.shields.io/github/actions/workflow/status/Chris-Wolfgang/IComparable-Extensions/pr.yaml?event=pull_request&label=PR%20build&logo=github)](https://github.com/Chris-Wolfgang/IComparable-Extensions/actions/workflows/pr.yaml)
+[![Release](https://img.shields.io/github/actions/workflow/status/Chris-Wolfgang/IComparable-Extensions/release.yaml?event=release&label=release&logo=github)](https://github.com/Chris-Wolfgang/IComparable-Extensions/actions/workflows/release.yaml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![.NET](https://img.shields.io/badge/.NET-Multi--Targeted-purple.svg)](https://dotnet.microsoft.com/)
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?logo=github)](https://github.com/Chris-Wolfgang/IComparable-Extensions)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/Chris-Wolfgang/IComparable-Extensions/badge)](https://scorecard.dev/viewer/?uri=github.com/Chris-Wolfgang/IComparable-Extensions)
+[![Coverage](https://img.shields.io/endpoint?url=https://chris-wolfgang.github.io/IComparable-Extensions/versions/latest/coverage/badge.json&logo=github)](https://chris-wolfgang.github.io/IComparable-Extensions/versions/latest/coverage/)
 
 ---
 
