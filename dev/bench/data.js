@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793936105814,
+  "lastUpdate": 1793996356783,
   "repoUrl": "https://github.com/Chris-Wolfgang/IComparable-Extensions",
   "entries": {
     "BenchmarkDotNet": [
@@ -1560,6 +1560,126 @@ window.BENCHMARK_DATA = {
             "value": 18.657305280367535,
             "unit": "ns",
             "range": "± 0.07114078985834234"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "210299580+Chris-Wolfgang@users.noreply.github.com",
+            "name": "Chris Wolfgang",
+            "username": "Chris-Wolfgang"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "00afe6d8058432c36221f1f269627fa135740084",
+          "message": "feat: NearestTo with a caller-supplied distance (#37) (#370)\n\n* feat: NearestTo with a caller-supplied distance (#37)\n\nvalue.NearestTo(candidates, distance) and the params form\nvalue.NearestTo(distance, c1, c2, ...): returns the candidate with the\nsmallest distance(value, candidate). IComparable<T> has no magnitude, so\nthe distance is a Func<T, T, TDistance> with TDistance : IComparable.\nTies return the earliest candidate; null candidates are skipped;\nArgumentNullException for null value/candidates/distance and\nArgumentException when no non-null candidate exists.\n\nRefs #37\n\nCo-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>\n\n* fix: annotate NearestTo candidates as nullable to match null-skipping behavior\n\nNull candidates are skipped, so the element type is honestly T?. Clears the\nInspectCode nullable-contract and redundant-cast alerts without suppression.\n\nCo-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>\n\n---------\n\nCo-authored-by: Claude Fable 5.1 <noreply@anthropic.com>",
+          "timestamp": "2026-11-06T15:13:52-05:00",
+          "tree_id": "156718fb40f05816eda9a00b8f83e8f389b0c9c5",
+          "url": "https://github.com/Chris-Wolfgang/IComparable-Extensions/commit/00afe6d8058432c36221f1f269627fa135740084"
+        },
+        "date": 1793996355154,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.Manual_Int_Inside",
+            "value": 0.0034990559021631875,
+            "unit": "ns",
+            "range": "± 0.003543376782496197"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.IsBetween_Int_Inside",
+            "value": 0.277922719096144,
+            "unit": "ns",
+            "range": "± 0.0013565913427005135"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.Manual_Int_AtLower",
+            "value": 0.027564889440933864,
+            "unit": "ns",
+            "range": "± 0.0006075645075965104"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.IsBetween_Int_AtLower",
+            "value": 0.27370037510991096,
+            "unit": "ns",
+            "range": "± 0.0003932676738277149"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.Manual_String_Inside",
+            "value": 58.99151009321213,
+            "unit": "ns",
+            "range": "± 0.10571987634241245"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.IsBetween_String_Inside",
+            "value": 59.189584811528526,
+            "unit": "ns",
+            "range": "± 0.030513123800080814"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.Manual_String_AtLower",
+            "value": 1.6446381298204262,
+            "unit": "ns",
+            "range": "± 0.006637501763970407"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.IsBetween_String_AtLower",
+            "value": 3.025664115945498,
+            "unit": "ns",
+            "range": "± 0.02764824677822938"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.Manual_Int_Inside",
+            "value": 0.0022898142536481223,
+            "unit": "ns",
+            "range": "± 0.0005114200759826753"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.IsInRange_Int_Inside",
+            "value": 0.2748940195888281,
+            "unit": "ns",
+            "range": "± 0.001249406979645051"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.Manual_Int_AtLower",
+            "value": 0.012329277272025744,
+            "unit": "ns",
+            "range": "± 0.01632676016003877"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.IsInRange_Int_AtLower",
+            "value": 0.27491525063912076,
+            "unit": "ns",
+            "range": "± 0.0006183350776212184"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.Manual_String_Inside",
+            "value": 59.12454068660736,
+            "unit": "ns",
+            "range": "± 0.2026116964257522"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.IsInRange_String_Inside",
+            "value": 58.84677791595459,
+            "unit": "ns",
+            "range": "± 0.03095422437872981"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.Manual_String_AtLower",
+            "value": 33.82978976766268,
+            "unit": "ns",
+            "range": "± 0.009087200988857529"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.IsInRange_String_AtLower",
+            "value": 33.89292258024216,
+            "unit": "ns",
+            "range": "± 0.052356362963143645"
           }
         ]
       }
