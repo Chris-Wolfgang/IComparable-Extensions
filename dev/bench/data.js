@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793927977504,
+  "lastUpdate": 1793936105814,
   "repoUrl": "https://github.com/Chris-Wolfgang/IComparable-Extensions",
   "entries": {
     "BenchmarkDotNet": [
@@ -1440,6 +1440,126 @@ window.BENCHMARK_DATA = {
             "value": 33.00976068774859,
             "unit": "ns",
             "range": "± 0.003200339028507151"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "210299580+Chris-Wolfgang@users.noreply.github.com",
+            "name": "Chris Wolfgang",
+            "username": "Chris-Wolfgang"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": false,
+          "id": "f18cb4b238c498ff9787b2c7a66f505e4578baa9",
+          "message": "feat: Clamp(min, max) for any IComparable<T> (#32) (#368)\n\n* feat: Clamp(min, max) for any IComparable<T> (#32)\n\nReturns min when value < min, max when value > max, otherwise value\n(the value instance itself when it equals a bound). ArgumentNullException\nfor a null value; ArgumentException (param min) when min > max, as\nMath.Clamp does, decided by Comparer<T>.Default so a null bound sorts\nfirst. In IComparableExtensions.Clamp.cs with a compiled <example>.\n\nRefs #32\n\nCo-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>\n\n* test: compare against string.Compare(..., CurrentCulture) explicitly (code-scanning)\n\nSame semantics as string.CompareTo(string), with the culture dependence spelled out.\n\nCo-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>\n\n---------\n\nCo-authored-by: Claude Fable 5.1 <noreply@anthropic.com>",
+          "timestamp": "2026-11-05T22:27:53-05:00",
+          "tree_id": "316f63c097303cc194cb409af7b98c2b81e01f0f",
+          "url": "https://github.com/Chris-Wolfgang/IComparable-Extensions/commit/f18cb4b238c498ff9787b2c7a66f505e4578baa9"
+        },
+        "date": 1793936104209,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.Manual_Int_Inside",
+            "value": 0.004663772881031036,
+            "unit": "ns",
+            "range": "± 0.00131424929927637"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.IsBetween_Int_Inside",
+            "value": 0.22265623634060225,
+            "unit": "ns",
+            "range": "± 0.0012440513666786288"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.Manual_Int_AtLower",
+            "value": 0,
+            "unit": "ns",
+            "range": "± 0"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.IsBetween_Int_AtLower",
+            "value": 0.21622956854601702,
+            "unit": "ns",
+            "range": "± 0.0031052071997308742"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.Manual_String_Inside",
+            "value": 33.901023825009666,
+            "unit": "ns",
+            "range": "± 0.11968797750800957"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.IsBetween_String_Inside",
+            "value": 34.76751923561096,
+            "unit": "ns",
+            "range": "± 0.09963838630563362"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.Manual_String_AtLower",
+            "value": 0.9037340419987837,
+            "unit": "ns",
+            "range": "± 0.0018427477546411187"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsBetweenBenchmarks.IsBetween_String_AtLower",
+            "value": 1.616503323117892,
+            "unit": "ns",
+            "range": "± 0.010510254336983998"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.Manual_Int_Inside",
+            "value": 0.0011831000447273254,
+            "unit": "ns",
+            "range": "± 0.002049189387904739"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.IsInRange_Int_Inside",
+            "value": 0.2346280924975872,
+            "unit": "ns",
+            "range": "± 0.012489980296646934"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.Manual_Int_AtLower",
+            "value": 0.00823624556263288,
+            "unit": "ns",
+            "range": "± 0.006023782509865628"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.IsInRange_Int_AtLower",
+            "value": 0.22680115699768066,
+            "unit": "ns",
+            "range": "± 0.0030092997430928754"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.Manual_String_Inside",
+            "value": 34.119218150774635,
+            "unit": "ns",
+            "range": "± 0.3979560944185235"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.IsInRange_String_Inside",
+            "value": 35.5549453496933,
+            "unit": "ns",
+            "range": "± 0.27950174330783123"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.Manual_String_AtLower",
+            "value": 18.39357844988505,
+            "unit": "ns",
+            "range": "± 0.03506044240195401"
+          },
+          {
+            "name": "Wolfgang.Extensions.IComparable.Benchmarks.IsInRangeBenchmarks.IsInRange_String_AtLower",
+            "value": 18.657305280367535,
+            "unit": "ns",
+            "range": "± 0.07114078985834234"
           }
         ]
       }
