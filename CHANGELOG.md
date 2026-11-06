@@ -7,18 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-
-### Changed
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
-
 ## [1.1.2] - 2026-08-21
 
 Infrastructure and quality-hardening round. No public API or runtime
@@ -91,7 +79,7 @@ build-time gates, test coverage, and release-path security posture.
   release now runs against a scoped ephemeral credential from GitHub
   OIDC.
 
-## [1.1.1] - 2026-06-01
+## [1.1.1] - 2026-06-03
 
 Canonical maintenance round + binding-stability fix. No public API or
 runtime behavior change vs v1.1.0.
@@ -151,6 +139,52 @@ runtime behavior change vs v1.1.0.
   consumers without a binding redirect. (See DateTime-Extensions v1.3.1
   for the post-mortem on what happens when this regression reaches a
   release.)
+
+## [1.1.0] - 2026-04-28
+
+Hardening and repository-standards release. Public API unchanged from v1.0.0
+(`IsBetween<T>` and `IsInRange<T>`); one behaviour change, below.
+
+### Changed
+
+- **License changed from MPL-2.0 to MIT** (#5). The package metadata already
+  declared `MIT`; the `LICENSE` file now matches it.
+- **`IsBetween` / `IsInRange` throw `ArgumentNullException` for a null
+  `value`** (#31). In v1.0.0 a null receiver failed with a
+  `NullReferenceException` from `CompareTo`. Bounds are still passed
+  straight to `T.CompareTo`. XML documentation was expanded at the same time.
+
+### Added
+
+- `SECURITY.md` (#28), documentation files (#8), and `scripts/build-pr.ps1`
+  to run the PR checks locally (#27).
+- Repository-template CI: gated `pr.yaml` (#25, #43), template `release.yaml`
+  with a tag-vs-csproj version check (#26, #57), protected configuration file
+  detection (#47, #58), and the template scripts (#24, #42, #55).
+
+### Fixed
+
+- `release.yaml` pack-and-validate restore/build arguments (#60) and the
+  trusted-config fetch exit code (#30).
+
+### Internal
+
+- Test and analyzer dependency bumps (xunit runner, Test SDK, coverlet,
+  Meziantou.Analyzer, SonarAnalyzer.CSharp), docfx single-commit deploy (#17),
+  solution file renamed to `IComparable-Extensions` (#59).
+
+## [1.0.0] - 2026-01-20
+
+Initial release (#1, #4).
+
+### Added
+
+- `IsBetween<T>(this T value, T lowerBound, T upperBound)`: `true` when `value`
+  is strictly between the bounds (exclusive).
+- `IsInRange<T>(this T value, T lowerBound, T upperBound)`: `true` when `value`
+  is within the bounds (inclusive).
+- Both work for any `T : IComparable<T>` and target `net462`,
+  `netstandard2.0`, `net8.0` and `net10.0`.
 
 [Unreleased]: https://github.com/Chris-Wolfgang/IComparable-Extensions/compare/v1.1.2...HEAD
 [1.1.2]: https://github.com/Chris-Wolfgang/IComparable-Extensions/compare/v1.1.1...v1.1.2
