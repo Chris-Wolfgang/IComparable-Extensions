@@ -25,6 +25,11 @@ Check("IsInRange on DateTime at lower", quarterStart.IsInRange(quarterStart, qua
 Check("IsBetween on string",  "m".IsBetween("a", "z"),                  expected: true);
 Check("IsInRange on string",  "a".IsInRange("a", "z"),                  expected: true);
 
+Check("IsGreaterThan on int",          5.IsGreaterThan(4),                  expected: true);
+Check("IsGreaterThanOrEqualTo on int", 5.IsGreaterThanOrEqualTo(5),         expected: true);
+Check("IsLessThan on DateTime",       quarterStart.IsLessThan(quarterEnd), expected: true);
+Check("IsLessThanOrEqualTo on string", "a".IsLessThanOrEqualTo("a"),       expected: true);
+
 // Argument-null path — the constructor of ArgumentNullException itself is a
 // classic AOT / trim casualty. Force it once so a broken exception path
 // crashes the smoke, not a downstream consumer.
