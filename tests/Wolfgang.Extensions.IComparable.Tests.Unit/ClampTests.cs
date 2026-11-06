@@ -53,7 +53,7 @@ public class ClampTests
     [Fact]
     public void Clamp_when_called_on_strings_agrees_with_string_CompareTo()
     {
-        var expected = "zebra".CompareTo("monkey") > 0 ? "monkey" : "zebra";
+        var expected = string.Compare("zebra", "monkey", StringComparison.CurrentCulture) > 0 ? "monkey" : "zebra";
 
         Assert.Equal(expected, "zebra".Clamp("apple", "monkey"));
     }
