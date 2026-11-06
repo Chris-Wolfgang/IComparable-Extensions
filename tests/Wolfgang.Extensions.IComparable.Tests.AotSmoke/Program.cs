@@ -33,6 +33,10 @@ Check("IsLessThanOrEqualTo on string", "a".IsLessThanOrEqualTo("a"),       expec
 Check("Clamp on int above",            15.Clamp(1, 10) == 10,              expected: true);
 Check("Clamp on DateTime below",       new DateTime(2026, 1, 1).Clamp(quarterStart, quarterEnd) == quarterStart, expected: true);
 
+Check("Min on int params",             7.Min(3, 9, 5) == 3,                 expected: true);
+Check("Max on DateTime",               quarterStart.Max(quarterEnd) == quarterEnd, expected: true);
+Check("Max on string sequence",        string.Equals("a".Max(new[] { "c", "b" }.AsEnumerable()), "c", StringComparison.Ordinal), expected: true);
+
 // Argument-null path — the constructor of ArgumentNullException itself is a
 // classic AOT / trim casualty. Force it once so a broken exception path
 // crashes the smoke, not a downstream consumer.
