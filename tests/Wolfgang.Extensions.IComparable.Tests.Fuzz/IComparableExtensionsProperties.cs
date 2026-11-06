@@ -15,7 +15,7 @@ namespace Wolfgang.Extensions.IComparable.Tests.Fuzz;
 /// class of drift a unit-test suite targeted at known cases will not catch.
 ///
 /// The library also propagates <c>T.CompareTo</c>'s null-bound behaviour
-/// (per ADR-0003), so bounds are allowed to be null; only the receiver
+/// (per ADR-0005), so bounds are allowed to be null; only the receiver
 /// (<c>value</c>) is null-checked, and the properties assert that a null
 /// receiver throws <see cref="ArgumentNullException"/>.
 ///
@@ -85,7 +85,7 @@ public class IComparableExtensionsProperties
 
 
     // -- string --------------------------------------------------------------
-    // Bounds may be null (per ADR-0003 — they pass through to T.CompareTo).
+    // Bounds may be null (per ADR-0005 — they pass through to T.CompareTo).
     // The receiver may not — a null value is asserted separately below to
     // throw ArgumentNullException.
 

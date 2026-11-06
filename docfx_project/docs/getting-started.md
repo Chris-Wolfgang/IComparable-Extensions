@@ -83,7 +83,8 @@ if (checkDate.IsInRange(startDate, endDate))
 ```csharp
 string value = "M";
 
-// String comparison is ordinal/cultural per the IComparable<string> contract
+// string.CompareTo(string) is culture-sensitive (CurrentCulture), so the result
+// follows the current culture; see ADR-0005
 if (value.IsBetween("A", "Z"))
 {
     Console.WriteLine("Value is between A and Z (exclusive)");
@@ -95,10 +96,10 @@ if (value.IsBetween("A", "Z"))
 ```csharp
 public sealed class Employee : IComparable<Employee>
 {
-    public string Name { get; init; }
+    public string Name { get; init; } = string.Empty;
     public decimal Salary { get; init; }
 
-    public int CompareTo(Employee other) =>
+    public int CompareTo(Employee? other) =>
         other is null ? 1 : Salary.CompareTo(other.Salary);
 }
 
