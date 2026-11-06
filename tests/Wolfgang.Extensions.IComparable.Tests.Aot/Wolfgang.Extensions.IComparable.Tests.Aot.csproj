@@ -40,9 +40,11 @@
 		<ProjectReference Include="..\..\src\Wolfgang.Extensions.IComparable\Wolfgang.Extensions.IComparable.csproj" />
 	</ItemGroup>
 
-	<!-- The unit tests themselves, linked from the 2.x project. -->
+	<!-- The unit tests themselves, linked from the 2.x project. The EF Core translation tests are
+	     left out: EF Core is not Native-AOT compatible, and this project does not reference it.
+	     They run in the JIT suite (Tests.Unit, net8.0+). -->
 	<ItemGroup>
-		<Compile Include="..\Wolfgang.Extensions.IComparable.Tests.Unit\*.cs" Link="Unit\%(Filename)%(Extension)" />
+		<Compile Include="..\Wolfgang.Extensions.IComparable.Tests.Unit\*.cs" Exclude="..\Wolfgang.Extensions.IComparable.Tests.Unit\QueryableRangeEfCoreTranslationTests.cs" Link="Unit\%(Filename)%(Extension)" />
 	</ItemGroup>
 
 	<ItemGroup>
