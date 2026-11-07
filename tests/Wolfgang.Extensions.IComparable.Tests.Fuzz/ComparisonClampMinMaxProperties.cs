@@ -1,4 +1,3 @@
-using System.Linq;
 using FsCheck;
 using FsCheck.Fluent;
 using FsCheck.Xunit;
@@ -41,7 +40,7 @@ public class ComparisonClampMinMaxProperties
     [Property]
     public Property IsGreaterThan_on_string_matches_manual_CompareTo() =>
         Prop.ForAll<NonNull<string>, string>((value, other) =>
-            value.Get.IsGreaterThan(other) == (value.Get.CompareTo(other) > 0));
+            value.Get.IsGreaterThan(other) == (string.Compare(value.Get, other, StringComparison.CurrentCulture) > 0));
 
 
     // -- Clamp -----------------------------------------------------------------
