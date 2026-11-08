@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1792305340247,
+  "lastUpdate": 1794143359902,
   "repoUrl": "https://github.com/Chris-Wolfgang/IComparable-Extensions",
   "entries": {
     "Mutation score": [
@@ -102,6 +102,33 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Chris-Wolfgang/IComparable-Extensions/commit/a430044d159baa00cea23f62a5bd39e37b587837"
         },
         "date": 1792305332075,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Mutation score",
+            "value": 100,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "Chris Wolfgang",
+            "username": "Chris-Wolfgang",
+            "email": "210299580+Chris-Wolfgang@users.noreply.github.com"
+          },
+          "committer": {
+            "name": "GitHub",
+            "username": "web-flow",
+            "email": "noreply@github.com"
+          },
+          "id": "1b191189b77aa0db87eb357fa1bc28eb355b4a57",
+          "message": "test(fuzz): clear the InspectCode alerts in the fuzz project (#422)\n\nDrop two redundant using directives and compare strings with an explicit\nculture instead of string.CompareTo.\n\nCo-authored-by: Claude Sonnet 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-07T03:27:52Z",
+          "url": "https://github.com/Chris-Wolfgang/IComparable-Extensions/commit/1b191189b77aa0db87eb357fa1bc28eb355b4a57"
+        },
+        "date": 1794143354868,
         "tool": "customBiggerIsBetter",
         "benches": [
           {
