@@ -21,7 +21,6 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write   # for benchmark-action to comment the delta table
 
 concurrency:
   group: pr-benchmarks-${{ github.event.pull_request.number || github.ref }}
@@ -32,6 +31,11 @@ jobs:
     name: BDN delta vs main
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Job-level, not workflow-level: benchmark-action in this job posts
+    # the delta table as a PR comment.
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Checkout PR HEAD
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
