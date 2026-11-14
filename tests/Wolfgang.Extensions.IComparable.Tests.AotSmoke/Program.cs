@@ -24,6 +24,8 @@ Check("IsInRange on DateTime at lower", quarterStart.IsInRange(quarterStart, qua
 
 Check("IsBetween on string",  "m".IsBetween("a", "z"),                  expected: true);
 Check("IsInRange on string",  "a".IsInRange("a", "z"),                  expected: true);
+Check("IsInRangeExcludingUpper on DateTime at upper", quarterEnd.IsInRangeExcludingUpper(quarterStart, quarterEnd), expected: false);
+Check("IsInRangeExcludingLower on int at upper",      10.IsInRangeExcludingLower(1, 10),                           expected: true);
 
 Check("IsGreaterThan on int",          5.IsGreaterThan(4),                  expected: true);
 Check("IsGreaterThanOrEqualTo on int", 5.IsGreaterThanOrEqualTo(5),         expected: true);
