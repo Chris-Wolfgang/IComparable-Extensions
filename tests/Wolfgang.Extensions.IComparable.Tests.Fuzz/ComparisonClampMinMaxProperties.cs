@@ -5,8 +5,8 @@ using FsCheck.Xunit;
 namespace Wolfgang.Extensions.IComparable.Tests.Fuzz;
 
 /// <summary>
-/// Property-based fuzz tests for the comparison, <c>Clamp</c>, <c>Min</c>/<c>Max</c>
-/// and <c>NearestTo</c> extensions. As in
+/// Property-based fuzz tests for the comparison, <c>Clamp</c>, <c>Min</c>/<c>Max</c>,
+/// <c>NearestTo</c> and <c>WhereBetween</c>/<c>WhereInRange</c> extensions. As in
 /// <see cref="IComparableExtensionsProperties"/>, each property checks the method against a
 /// reference written with plain <c>CompareTo</c> or LINQ, so any added or lost semantic shows up
 /// as a counter-example. Bounds are put in order with <see cref="Math.Min(int, int)"/> /
@@ -104,6 +104,41 @@ public class ComparisonClampMinMaxProperties
 
             return candidates.Get.Contains(nearest)
                 && Distance(value, nearest) == candidates.Get.Min(c => Distance(value, c));
+        });
+
+
+    // -- WhereBetween / WhereInRange ---------------------------------------------
+
+    [Property]
+    public Property WhereBetween_on_int_matches_IsBetween() =>
+        Prop.ForAll<NonEmptyArray<int>, int, int>((values, lower, upper) =>
+            values.Get
+                .AsQueryable()
+                .WhereBetween(x => x, lower, upper)
+                .SequenceEqual(values.Get.Where(x => x.IsBetween(lower, upper))));
+
+
+    [Property]
+    public Property WhereInRange_on_int_matches_IsInRange() =>
+        Prop.ForAll<NonEmptyArray<int>, int, int>((values, lower, upper) =>
+            values.Get
+                .AsQueryable()
+                .WhereInRange(x => x, lower, upper)
+                .SequenceEqual(values.Get.Where(x => x.IsInRange(lower, upper))));
+
+
+    [Property]
+    public Property WhereBetween_on_string_matches_IsBetween() =>
+        Prop.ForAll<NonEmptyArray<NonNull<string>>, string, string>((values, lower, upper) =>
+        {
+            var strings = values.Get
+                .Select(s => s.Get)
+                .ToArray();
+
+            return strings
+                .AsQueryable()
+                .WhereBetween(s => s, lower, upper)
+                .SequenceEqual(strings.Where(s => s.IsBetween(lower, upper)));
         });
 
 
