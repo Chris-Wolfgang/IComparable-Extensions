@@ -133,7 +133,7 @@ public class NearestToTests
     [Fact]
     public void NearestTo_when_candidates_is_null_throws_ArgumentNullException()
     {
-        var exception = Assert.Throws<ArgumentNullException>(() => 5.NearestTo((IEnumerable<int>)null!, IntDistance));
+        var exception = Assert.Throws<ArgumentNullException>(() => 5.NearestTo(null!, IntDistance));
 
         Assert.Equal("candidates", exception.ParamName);
     }

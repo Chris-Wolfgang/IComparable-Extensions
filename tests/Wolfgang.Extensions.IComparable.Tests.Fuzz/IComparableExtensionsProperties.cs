@@ -2,7 +2,6 @@
 using System.Diagnostics.CodeAnalysis;
 using FsCheck;
 using FsCheck.Fluent;
-using FsCheck.Xunit;
 
 namespace Wolfgang.Extensions.IComparable.Tests.Fuzz;
 
