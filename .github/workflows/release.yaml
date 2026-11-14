@@ -634,6 +634,29 @@ jobs:
           $manifest | ConvertTo-Json -Depth 6 | Set-Content -Path $out -Encoding utf8NoBOM
           Get-Content $out
 
+          # SHA256SUMS.txt (#423): the same hashes in `sha256sum -c` format, LF line endings.
+          # One line per .dll/.pdb inside a package, keyed by its path in the package
+          # (lib/<tfm>/...), then one line per package file. Extract a rebuilt package and
+          # run `sha256sum -c --ignore-missing SHA256SUMS.txt` from the extraction root to
+          # check the assemblies; the package lines only verify the downloaded release assets.
+          $lines = [System.Collections.Generic.List[string]]::new()
+          $seen = @{}
+          foreach ($package in $entries) {
+            foreach ($file in $package.files) {
+              $key = "$($file.path)"
+              if ($seen.ContainsKey($key)) {
+                if ($seen[$key] -ne $file.sha256) { Write-Error "Two packages carry '$key' with different hashes." }
+                continue
+              }
+              $seen[$key] = $file.sha256
+              $lines.Add("$($file.sha256)  $key")
+            }
+          }
+          foreach ($package in $entries) { $lines.Add("$($package.sha256)  $($package.file)") }
+          $sums = Join-Path $PWD 'nuget-packages' 'SHA256SUMS.txt'
+          [System.IO.File]::WriteAllText($sums, (($lines -join "`n") + "`n"), [System.Text.UTF8Encoding]::new($false))
+          Get-Content $sums
+
       - name: Upload NuGet packages
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -799,7 +822,12 @@ jobs:
         id: attest
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
-          subject-path: './packages/*.nupkg'
+          # The packages, plus the hash list and manifest (#423) so a verifier can prove
+          # SHA256SUMS.txt came from this workflow run before trusting its hashes.
+          subject-path: |
+            ./packages/*.nupkg
+            ./packages/SHA256SUMS.txt
+            ./packages/reproducible-build-manifest.json
 
       # The attestation above is recorded in GitHub's attestation store, which is what
       # `gh attestation verify` reads. Tooling that audits the RELEASE PAGE - OpenSSF
@@ -928,6 +956,6 @@ jobs:
           TAG_NAME: ${{ github.event.release.tag_name }}
         run: |
           shopt -s nullglob
-          files=(./nuget-packages/*.nupkg ./nuget-packages/*.snupkg ./nuget-packages/*.bom.json ./nuget-packages/reproducible-build-manifest*.json ./provenance/*.intoto.jsonl release-coverage.zip)
+          files=(./nuget-packages/*.nupkg ./nuget-packages/*.snupkg ./nuget-packages/*.bom.json ./nuget-packages/reproducible-build-manifest*.json ./nuget-packages/SHA256SUMS.txt ./provenance/*.intoto.jsonl release-coverage.zip)
           echo "Uploading ${#files[@]} asset(s) to release $TAG_NAME"
           gh release upload "$TAG_NAME" "${files[@]}" --clobber
