@@ -42,6 +42,20 @@ public class IComparableExtensionsProperties
 
 
 
+    [FuzzProperty]
+    public bool IsInRangeExcludingUpper_on_int_matches_manual_CompareTo(int value, int lower, int upper) =>
+        value.IsInRangeExcludingUpper(lower, upper)
+            == (value.CompareTo(lower) >= 0 && value.CompareTo(upper) < 0);
+
+
+
+    [FuzzProperty]
+    public bool IsInRangeExcludingLower_on_int_matches_manual_CompareTo(int value, int lower, int upper) =>
+        value.IsInRangeExcludingLower(lower, upper)
+            == (value.CompareTo(lower) > 0 && value.CompareTo(upper) <= 0);
+
+
+
     // -- long ----------------------------------------------------------------
 
     [FuzzProperty]
