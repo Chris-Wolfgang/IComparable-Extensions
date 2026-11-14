@@ -1,4 +1,3 @@
-using System.Linq;
 using FsCheck;
 using FsCheck.Fluent;
 using FsCheck.Xunit;
@@ -41,7 +40,7 @@ public class ComparisonClampMinMaxProperties
     [Property]
     public Property IsGreaterThan_on_string_matches_manual_CompareTo() =>
         Prop.ForAll<NonNull<string>, string>((value, other) =>
-            value.Get.IsGreaterThan(other) == (value.Get.CompareTo(other) > 0));
+            value.Get.IsGreaterThan(other) == (string.Compare(value.Get, other, StringComparison.CurrentCulture) > 0));
 
 
     // -- Clamp -----------------------------------------------------------------
@@ -113,14 +112,18 @@ public class ComparisonClampMinMaxProperties
     [Property]
     public Property WhereBetween_on_int_matches_IsBetween() =>
         Prop.ForAll<NonEmptyArray<int>, int, int>((values, lower, upper) =>
-            values.Get.AsQueryable().WhereBetween(x => x, lower, upper)
+            values.Get
+                .AsQueryable()
+                .WhereBetween(x => x, lower, upper)
                 .SequenceEqual(values.Get.Where(x => x.IsBetween(lower, upper))));
 
 
     [Property]
     public Property WhereInRange_on_int_matches_IsInRange() =>
         Prop.ForAll<NonEmptyArray<int>, int, int>((values, lower, upper) =>
-            values.Get.AsQueryable().WhereInRange(x => x, lower, upper)
+            values.Get
+                .AsQueryable()
+                .WhereInRange(x => x, lower, upper)
                 .SequenceEqual(values.Get.Where(x => x.IsInRange(lower, upper))));
 
 
@@ -128,12 +131,15 @@ public class ComparisonClampMinMaxProperties
     public Property WhereBetween_on_string_matches_IsBetween() =>
         Prop.ForAll<NonEmptyArray<NonNull<string>>, string, string>((values, lower, upper) =>
         {
-            var strings = values.Get.Select(s => s.Get).ToArray();
+            var strings = values.Get
+                .Select(s => s.Get)
+                .ToArray();
 
-            return strings.AsQueryable().WhereBetween(s => s, lower, upper)
+            return strings
+                .AsQueryable()
+                .WhereBetween(s => s, lower, upper)
                 .SequenceEqual(strings.Where(s => s.IsBetween(lower, upper)));
         });
-
 
 
     private static long Distance(int a, int b) => Math.Abs((long)a - b);
