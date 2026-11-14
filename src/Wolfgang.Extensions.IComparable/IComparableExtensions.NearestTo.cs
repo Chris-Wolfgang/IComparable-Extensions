@@ -52,7 +52,7 @@ public static partial class IComparableExtensions
     public static T NearestTo<T, TDistance>
     (
         this T value,
-        IEnumerable<T> candidates,
+        IEnumerable<T?> candidates,
         Func<T, T, TDistance> distance
     )
         where T : IComparable<T>
@@ -139,11 +139,11 @@ public static partial class IComparableExtensions
     (
         this T value,
         Func<T, T, TDistance> distance,
-        params T[] candidates
+        params T?[] candidates
     )
         where T : IComparable<T>
         where TDistance : IComparable<TDistance>
     {
-        return value.NearestTo((IEnumerable<T>)candidates, distance);
+        return value.NearestTo(candidates, distance);
     }
 }
