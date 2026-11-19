@@ -35,14 +35,10 @@ described below. v1.1.2 and earlier predate the cross-OS fixes and have no manif
 
 ## Continuous verification
 
-The [`Reproducible Build`](../.github/workflows/reproducible-build.yaml) workflow (the
-canonical repo-template copy) runs on every pull request to `main` and on demand. Its
-**Reproducible build** job packs every packable project under `src/` twice on
-`ubuntu-latest` with `CI=true`, with a full `git clean` in between, and **fails** unless
-every `.dll` and `.pdb` is byte-identical and every `.nupkg` / `.snupkg` matches entry by
-entry. The **Reproducible build (Windows report)** job packs the same commit on
-`windows-latest` and prints the cross-OS hash comparison in the job summary; that
-comparison is reported, not gated.
+The [`Reproducible Build`](../.github/workflows/reproducible-build.yaml) workflow runs on
+every pull request and push to `main`: it packs the project on `ubuntu-latest` and
+`windows-latest` with `CI=true`, hashes every `.dll` and `.pdb`, and **fails** if any hash
+differs between the two operating systems.
 
 ## The release manifest
 
