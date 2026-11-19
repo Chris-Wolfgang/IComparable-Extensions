@@ -48,6 +48,15 @@ Every release attaches **`reproducible-build-manifest.json`**, generated inside
 contains (`packages[].files[]`). The package files' own `sha256` is informational only (see
 above).
 
+It also attaches **`SHA256SUMS.txt`**: the same hashes in `sha256sum -c` format, one line per
+`.dll` / `.pdb` keyed by its path inside the package (`lib/<tfm>/...`), then one line per
+package file. Both files are subjects of the release's build-provenance attestation, so you can
+confirm they came from the release workflow before trusting them:
+
+```bash
+gh attestation verify SHA256SUMS.txt --repo Chris-Wolfgang/IComparable-Extensions   --signer-workflow Chris-Wolfgang/IComparable-Extensions/.github/workflows/release.yaml
+```
+
 ## Verify it yourself
 
 Use the SDK version recorded in the manifest (`sdk`); a different compiler can legitimately
@@ -79,7 +88,9 @@ diff released.txt mine.txt && echo "Reproduced: identical assemblies and symbols
 ```
 
 An empty `diff` shows that the assemblies and symbols you rebuilt from source are
-byte-identical to the published ones. To check the package you actually installed, unzip it
+byte-identical to the published ones. For releases that attach `SHA256SUMS.txt`, step 3 can
+instead be `(cd mine && sha256sum -c --ignore-missing ../SHA256SUMS.txt)` after downloading it
+with `--pattern SHA256SUMS.txt`; every `lib/` line must report `OK`. To check the package you actually installed, unzip it
 from your NuGet cache and hash its `lib/` entries the same way.
 
 ## File a discrepancy
