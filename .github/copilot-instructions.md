@@ -41,7 +41,7 @@ dotnet test  tests/Wolfgang.Extensions.IComparable.Tests.Unit/Wolfgang.Extension
 
 | Workflow | Purpose | Triggers on |
 |---|---|---|
-| `.github/workflows/pr.yaml` | Multi-stage validation: gitleaks, changelog fragment check, InspectCode, Linux + Windows + macOS tests with coverage gates, DevSkim | `pull_request` against `main` + `push` to `main` |
+| `.github/workflows/pr.yaml` | Multi-stage validation: gitleaks, changelog fragment check, InspectCode, Linux + Windows + macOS tests with coverage gates, Linux ARM64 + Windows ARM64 tests (Stages 4/5, net6.0+, in parallel), DevSkim | `pull_request` against `main` + `push` to `main` |
 | `.github/workflows/protected-files.yaml` | Protected Files Guard: refuses a PR that mixes protected config with other changes (never checks out PR code) | `pull_request_target` |
 | `.github/workflows/release.yaml` | Validate, pack, SBOM, NuGet publish via Trusted Publishing (OIDC), docs deploy, release assets | GitHub Release published |
 | `.github/workflows/docfx.yaml` | DocFX site → `gh-pages` | `workflow_call` (from `release.yaml`) and `workflow_dispatch` |
@@ -54,7 +54,7 @@ dotnet test  tests/Wolfgang.Extensions.IComparable.Tests.Unit/Wolfgang.Extension
 | `.github/workflows/sbom.yaml` | CycloneDX SBOM artifact | PR + push + `workflow_dispatch` |
 | `.github/workflows/sourcelink.yaml` | `dotnet sourcelink test` on the net10.0 PDB | PR + push + `workflow_dispatch` |
 | `.github/workflows/reproducible-build.yaml` | Builds the same commit twice from clean and compares the output hashes | PR + push + `workflow_dispatch` |
-| `.github/workflows/aot-smoke.yaml` | `PublishAot + run` of `Tests.AotSmoke` on Linux | PR + push + `workflow_dispatch` |
+| `.github/workflows/aot-smoke.yaml` | Native AOT publish + run of every `PublishAot` project (`Tests.Aot`, `Tests.AotSmoke`) on linux-x64 and linux-arm64 | PR + `workflow_dispatch` + `workflow_call` from `release.yaml` |
 | `.github/workflows/stryker.yaml` | Stryker.NET mutation testing + survivor issue | PR + weekly + `workflow_dispatch` |
 | `.github/workflows/benchmarks.yaml` | BenchmarkDotNet → `gh-pages` chart | push to `main` + `workflow_dispatch` |
 | `.github/workflows/pr-benchmarks.yaml` | BenchmarkDotNet delta table as a PR comment (advisory) | PR + `workflow_dispatch` |
