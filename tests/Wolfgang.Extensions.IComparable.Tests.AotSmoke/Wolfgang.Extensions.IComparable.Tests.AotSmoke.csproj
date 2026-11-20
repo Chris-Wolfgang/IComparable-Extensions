@@ -18,6 +18,12 @@
 
 		<!-- Not packed, not run as a test — just publish + execute. -->
 		<IsPackable>false</IsPackable>
+
+		<!-- Explicit opt-out of `dotnet test`: the pr.yaml test stages fail any
+		     project under tests/ that neither references Microsoft.NET.Test.Sdk
+		     nor sets IsTestProject=false, so a test project that lost its
+		     Test.Sdk reference cannot drop out of the gate silently. -->
+		<IsTestProject>false</IsTestProject>
 	</PropertyGroup>
 
 	<ItemGroup>
