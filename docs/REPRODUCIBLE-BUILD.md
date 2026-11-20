@@ -29,7 +29,7 @@ described below. v1.1.2 and earlier predate the cross-OS fixes and have no manif
 | --- | --- | --- |
 | `Deterministic` (SDK default `true`) | SDK | No timestamps or other non-deterministic metadata in the assembly. |
 | `ContinuousIntegrationBuild=true` when `CI=true` | `Directory.Build.props` | Turns on `DeterministicSourcePaths`, replacing absolute source paths with stable tokens. |
-| `Microsoft.SourceLink.GitHub` + `EmbedUntrackedSources` | `Directory.Build.props` | Maps source paths to the repository, which keeps the PDB machine-independent. |
+| SDK built-in SourceLink (default since .NET 8) + `EmbedUntrackedSources` | SDK + `Directory.Build.props` | Maps source paths to the repository, which keeps the PDB machine-independent. |
 | `NormalizeGeneratedLineEndings` target | `Directory.Build.targets` | Rewrites the SDK-generated `*.AssemblyInfo.cs` / `*.AssemblyAttributes.cs` to LF before compiling. They are written with the OS newline, and the PDB records their hash and text, so without this the PDB (and through its checksum the DLL) differed between Windows and Linux. |
 | `Microsoft.NETFramework.ReferenceAssemblies` for `net4*` | `Directory.Build.props` | Every OS compiles `net462` against the same reference assemblies instead of Windows using the installed targeting pack. The PDB records each reference's identity. |
 
