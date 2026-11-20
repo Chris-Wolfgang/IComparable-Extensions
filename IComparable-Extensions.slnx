@@ -9,6 +9,8 @@
     <File Path="CONTRIBUTING.md" />
     <File Path="coverlet.runsettings" />
     <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <File Path="global.json" />
     <File Path="LICENSE" />
     <File Path="README.md" />
     <File Path="SECURITY.md" />
@@ -26,6 +28,7 @@
     <File Path=".github/workflows/build-all-versions.yaml" />
     <File Path=".github/workflows/codeql.yaml" />
     <File Path=".github/workflows/docfx.yaml" />
+    <File Path=".github/workflows/fuzz.yaml" />
     <File Path=".github/workflows/license-audit.yaml" />
     <File Path=".github/workflows/pr-benchmarks.yaml" />
     <File Path=".github/workflows/pr.yaml" />
