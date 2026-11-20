@@ -57,7 +57,8 @@ Ensure the following settings are enabled:
   - "Stage 3: macOS Tests (.NET 6.0-10.0)"
   - "Security Scan (DevSkim)"
   - "Security Scan (CodeQL)" (`codeql.yaml`)
-  - "PublishAot + run" (`aot-smoke.yaml`)
+  - "AOT smoke (linux-x64)" and "AOT smoke (linux-arm64)" (`aot-smoke.yaml`)
+  - "Stage 4: Linux ARM64 Tests" and "Stage 5: Windows ARM64 Tests" (`pr.yaml`), once both have passed on `main`
 - ✅ **Require conversation resolution before merging**
 - ✅ **Block force pushes** and **Restrict deletions**
 - ⬜ **Require linear history** — optional (limits merges to squash/rebase); stacked PRs then use `scripts/restack.ps1` after each merge.
