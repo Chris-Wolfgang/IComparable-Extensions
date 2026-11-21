@@ -61,7 +61,6 @@
   <Folder Name="/tests/">
     <File Path="tests/Wolfgang.Extensions.IComparable.Tests.Unit/stryker-config.json" />
     <Project Path="tests/Wolfgang.Extensions.IComparable.Tests.Aot/Wolfgang.Extensions.IComparable.Tests.Aot.csproj" />
-    <Project Path="tests/Wolfgang.Extensions.IComparable.Tests.AotSmoke/Wolfgang.Extensions.IComparable.Tests.AotSmoke.csproj" />
     <Project Path="tests/Wolfgang.Extensions.IComparable.Tests.DocExamples/Wolfgang.Extensions.IComparable.Tests.DocExamples.csproj" />
     <Project Path="tests/Wolfgang.Extensions.IComparable.Tests.Fuzz/Wolfgang.Extensions.IComparable.Tests.Fuzz.csproj" />
     <Project Path="tests/Wolfgang.Extensions.IComparable.Tests.Unit/Wolfgang.Extensions.IComparable.Tests.Unit.csproj" />

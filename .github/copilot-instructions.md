@@ -54,7 +54,7 @@ dotnet test  tests/Wolfgang.Extensions.IComparable.Tests.Unit/Wolfgang.Extension
 | `.github/workflows/sbom.yaml` | CycloneDX SBOM artifact | PR + push + `workflow_dispatch` |
 | `.github/workflows/sourcelink.yaml` | `dotnet sourcelink test` on the net10.0 PDB | PR + push + `workflow_dispatch` |
 | `.github/workflows/reproducible-build.yaml` | Builds the same commit twice from clean and compares the output hashes | PR + push + `workflow_dispatch` |
-| `.github/workflows/aot-smoke.yaml` | Native AOT publish + run of every `PublishAot` project (`Tests.Aot`, `Tests.AotSmoke`) on linux-x64 and linux-arm64 | PR + `workflow_dispatch` + `workflow_call` from `release.yaml` |
+| `.github/workflows/aot-smoke.yaml` | Native AOT publish + run of every `PublishAot` project (`Tests.Aot`) on linux-x64 and linux-arm64 | PR + `workflow_dispatch` + `workflow_call` from `release.yaml` |
 | `.github/workflows/stryker.yaml` | Stryker.NET mutation testing + survivor issue | PR + weekly + `workflow_dispatch` |
 | `.github/workflows/benchmarks.yaml` | BenchmarkDotNet → `gh-pages` chart | push to `main` + `workflow_dispatch` |
 | `.github/workflows/pr-benchmarks.yaml` | BenchmarkDotNet delta table as a PR comment (advisory) | PR + `workflow_dispatch` |
@@ -77,7 +77,7 @@ root/
 │   ├── Wolfgang.Extensions.IComparable.Tests.Unit/        # Unit, culture and allocation tests (net462-net10.0)
 │   ├── Wolfgang.Extensions.IComparable.Tests.DocExamples/ # Compiles every XML-doc <example> (doc-rot gate)
 │   ├── Wolfgang.Extensions.IComparable.Tests.Fuzz/        # FsCheck properties vs a manual CompareTo chain
-│   └── Wolfgang.Extensions.IComparable.Tests.AotSmoke/    # PublishAot console app run by aot-smoke.yaml
+│   └── Wolfgang.Extensions.IComparable.Tests.Aot/         # Native AOT xunit.v3 runner over the unit suite (aot-smoke.yaml)
 ├── benchmarks/
 │   └── Wolfgang.Extensions.IComparable.Benchmarks/        # BenchmarkDotNet (benchmarks.yaml, pr-benchmarks.yaml)
 ├── examples/
