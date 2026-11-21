@@ -47,6 +47,8 @@ All methods are generic extension methods on `T where T : IComparable<T>`. Each 
 |---|---|---|
 | `value.IsBetween(lowerBound, upperBound)` | **Exclusive** on both ends | `lowerBound < value < upperBound` |
 | `value.IsInRange(lowerBound, upperBound)` | **Inclusive** on both ends | `lowerBound ≤ value ≤ upperBound` |
+| `value.IsInRangeExcludingUpper(lowerBound, upperBound)` | Half-open `[lower, upper)` | `lowerBound ≤ value < upperBound` |
+| `value.IsInRangeExcludingLower(lowerBound, upperBound)` | Half-open `(lower, upper]` | `lowerBound < value ≤ upperBound` |
 | `value.IsGreaterThan(other)` | Strict | `value > other` |
 | `value.IsGreaterThanOrEqualTo(other)` | Inclusive | `value ≥ other` |
 | `value.IsLessThan(other)` | Strict | `value < other` |
