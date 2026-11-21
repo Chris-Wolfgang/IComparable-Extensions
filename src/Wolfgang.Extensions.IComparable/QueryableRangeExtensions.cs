@@ -16,8 +16,11 @@ namespace Wolfgang.Extensions.IComparable;
 /// (numeric types, <see cref="DateTime"/>, <see cref="DateTimeOffset"/>, <see cref="TimeSpan"/>,
 /// <see cref="decimal"/>, ...) it uses them, which providers translate to <c>&gt;</c>,
 /// <c>&lt;</c>, <c>&gt;=</c> and <c>&lt;=</c>. Otherwise (for example <see cref="string"/>) it
-/// uses <c>key.CompareTo(bound) &gt; 0</c> and the like, which EF Core also translates. The
-/// bounds are captured as closure values, so providers send them as query parameters.
+/// uses <c>key.CompareTo(bound) &gt; 0</c> and the like; for <see cref="string"/> that is
+/// <see cref="string.CompareTo(string)"/>, which EF Core translates to a SQL comparison. Other
+/// types without operators compare through <see cref="IComparable{T}.CompareTo"/>, which a
+/// provider may not translate. The bounds are captured as closure values, so providers send
+/// them as query parameters.
 /// </remarks>
 public static class QueryableRangeExtensions
 {
@@ -165,6 +168,11 @@ public static class QueryableRangeExtensions
 
 
 
+    private static readonly System.Reflection.MethodInfo StringCompareTo =
+        typeof(string).GetMethod(nameof(string.CompareTo), new[] { typeof(string) })!;
+
+
+
     private static Expression Compare<TKey>(Expression key, Expression bound, ExpressionType comparison)
         where TKey : IComparable<TKey>
     {
@@ -173,14 +181,24 @@ public static class QueryableRangeExtensions
             return Expression.MakeBinary(comparison, key, bound);
         }
 
-        // key.CompareTo(bound) <op> 0 through IComparable<TKey>, the same call IsBetween /
-        // IsInRange make in memory (ADR-0005).
-        var compareTo = typeof(IComparable<TKey>).GetMethod(nameof(IComparable<TKey>.CompareTo))!;
+        // key.CompareTo(bound) <op> 0, the same call IsBetween / IsInRange make in memory
+        // (ADR-0005). For string it calls string.CompareTo(string) itself, the shape EF Core
+        // rewrites to a plain SQL comparison; a call through the IComparable<string> interface
+        // (behind a Convert) is not recognised and fails translation. Other types go through
+        // IComparable<TKey>.
+        var compareToCall = typeof(TKey) == typeof(string)
+            ? Expression.Call(key, StringCompareTo, bound)
+            : Expression.Call
+            (
+                Expression.Convert(key, typeof(IComparable<TKey>)),
+                typeof(IComparable<TKey>).GetMethod(nameof(IComparable<TKey>.CompareTo))!,
+                bound
+            );
 
         return Expression.MakeBinary
         (
             comparison,
-            Expression.Call(Expression.Convert(key, typeof(IComparable<TKey>)), compareTo, bound),
+            compareToCall,
             Expression.Constant(0)
         );
     }

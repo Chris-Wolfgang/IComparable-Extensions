@@ -123,6 +123,36 @@ public class QueryableRangeExtensionsTests
 
 
     [Fact]
+    public void WhereBetween_on_a_string_key_calls_string_CompareTo_directly()
+    {
+        // EF Core rewrites string.CompareTo(string) to a SQL comparison; a call through the
+        // IComparable<string> interface behind a Convert fails translation.
+        var predicate = PredicateOf(Products.AsQueryable().WhereBetween(p => p.Name, "d", "r"));
+
+        var lower = (BinaryExpression)((BinaryExpression)predicate.Body).Left;
+        var call = (MethodCallExpression)lower.Left;
+
+        Assert.Equal(typeof(string), call.Method.DeclaringType);
+    }
+
+
+
+    [Fact]
+    public void WhereBetween_on_a_key_without_operators_or_string_compares_through_the_interface()
+    {
+        var levels = new[] { new Level(1), new Level(2), new Level(3), new Level(4) }.AsQueryable();
+
+        var query = levels.WhereBetween(l => l, new Level(1), new Level(4));
+
+        var call = (MethodCallExpression)((BinaryExpression)((BinaryExpression)PredicateOf(query).Body).Left).Left;
+
+        Assert.Equal(typeof(IComparable<Level>), call.Method.DeclaringType);
+        Assert.Equal(new[] { 2, 3 }, query.Select(l => l.Value).ToArray());
+    }
+
+
+
+    [Fact]
     public void WhereBetween_captures_the_bounds_as_closure_members_not_constants()
     {
         // A member access on a closure is what providers turn into a query parameter; a
@@ -220,6 +250,27 @@ public class QueryableRangeExtensionsTests
     {
         var where = (MethodCallExpression)query.Expression;
         return (LambdaExpression)((UnaryExpression)where.Arguments[1]).Operand;
+    }
+
+
+
+    // Implements IComparable<T> explicitly and defines no comparison operators, so the
+    // filter has to compare through the interface.
+    [ExcludeFromCodeCoverage]
+    private sealed class Level : IComparable<Level>
+    {
+        public Level(int value)
+        {
+            Value = value;
+        }
+
+
+
+        public int Value { get; }
+
+
+
+        int IComparable<Level>.CompareTo(Level? other) => other is null ? 1 : Value.CompareTo(other.Value);
     }
 
 
