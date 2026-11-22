@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794750706967,
+  "lastUpdate": 1795357661799,
   "repoUrl": "https://github.com/Chris-Wolfgang/IComparable-Extensions",
   "entries": {
     "Mutation score": [
@@ -156,6 +156,33 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Chris-Wolfgang/IComparable-Extensions/commit/266c4c4181865c673b22d955c5c8d8ba3bd9c8aa"
         },
         "date": 1794750703807,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Mutation score (tests/Wolfgang.Extensions.IComparable.Tests.Unit)",
+            "value": 100,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "Chris Wolfgang",
+            "username": "Chris-Wolfgang",
+            "email": "210299580+Chris-Wolfgang@users.noreply.github.com"
+          },
+          "committer": {
+            "name": "GitHub",
+            "username": "web-flow",
+            "email": "noreply@github.com"
+          },
+          "id": "24cd3793b24a60ff6eef990ccd9c0b7b4d443d32",
+          "message": "test(aot): delete the AotSmoke harness; Tests.Aot covers it (#468)\n\nTests.Aot links the whole Tests.Unit suite and is already the project\naot-smoke.yaml publishes and runs, so the hand-written AotSmoke console\napp only duplicated a subset of those assertions. Removes the project,\nits slnx entry and the copilot-instructions references, per the\nTests.Aot conversion plan (pilot repo).\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-21T18:58:04Z",
+          "url": "https://github.com/Chris-Wolfgang/IComparable-Extensions/commit/24cd3793b24a60ff6eef990ccd9c0b7b4d443d32"
+        },
+        "date": 1795357658020,
         "tool": "customBiggerIsBetter",
         "benches": [
           {
