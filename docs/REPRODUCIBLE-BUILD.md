@@ -29,16 +29,20 @@ described below. v1.1.2 and earlier predate the cross-OS fixes and have no manif
 | --- | --- | --- |
 | `Deterministic` (SDK default `true`) | SDK | No timestamps or other non-deterministic metadata in the assembly. |
 | `ContinuousIntegrationBuild=true` when `CI=true` | `Directory.Build.props` | Turns on `DeterministicSourcePaths`, replacing absolute source paths with stable tokens. |
-| `Microsoft.SourceLink.GitHub` + `EmbedUntrackedSources` | `Directory.Build.props` | Maps source paths to the repository, which keeps the PDB machine-independent. |
+| SDK built-in SourceLink (default since .NET 8) + `EmbedUntrackedSources` | SDK + `Directory.Build.props` | Maps source paths to the repository, which keeps the PDB machine-independent. |
 | `NormalizeGeneratedLineEndings` target | `Directory.Build.targets` | Rewrites the SDK-generated `*.AssemblyInfo.cs` / `*.AssemblyAttributes.cs` to LF before compiling. They are written with the OS newline, and the PDB records their hash and text, so without this the PDB (and through its checksum the DLL) differed between Windows and Linux. |
 | `Microsoft.NETFramework.ReferenceAssemblies` for `net4*` | `Directory.Build.props` | Every OS compiles `net462` against the same reference assemblies instead of Windows using the installed targeting pack. The PDB records each reference's identity. |
 
 ## Continuous verification
 
-The [`Reproducible Build`](../.github/workflows/reproducible-build.yaml) workflow runs on
-every pull request and push to `main`: it packs the project on `ubuntu-latest` and
-`windows-latest` with `CI=true`, hashes every `.dll` and `.pdb`, and **fails** if any hash
-differs between the two operating systems.
+The [`Reproducible Build`](../.github/workflows/reproducible-build.yaml) workflow (the
+canonical repo-template copy) runs on every pull request to `main` and on demand. Its
+**Reproducible build** job packs every packable project under `src/` twice on
+`ubuntu-latest` with `CI=true`, with a full `git clean` in between, and **fails** unless
+every `.dll` and `.pdb` is byte-identical and every `.nupkg` / `.snupkg` matches entry by
+entry. The **Reproducible build (Windows report)** job packs the same commit on
+`windows-latest` and prints the cross-OS hash comparison in the job summary; that
+comparison is reported, not gated.
 
 ## The release manifest
 
