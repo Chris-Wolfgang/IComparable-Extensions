@@ -11,7 +11,7 @@ contains nothing else.
 For a given commit built with the same SDK, these outputs are bit-for-bit identical:
 
 - `Wolfgang.Extensions.IComparable.dll` for every target framework (`net462`,
-  `netstandard2.0`, `net8.0`, `net10.0`), as shipped in the `.nupkg`,
+  `netstandard2.0`, `net8.0`, `net10.0`, `net11.0`), as shipped in the `.nupkg`,
 - `Wolfgang.Extensions.IComparable.pdb` for every target framework, as shipped in the
   `.snupkg`.
 
